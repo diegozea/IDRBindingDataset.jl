@@ -2,7 +2,7 @@
 
 julia_version = "1.12.5"
 manifest_format = "2.0"
-project_hash = "47c97a0f04b2d100baa75924bcea821b21cd81d6"
+project_hash = "a33dc32bf581c903b93f25ada0367eb42b14a941"
 
 [[deps.Aqua]]
 deps = ["Compat", "Pkg", "Test"]
@@ -237,6 +237,17 @@ version = "1.10.0"
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 version = "1.11.0"
+
+[[deps.TestItemRunner]]
+deps = ["Pkg", "TOML", "Test", "TestItems", "UUIDs"]
+git-tree-sha1 = "76f275a3f3d83ece88ec69d73058048de5acb1dc"
+uuid = "f8b46487-2199-4994-9208-9a1283c18c0a"
+version = "1.1.4"
+
+[[deps.TestItems]]
+git-tree-sha1 = "42fd9023fef18b9b78c8343a4e2f3813ffbcefcb"
+uuid = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
+version = "1.0.0"
 
 [[deps.UUIDs]]
 deps = ["Random", "SHA"]
