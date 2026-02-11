@@ -1,0 +1,7 @@
+name = "IDRBindingDataset"
+uuid = "4ed5ff09-7a8d-4be1-90a2-095b546ff853"
+authors = ["Diego Javier Zea <diegozea@gmail.com> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1.10.10"

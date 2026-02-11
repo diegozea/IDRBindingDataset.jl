@@ -1,0 +1,10 @@
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.12.5"
+manifest_format = "2.0"
+project_hash = "b6b3dead22488fd55d1b17d9462afe6a11685eef"
+
+[[deps.IDRBindingDataset]]
+path = "."
+uuid = "4ed5ff09-7a8d-4be1-90a2-095b546ff853"
+version = "0.1.0"
