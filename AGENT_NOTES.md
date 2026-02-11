@@ -856,3 +856,62 @@ Add Julia formatting guardrails to repository automation and instructions:
 - `julia-actions/julia-format` releases (latest `v4.1.0`):
   - https://github.com/julia-actions/julia-format/releases
   - Accessed on 11-02-2026.
+
+# 11-02-2026
+
+## Goal
+
+Add explicit guidance in `AGENTS.md` to prefer `julia-mcp` when available, and validate it in this environment for routine Julia tasks (tests/formatting context).
+
+## What I tried
+
+- Updated `AGENTS.md` operational conventions to state:
+  - prefer `julia-mcp` for Julia execution when available (especially tests and formatting),
+  - use shell `julia` only as fallback,
+  - minimum validation should run full tests (prefer via `julia-mcp`).
+- Verified `julia-mcp` availability and execution by running full package tests through MCP:
+  - `Pkg.test()` in env `IDRBindingDataset.jl` via persistent MCP Julia session.
+
+## Results and observations
+
+- `julia-mcp` is available and functional in this environment.
+- Full test suite run via MCP passed:
+  - `Package | Pass 35 / Total 35`
+
+## Decisions
+
+- Kept formatter command examples in AGENTS generic (policy-level) while making MCP preference explicit.
+- Used test execution as MCP proof-of-use for this change, which directly exercises the requested low-TTFX path.
+
+## Sources
+
+- No external sources were required for this repository-internal policy update and runtime verification.
+
+# 11-02-2026
+
+## Goal
+
+Improve `AGENTS.md` Julia MCP guidance by adding concrete usage examples instead of only policy text.
+
+## What I tried
+
+- Updated the `Repo operational conventions (agent)` section in `AGENTS.md` to include explicit Julia MCP examples for:
+  - running tests in the repo environment,
+  - running formatting in the repo environment.
+- Kept shell-Julia fallback guidance intact.
+- Validated Julia MCP operation in this environment by running full tests via MCP:
+  - `Pkg.test()` with `env_path = /home/diego.zea/.julia/dev/IDRBindingDataset.jl`.
+
+## Results and observations
+
+- `AGENTS.md` now includes actionable Julia MCP examples (`env_path` + `code` pairs).
+- MCP validation passed:
+  - `Package | Pass 35 / Total 35`
+
+## Decisions
+
+- Used minimal example payloads so the pattern is clear and reusable without over-specifying tool internals.
+
+## Sources
+
+- No external sources were required for this documentation/policy update.

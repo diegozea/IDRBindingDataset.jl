@@ -176,9 +176,17 @@ When you use external information (docs, papers, web pages), you MUST:
   * activate and instantiate their own environment (`Pkg.activate(@__DIR__)`, `Pkg.instantiate()`),
   * use package imports (`using IDRBindingDataset`),
   * expose explicit CLI flags via `ArgParse` for configurable inputs.
+* If the Julia MCP is available, prefer it for Julia execution (especially tests and formatting) to reuse a warm Julia session and reduce TTFX.
+  * Use shell `julia` only as fallback when the Julia MCP is unavailable or unsuitable.
+  * Example (Julia MCP):
+    * run tests with MCP `julia_eval` in repo environment:
+      * `env_path = "/path/to/repo"`
+      * `code = "import Pkg; Pkg.test()"`
+    * run formatting with MCP `julia_eval` in repo environment:
+      * `env_path = "/path/to/repo"`
+      * `code = "using JuliaFormatter; format(\".\")"`
 * After code changes, run `JuliaFormatter` on the repository using `.JuliaFormatter.toml` before final validation.
-  * Suggested command:
-    * `julia -e 'import Pkg; Pkg.activate(temp=true); Pkg.add(name="JuliaFormatter", version="2"); using JuliaFormatter; format(".")'`
+  * Prefer running formatting via the Julia MCP in the repository environment.
 * Script `--help` should include:
   * where to run from (repo root),
   * one complete invocation example.
@@ -187,5 +195,5 @@ When you use external information (docs, papers, web pages), you MUST:
   * workflow/docs references,
   * AGENT_NOTES.md (append-only).
 * Minimum validation before finishing:
-  * `julia --project=. -e 'using Pkg; Pkg.test()'`,
+  * run full tests (prefer via the Julia MCP),
   * `--help` smoke test for modified scripts.
