@@ -4,8 +4,7 @@ using TestItems
     using Test
     using IDRBindingDataset: build_disprot_regions_url
 
-    expected =
-        "https://disprot.org/api/search?release=2025_12&show_ambiguous=true&show_obsolete=false&format=json"
+    expected = "https://disprot.org/api/search?release=2025_12&show_ambiguous=true&show_obsolete=false&format=json"
     @test build_disprot_regions_url("2025_12") == expected
 end
 
@@ -58,7 +57,7 @@ end
         destination;
         delays = [0.0, 0.0],
         downloader = flaky_downloader,
-        logger = noop_logger,
+        logger = noop_logger
     )
 
     @test attempts[] == 3
@@ -83,7 +82,7 @@ end
         destination;
         delays = [0.0],
         downloader = failing_downloader,
-        logger = _ -> nothing,
+        logger = _ -> nothing
     )
     @test attempts[] == 2
 end
@@ -98,7 +97,7 @@ end
     write(joinpath(tmp_dir, "present.json"), "{}")
     sources = (
         ("https://example.org/present.json", "present.json"),
-        ("https://example.org/missing.tsv", "missing.tsv"),
+        ("https://example.org/missing.tsv", "missing.tsv")
     )
 
     write_download_report(
@@ -108,7 +107,7 @@ end
         release = "2025_12",
         idpo_version = "0.3.0",
         sources = sources,
-        error_message = "network timeout",
+        error_message = "network timeout"
     )
 
     report = read(report_path, String)
@@ -139,7 +138,7 @@ end
         destination;
         delays = [0.0],
         downloader = fake_downloader,
-        logger = _ -> nothing,
+        logger = _ -> nothing
     )
 
     header = read(destination)[1:2]
@@ -157,7 +156,7 @@ end
     @test ensure_files_within_size_limit(
         [small_file];
         max_bytes = 10,
-        limit_name = "test limit",
+        limit_name = "test limit"
     ) === nothing
 end
 
@@ -174,7 +173,7 @@ end
             [big_file];
             max_bytes = 8,
             limit_name = "GitHub single-file hard limit",
-            remediation = "Use Git LFS.",
+            remediation = "Use Git LFS."
         )
         nothing
     catch caught

@@ -7,12 +7,12 @@ Pkg.instantiate()
 using ArgParse
 
 using IDRBindingDataset:
-    build_disprot_regions_url,
-    clean_directory,
-    download_to_gzip_file_with_retries,
-    ensure_files_within_size_limit,
-    utc_now_iso8601,
-    write_download_report
+                         build_disprot_regions_url,
+                         clean_directory,
+                         download_to_gzip_file_with_retries,
+                         ensure_files_within_size_limit,
+                         utc_now_iso8601,
+                         write_download_report
 
 const RELEASE = "2025_12"
 const IDPO_VERSION = "0.3.0"
@@ -47,19 +47,19 @@ The script activates and instantiates scripts/Project.toml internally.
 
     @add_arg_table! settings begin
         "--release"
-            help = "DisProt release identifier (default: $(RELEASE))."
-            arg_type = String
-            default = RELEASE
+        help = "DisProt release identifier (default: $(RELEASE))."
+        arg_type = String
+        default = RELEASE
         "--idpo-version"
-            help = "IDPO version identifier (default: $(IDPO_VERSION))."
-            arg_type = String
-            default = IDPO_VERSION
+        help = "IDPO version identifier (default: $(IDPO_VERSION))."
+        arg_type = String
+        default = IDPO_VERSION
     end
 
     parsed = parse_args(args, settings)
     return (;
         release = parsed["release"],
-        idpo_version = parsed["idpo_version"],
+        idpo_version = parsed["idpo_version"]
     )
 end
 
@@ -81,7 +81,7 @@ function main()
     sources = (
         (build_disprot_regions_url(release), DISPROT_REGIONS_FILENAME),
         (idpo_url, IDPO_FILENAME),
-        (IDPO_MAPPINGS_URL, IDPO_MAPPINGS_FILENAME),
+        (IDPO_MAPPINGS_URL, IDPO_MAPPINGS_FILENAME)
     )
 
     try
@@ -91,7 +91,7 @@ function main()
             download_to_gzip_file_with_retries(
                 url,
                 destination;
-                delays = ExponentialBackOff(n = 5),
+                delays = ExponentialBackOff(n = 5)
             )
         end
 
@@ -100,7 +100,7 @@ function main()
             downloaded_paths;
             max_bytes = GITHUB_SINGLE_FILE_HARD_LIMIT_BYTES,
             limit_name = "GitHub single-file hard limit",
-            remediation = "GitHub blocks files larger than 100 MiB. Use Git LFS or store large artifacts in release assets/object storage.",
+            remediation = "GitHub blocks files larger than 100 MiB. Use Git LFS or store large artifacts in release assets/object storage."
         )
 
         write_download_report(
@@ -109,7 +109,7 @@ function main()
             timestamp_utc = download_timestamp,
             release = release,
             idpo_version = idpo_version,
-            sources = sources,
+            sources = sources
         )
     catch err
         write_download_report(
@@ -119,7 +119,7 @@ function main()
             release = release,
             idpo_version = idpo_version,
             sources = sources,
-            error_message = sprint(showerror, err),
+            error_message = sprint(showerror, err)
         )
         rethrow()
     end

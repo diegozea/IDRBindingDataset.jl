@@ -45,11 +45,11 @@ Download `url` into `destination` using atomic writes and bounded retries.
 If all attempts fail, the last exception is rethrown.
 """
 function _attempt_download(
-    url::AbstractString,
-    destination::AbstractString,
-    downloader::Function,
-    logger::Function,
-    log_success::Bool,
+        url::AbstractString,
+        destination::AbstractString,
+        downloader::Function,
+        logger::Function,
+        log_success::Bool
 )::Nothing
     tmp_path, tmp_io = mktemp(dirname(destination); cleanup = false)
     close(tmp_io)
@@ -71,24 +71,25 @@ function _attempt_download(
 end
 
 function download_to_file_with_retries(
-    url::AbstractString,
-    destination::AbstractString;
-    delays = ExponentialBackOff(n = 5),
-    downloader::Function = Downloads.download,
-    logger::Function = println,
-    log_success::Bool = true,
+        url::AbstractString,
+        destination::AbstractString;
+        delays = ExponentialBackOff(n = 5),
+        downloader::Function = Downloads.download,
+        logger::Function = println,
+        log_success::Bool = true
 )::Nothing
     mkpath(dirname(destination))
 
     retry(
         () -> _attempt_download(url, destination, downloader, logger, log_success);
         delays = delays,
-        check = (_, err) -> begin
+        check = (_,
+            err) -> begin
             logger(
                 "Download failed for $(url): $(sprint(showerror, err)). Retrying with exponential backoff...",
             )
             return true
-        end,
+        end
     )()
 
     return nothing
@@ -105,11 +106,11 @@ format_mb(bytes::Integer)::Float64 = round(bytes_to_mb(bytes); digits = 4)
 Download `url`, compress it as gzip, and save it to `destination`.
 """
 function download_to_gzip_file_with_retries(
-    url::AbstractString,
-    destination::AbstractString;
-    delays = ExponentialBackOff(n = 5),
-    downloader::Function = Downloads.download,
-    logger::Function = println,
+        url::AbstractString,
+        destination::AbstractString;
+        delays = ExponentialBackOff(n = 5),
+        downloader::Function = Downloads.download,
+        logger::Function = println
 )::Nothing
     mkpath(dirname(destination))
     raw_tmp_path, raw_tmp_io = mktemp(dirname(destination); cleanup = false)
@@ -124,7 +125,7 @@ function download_to_gzip_file_with_retries(
             delays = delays,
             downloader = downloader,
             logger = logger,
-            log_success = false,
+            log_success = false
         )
 
         open(raw_tmp_path, "r") do input_io
@@ -167,10 +168,10 @@ If any file is missing or exceeds the configured limit, this function throws
 an `ErrorException` with a clear multi-line diagnostic.
 """
 function ensure_files_within_size_limit(
-    paths;
-    max_bytes::Integer,
-    limit_name::AbstractString,
-    remediation::AbstractString = "",
+        paths;
+        max_bytes::Integer,
+        limit_name::AbstractString,
+        remediation::AbstractString = ""
 )::Nothing
     max_bytes > 0 || throw(ArgumentError("`max_bytes` must be greater than zero."))
 
@@ -194,9 +195,9 @@ function ensure_files_within_size_limit(
         message = join(
             [
                 "Cannot validate file size limits because these files are missing:",
-                join(["- $(path)" for path in missing_paths], "\n"),
+                join(["- $(path)" for path in missing_paths], "\n")
             ],
-            "\n",
+            "\n"
         )
         error(message)
     end
@@ -204,18 +205,16 @@ function ensure_files_within_size_limit(
     if !isempty(oversized)
         limit_in_mib = max_bytes / (1024^2)
         details = join(
-            [
-                "- $(path): $(size) bytes ($(round(size / (1024^2); digits = 2)) MiB)"
-                for (path, size) in oversized
-            ],
-            "\n",
+            ["- $(path): $(size) bytes ($(round(size / (1024^2); digits = 2)) MiB)"
+             for (path, size) in oversized],
+            "\n"
         )
 
         lines = [
             "One or more downloaded files exceed the configured Git/GitHub size limit.",
             "Limit ($(limit_name)): $(max_bytes) bytes ($(round(limit_in_mib; digits = 2)) MiB).",
             "Oversized files:",
-            details,
+            details
         ]
 
         if !isempty(remediation)
@@ -238,13 +237,13 @@ Write a Markdown report describing the last raw-data download run.
 is expected to live in `dirname(report_path)`.
 """
 function write_download_report(
-    report_path::AbstractString;
-    status::AbstractString,
-    timestamp_utc::AbstractString,
-    release::AbstractString,
-    idpo_version::AbstractString,
-    sources,
-    error_message::Union{Nothing, AbstractString} = nothing,
+        report_path::AbstractString;
+        status::AbstractString,
+        timestamp_utc::AbstractString,
+        release::AbstractString,
+        idpo_version::AbstractString,
+        sources,
+        error_message::Union{Nothing, AbstractString} = nothing
 )::Nothing
     report_dir = dirname(report_path)
     total_size_bytes = 0
@@ -270,7 +269,7 @@ function write_download_report(
 
         println(
             io,
-            "- Final size (compressed, total): `$(format_mb(total_size_bytes)) MB`",
+            "- Final size (compressed, total): `$(format_mb(total_size_bytes)) MB`"
         )
 
         println(io)
@@ -282,7 +281,7 @@ function write_download_report(
                 size_bytes = filesize(destination)
                 println(
                     io,
-                    "- `$(filename)` ($(size_bytes) bytes, $(format_mb(size_bytes)) MB)",
+                    "- `$(filename)` ($(size_bytes) bytes, $(format_mb(size_bytes)) MB)"
                 )
             else
                 println(io, "- `$(filename)` (missing)")

@@ -176,6 +176,9 @@ When you use external information (docs, papers, web pages), you MUST:
   * activate and instantiate their own environment (`Pkg.activate(@__DIR__)`, `Pkg.instantiate()`),
   * use package imports (`using IDRBindingDataset`),
   * expose explicit CLI flags via `ArgParse` for configurable inputs.
+* After code changes, run `JuliaFormatter` on the repository using `.JuliaFormatter.toml` before final validation.
+  * Suggested command:
+    * `julia -e 'import Pkg; Pkg.activate(temp=true); Pkg.add(name="JuliaFormatter", version="2"); using JuliaFormatter; format(".")'`
 * Script `--help` should include:
   * where to run from (repo root),
   * one complete invocation example.

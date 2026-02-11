@@ -798,3 +798,61 @@ Require Julia 1.12 across the repository, update CI to match, and adopt Julia-ve
   - https://github.com/julia-actions/setup-julia
   - Accessed on 11-02-2026.
   - Used for CI version configuration recommendations (quoted version strings and explicit pinning).
+
+# 11-02-2026
+
+## Goal
+
+Add Julia formatting guardrails to repository automation and instructions:
+- add a `Format` workflow patterned after MIToS but updated to current recommendations,
+- format all Julia source files in the repository,
+- add explicit formatter instructions in `AGENTS.md`.
+
+## What I tried
+
+- Retrieved MIToS workflow reference:
+  - `https://github.com/diegozea/MIToS.jl/blob/master/.github/workflows/Format.yml`
+  - confirmed it uses `julia-actions/julia-format` with suggestion comments on PRs.
+- Verified current upstream formatter action recommendations and release:
+  - `julia-actions/julia-format` README usage for `@v4`,
+  - latest release `v4.1.0`.
+- Added `.github/workflows/Format.yml` using MIToS-style PR suggestion workflow, updated to:
+  - `uses: julia-actions/julia-format@v4`
+  - `version: '2'`
+  - `suggestion-label: 'format-suggest'`
+  - explicit permissions for PR suggestions (`pull-requests: write`).
+- Ran repository-wide formatting with JuliaFormatter:
+  - `julia -e 'import Pkg; Pkg.activate(temp=true); Pkg.add(name="JuliaFormatter", version="2"); using JuliaFormatter; format(".")'`
+- Updated `AGENTS.md` to require running JuliaFormatter after code changes (with concrete command).
+- Ran full test suite:
+  - `julia --project=. -e 'using Pkg; Pkg.test()'`
+
+## Results and observations
+
+- New workflow added:
+  - `.github/workflows/Format.yml`
+- Julia files were reformatted (style-only diffs) in:
+  - `docs/make.jl`
+  - `scripts/01_download_disprot_data.jl`
+  - `src/raw_data_download.jl`
+  - `test/raw_data_download_tests.jl`
+- Full package tests passed:
+  - `Package | Pass 35 / Total 35`
+
+## Decisions
+
+- Kept the workflow behavior close to MIToS (PR suggestions, label-gated option) for consistency.
+- Upgraded from MIToS's `julia-format@v3` to `@v4` based on current upstream recommendation.
+- Used JuliaFormatter major version `2` in workflow and local formatting command for consistency.
+
+## Sources
+
+- MIToS Format workflow reference:
+  - https://github.com/diegozea/MIToS.jl/blob/master/.github/workflows/Format.yml
+  - Accessed on 11-02-2026.
+- `julia-actions/julia-format` repository and README (usage of `@v4`):
+  - https://github.com/julia-actions/julia-format
+  - Accessed on 11-02-2026.
+- `julia-actions/julia-format` releases (latest `v4.1.0`):
+  - https://github.com/julia-actions/julia-format/releases
+  - Accessed on 11-02-2026.
