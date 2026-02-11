@@ -1,14 +1,18 @@
-using IDRBindingDataset
-using Test
-using Aqua
-using JET
+using TestItemRunner
+using TestItems
 
-@testset "IDRBindingDataset.jl" begin
-    @testset "Code quality (Aqua.jl)" begin
-        Aqua.test_all(IDRBindingDataset)
-    end
-    @testset "Code linting (JET.jl)" begin
-        JET.test_package(IDRBindingDataset; target_defined_modules = true)
-    end
-    # Write your tests here.
+@testitem "Code quality (Aqua.jl)" begin
+    using Aqua
+    using IDRBindingDataset
+
+    Aqua.test_all(IDRBindingDataset)
 end
+
+@testitem "Code linting (JET.jl)" begin
+    using JET
+    using IDRBindingDataset
+
+    JET.test_package(IDRBindingDataset; target_modules = (IDRBindingDataset,))
+end
+
+@run_package_tests
