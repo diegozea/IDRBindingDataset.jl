@@ -701,3 +701,34 @@ Re-check whether `scripts/01_download_data.jl` actually uses the `scripts/` envi
 ## Sources
 
 - No new external sources were required for this verification and wording update.
+
+# 11-02-2026
+
+## Goal
+
+Rename the orchestration script from `scripts/01_download_data.jl` to `scripts/01_download_disprot_data.jl`.
+
+## What I tried
+
+- Renamed the file:
+  - `scripts/01_download_data.jl` -> `scripts/01_download_disprot_data.jl`
+- Updated the CLI help description example inside the script to use the new filename.
+- Searched for remaining live references to the old filename in `scripts/`, `src/`, `test/`, and `data/`.
+- Re-ran package tests:
+  - `julia --project=. -e 'using Pkg; Pkg.test()'`
+
+## Results and observations
+
+- New script path is active and `--help` now shows:
+  - `usage: 01_download_disprot_data.jl ...`
+- No remaining old-name references were found in active code/docs directories (`scripts`, `src`, `test`, `data`).
+- Full test suite passed:
+  - `Package | Pass 35 / Total 35`
+
+## Decisions
+
+- Historical references in prior `AGENT_NOTES.md` entries were left unchanged (append-only notebook policy).
+
+## Sources
+
+- No external sources were required for this refactor.

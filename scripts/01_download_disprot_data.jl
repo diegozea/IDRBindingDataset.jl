@@ -39,7 +39,7 @@ function parse_command_line(args)
 Download DisProt regions, IDPO ontology, and IDPO mappings into data/raw.
 
 Run from the repository root:
-  julia scripts/01_download_data.jl --release 2025_12 --idpo-version 0.3.0
+  julia scripts/01_download_disprot_data.jl --release 2025_12 --idpo-version 0.3.0
 
 The script activates and instantiates scripts/Project.toml internally.
 """,
