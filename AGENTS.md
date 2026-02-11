@@ -157,3 +157,32 @@ When you use external information (docs, papers, web pages), you MUST:
 * Do not silently change public APIs.
 * Do not add large dependencies without justification.
 * Do not write to NOTES.md; use AGENT_NOTES.md.
+
+## Repo operational conventions (agent)
+
+* Keep Julia support policy consistent across:
+  * root `Project.toml`,
+  * `scripts/Project.toml`,
+  * `test/Project.toml`,
+  * `docs/Project.toml`,
+  * CI Julia versions for test/docs jobs.
+* Use version-specific manifest files only.
+* For dependency/compat changes, re-resolve and validate all environments:
+  * root,
+  * `scripts/`,
+  * `test/`,
+  * `docs/`.
+* Scripts in `scripts/` should:
+  * activate and instantiate their own environment (`Pkg.activate(@__DIR__)`, `Pkg.instantiate()`),
+  * use package imports (`using IDRBindingDataset`),
+  * expose explicit CLI flags via `ArgParse` for configurable inputs.
+* Script `--help` should include:
+  * where to run from (repo root),
+  * one complete invocation example.
+* If a script filename changes, update:
+  * usage/help text in the script,
+  * workflow/docs references,
+  * AGENT_NOTES.md (append-only).
+* Minimum validation before finishing:
+  * `julia --project=. -e 'using Pkg; Pkg.test()'`,
+  * `--help` smoke test for modified scripts.
