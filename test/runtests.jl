@@ -1,18 +1,7 @@
 using TestItemRunner
 using TestItems
 
-@testitem "Code quality (Aqua.jl)" begin
-    using Aqua
-    using IDRBindingDataset
-
-    Aqua.test_all(IDRBindingDataset)
-end
-
-@testitem "Code linting (JET.jl)" begin
-    using JET
-    using IDRBindingDataset
-
-    JET.test_package(IDRBindingDataset; target_modules = (IDRBindingDataset,))
-end
+include("quality_tests.jl")
+include("raw_data_download_tests.jl")
 
 @run_package_tests
