@@ -732,3 +732,69 @@ Rename the orchestration script from `scripts/01_download_data.jl` to `scripts/0
 ## Sources
 
 - No external sources were required for this refactor.
+
+# 11-02-2026
+
+## Goal
+
+Require Julia 1.12 across the repository, update CI to match, and adopt Julia-version-specific manifest files.
+
+## Assumptions
+
+- The package baseline should become Julia `1.12` (drop `1.10` support).
+- CI should test the supported baseline explicitly rather than a mixed-version matrix.
+- Version-specific manifests should be used for root and sub-environments (`scripts/`, `test/`, `docs/`).
+
+## What I tried
+
+- Reviewed official recommendations for:
+  - Julia version compatibility in `Project.toml`,
+  - version-specific manifest naming/behavior,
+  - CI version pinning practices with `setup-julia`.
+- Updated compatibility bounds:
+  - `Project.toml`: `julia = "1.12"`
+  - `scripts/Project.toml`: `julia = "1.12"`
+  - `test/Project.toml`: added `[compat] julia = "1.12"`
+  - `docs/Project.toml`: added `[compat] julia = "1.12"`
+- Updated CI workflow:
+  - `.github/workflows/CI.yml` test matrix now runs only `1.12`.
+  - `.github/workflows/CI.yml` docs job now uses `version: '1.12'`.
+- Adopted Julia-version-specific manifests by renaming:
+  - `Manifest.toml` -> `Manifest-v1.12.toml`
+  - `scripts/Manifest.toml` -> `scripts/Manifest-v1.12.toml`
+  - `test/Manifest.toml` -> `test/Manifest-v1.12.toml`
+  - `docs/Manifest.toml` -> `docs/Manifest-v1.12.toml`
+- Verified environments and behavior:
+  - `julia --project=. -e 'using Pkg; Pkg.test()'`
+  - `julia scripts/01_download_disprot_data.jl --help`
+  - `julia --project=scripts -e 'using Pkg; Pkg.instantiate(); using ArgParse, IDRBindingDataset'`
+  - `julia --project=test -e 'using Pkg; Pkg.instantiate()'`
+  - `julia --project=docs -e 'using Pkg; Pkg.instantiate(); using IDRBindingDataset'`
+
+## Results and observations
+
+- The repository now enforces Julia 1.12 at package and sub-environment level.
+- CI is aligned to Julia 1.12 for both tests and docs.
+- All manifests are now version-specific for Julia 1.12.
+- Validation succeeded:
+  - package tests passed (`35 / 35`),
+  - script help path works,
+  - scripts/test/docs environments instantiate and load correctly.
+
+## Decisions
+
+- Pinned CI to `1.12` only to match the stated support baseline and ensure deterministic manifest usage (`Manifest-v1.12.toml`).
+- Added explicit julia compat entries in `test/` and `docs/` projects for clarity and consistency with root/scripts policy.
+
+## Sources
+
+- Julia Pkg docs, `Project.toml` / `Manifest.toml`:
+  - https://pkgdocs.julialang.org/v1/toml-files/
+  - Accessed on 11-02-2026.
+  - Used for:
+    - `julia` compatibility via `[compat]`,
+    - version-specific manifest naming (`Manifest-v{major}.{minor}.toml`) and precedence behavior.
+- `julia-actions/setup-julia` README:
+  - https://github.com/julia-actions/setup-julia
+  - Accessed on 11-02-2026.
+  - Used for CI version configuration recommendations (quoted version strings and explicit pinning).
