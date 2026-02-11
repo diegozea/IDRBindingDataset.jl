@@ -1,5 +1,13 @@
 module IDRBindingDataset
 
-# Write your package code here.
+export build_disprot_regions_url
+export clean_directory
+export download_to_file_with_retries
+export download_to_gzip_file_with_retries
+export ensure_files_within_size_limit
+export utc_now_iso8601
+export write_download_report
+
+include("raw_data_download.jl")
 
 end
