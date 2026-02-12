@@ -915,3 +915,39 @@ Improve `AGENTS.md` Julia MCP guidance by adding concrete usage examples instead
 ## Sources
 
 - No external sources were required for this documentation/policy update.
+
+# 12-02-2026
+
+## Goal
+
+Update the `scripts/01_download_disprot_data.jl` cleanup step so it removes only the files that script downloads (plus its generated report), instead of deleting the entire `data/raw` directory.
+
+## Assumptions
+
+- The intended cleanup scope is limited to files produced by script 01 in `data/raw`.
+- Keeping unrelated files in `data/raw` is desired to avoid accidental data loss.
+
+## What I tried
+
+- Added a new helper `remove_files(paths)` in `src/raw_data_download.jl` that deletes only listed files if they exist.
+- Exported `remove_files` from `src/IDRBindingDataset.jl`.
+- Updated `scripts/01_download_disprot_data.jl` to:
+  - import `remove_files` instead of `clean_directory`,
+  - build the list of expected downloaded file paths from `sources`,
+  - remove only those files plus `data/raw/README.md` before download.
+- Added a unit test in `test/raw_data_download_tests.jl` to verify `remove_files` does not delete unlisted files.
+
+## Results and observations
+
+- The script now performs targeted cleanup and preserves unrelated files in `data/raw`.
+- Added test coverage for selective file deletion behavior.
+- Could not run Julia formatter/tests in this environment because `julia` is not installed on PATH.
+
+## Decisions
+
+- Kept existing `clean_directory` helper unchanged for compatibility and existing tests.
+- Implemented targeted cleanup as a separate reusable helper to keep script logic concise and testable.
+
+## Sources
+
+- No external sources used; change is based on repository-local requirements and code.

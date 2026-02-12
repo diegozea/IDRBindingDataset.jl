@@ -17,6 +17,22 @@ end
     @test utc_now_iso8601(; clock = fake_clock) == "2026-02-11T15:30:45Z"
 end
 
+
+@testitem "File removal helper only removes listed files" begin
+    using Test
+    using IDRBindingDataset: remove_files
+
+    tmp_dir = mktempdir()
+    keep_file = joinpath(tmp_dir, "keep.txt")
+    remove_file = joinpath(tmp_dir, "remove.txt")
+    write(keep_file, "keep")
+    write(remove_file, "remove")
+
+    remove_files([remove_file, joinpath(tmp_dir, "missing.txt")])
+
+    @test isfile(keep_file)
+    @test !isfile(remove_file)
+end
 @testitem "Directory cleanup helper" begin
     using Test
     using IDRBindingDataset: clean_directory
