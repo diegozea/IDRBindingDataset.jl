@@ -18,6 +18,7 @@ const RELEASE = "2025_12"
 const IDPO_VERSION = "0.3.0"
 
 const RAW_DATA_DIR = normpath(joinpath(@__DIR__, "..", "data", "raw"))
+const DISPROT_DATA_DIR = joinpath(RAW_DATA_DIR, "disprot")
 const RAW_README_FILENAME = "README.md"
 
 const DISPROT_REGIONS_FILENAME = "disprot_regions.json.gz"
@@ -36,7 +37,7 @@ Parse command-line arguments and return selected versions.
 function parse_command_line(args)
     settings = ArgParseSettings(
         description = """
-Download DisProt regions, IDPO ontology, and IDPO mappings into data/raw.
+Download DisProt regions, IDPO ontology, and IDPO mappings into data/raw/disprot.
 
 Run from the repository root:
   julia scripts/01_download_disprot_data.jl --release 2025_12 --idpo-version 0.3.0
@@ -68,10 +69,11 @@ function main()
     release = options.release
     idpo_version = options.idpo_version
     download_timestamp = utc_now_iso8601()
-    report_path = joinpath(RAW_DATA_DIR, RAW_README_FILENAME)
+    report_path = joinpath(DISPROT_DATA_DIR, RAW_README_FILENAME)
     idpo_url = "https://disprot.org/assets/data/IDPO_v$(idpo_version).json"
 
-    println("Downloading DisProt sources to $(RAW_DATA_DIR)")
+    mkpath(DISPROT_DATA_DIR)
+    println("Downloading DisProt sources to $(DISPROT_DATA_DIR)")
     println("Using release = $(release)")
     println("Using IDPO version = $(idpo_version)")
     println("Removing previously downloaded raw data files before download")
@@ -82,12 +84,12 @@ function main()
         (IDPO_MAPPINGS_URL, IDPO_MAPPINGS_FILENAME)
     )
 
-    downloaded_paths = [joinpath(RAW_DATA_DIR, filename) for (_, filename) in sources]
+    downloaded_paths = [joinpath(DISPROT_DATA_DIR, filename) for (_, filename) in sources]
     remove_files(vcat(downloaded_paths, [report_path]))
 
     try
         for (url, filename) in sources
-            destination = joinpath(RAW_DATA_DIR, filename)
+            destination = joinpath(DISPROT_DATA_DIR, filename)
             println("Downloading $(url)")
             download_to_gzip_file_with_retries(
                 url,
