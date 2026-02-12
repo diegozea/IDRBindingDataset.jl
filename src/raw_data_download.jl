@@ -37,6 +37,21 @@ function clean_directory(path::AbstractString)::Nothing
 end
 
 """
+    remove_files(paths)
+
+Remove each file path in `paths` if it exists. Parent directories are kept.
+"""
+function remove_files(paths)::Nothing
+    for path in paths
+        path_string = String(path)
+        if isfile(path_string)
+            rm(path_string; force = true)
+        end
+    end
+    return nothing
+end
+
+"""
     download_to_file_with_retries(url, destination;
         delays = ExponentialBackOff(n = 5), downloader = Downloads.download,
         logger = println, log_success = true)

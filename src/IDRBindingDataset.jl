@@ -2,6 +2,7 @@ module IDRBindingDataset
 
 export build_disprot_regions_url
 export clean_directory
+export remove_files
 export download_to_file_with_retries
 export download_to_gzip_file_with_retries
 export ensure_files_within_size_limit
