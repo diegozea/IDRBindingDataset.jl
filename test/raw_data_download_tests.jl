@@ -17,7 +17,6 @@ end
     @test utc_now_iso8601(; clock = fake_clock) == "2026-02-11T15:30:45Z"
 end
 
-
 @testitem "File removal helper only removes listed files" begin
     using Test
     using IDRBindingDataset: remove_files
