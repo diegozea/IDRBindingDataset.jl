@@ -20,23 +20,21 @@ function parse_command_line(args)
 Download CAID-2 and CAID-3 annotated FASTA reference files into data/raw/caid_2 and data/raw/caid_3.
 
 Run from the repository root:
-  julia scripts/02_download_caid_data.jl --raw-data-dir data/raw
+  julia scripts/02_download_caid_data.jl --raw_data_dir data/raw
 
 The script activates and instantiates scripts/Project.toml internally.
 """,
     )
 
     @add_arg_table! settings begin
-        "--raw-data-dir"
+        "--raw_data_dir"
         help = "Raw data directory where caid_2 and caid_3 folders will be created."
         arg_type = String
         default = RAW_DATA_DIR
     end
 
     parsed = parse_args(args, settings)
-    raw_data_dir = haskey(parsed, "raw_data_dir") ? parsed["raw_data_dir"] :
-                   parsed["raw-data-dir"]
-    return (; raw_data_dir = normpath(raw_data_dir))
+    return (; raw_data_dir = normpath(parsed["raw_data_dir"]))
 end
 
 function main()

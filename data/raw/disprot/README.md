@@ -1,7 +1,7 @@
 # Raw Data Download
 
 - Status: `SUCCESS`
-- Download timestamp (UTC): `2026-02-11T16:28:49Z`
+- Download timestamp (UTC): `2026-02-12T15:39:23Z`
 - DisProt release: `2025_12`
 - IDPO version: `0.3.0`
 - Final size (compressed, total): `5.1616 MB`
@@ -13,9 +13,3 @@
   - Source: `https://disprot.org/assets/data/IDPO_v0.3.0.json`
 - `mapping_ontology.tsv.gz` (1767 bytes, 0.0018 MB)
   - Source: `https://disprot.org/assets/data/mapping_ontology_Disprot-DO_GO_IDPO.tsv`
-
-## CAID Reference Folders
-
-- `caid_2/`: CAID-2 reference files (`*.fasta.gz`) and per-folder metadata.
-- `caid_3/`: CAID-3 reference files (`*.fasta.gz`) and per-folder metadata.
-- Last CAID refresh (UTC): `2026-02-12T14:12:03Z`
