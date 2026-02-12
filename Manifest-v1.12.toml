@@ -33,7 +33,7 @@ uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 version = "1.11.0"
 
 [[deps.IDRBindingDataset]]
-deps = ["Dates", "Downloads"]
+deps = ["CodecZlib", "Dates", "Downloads"]
 path = "."
 uuid = "4ed5ff09-7a8d-4be1-90a2-095b546ff853"
 version = "0.1.0"

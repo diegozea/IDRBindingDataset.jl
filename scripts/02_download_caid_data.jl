@@ -1,24 +1,48 @@
-# This script will download the raw data used to evaluate the methods in the CAID-2 and 
-# CAID-3 competitions, so that we can include those proteins into the testing set to 
-# ease the comparison to other methods.
+#!/usr/bin/env julia
 
-# The links to the references in FASTA format are:
-#
-# CAID-3
-# ------
-#
-# Disorder-NOX:  https://caid.idpcentral.org/assets/sections/challenge/static/references/3/disorder_nox.fasta
-# Disorder-PDB:  https://caid.idpcentral.org/assets/sections/challenge/static/references/3/disorder_pdb.fasta
-# Binding:       https://caid.idpcentral.org/assets/sections/challenge/static/references/3/binding.fasta
-# Binding-IDR:   https://caid.idpcentral.org/assets/sections/challenge/static/references/3/binding_idr.fasta
-# Linker:        https://caid.idpcentral.org/assets/sections/challenge/static/references/3/linker.fasta
-#
-# CAID-2
-# ------
-#
-# Disorder-NOX:  https://caid.idpcentral.org/assets/sections/challenge/static/references/2/disorder_nox.fasta
-# Disorder-PDB:  https://caid.idpcentral.org/assets/sections/challenge/static/references/2/disorder_pdb.fasta
-# Binding:       https://caid.idpcentral.org/assets/sections/challenge/static/references/2/binding.fasta
-# Linker:        https://caid.idpcentral.org/assets/sections/challenge/static/references/2/linker.fasta
-#
-    
+import Pkg
+Pkg.activate(@__DIR__)
+Pkg.instantiate()
+
+using ArgParse
+using IDRBindingDataset: download_caid_reference_data
+
+const RAW_DATA_DIR = normpath(joinpath(@__DIR__, "..", "data", "raw"))
+
+"""
+    parse_command_line(args)
+
+Parse command-line arguments for CAID raw-data download.
+"""
+function parse_command_line(args)
+    settings = ArgParseSettings(
+        description = """
+Download CAID-2 and CAID-3 annotated FASTA reference files into data/raw/caid_2 and data/raw/caid_3.
+
+Run from the repository root:
+  julia scripts/02_download_caid_data.jl --raw-data-dir data/raw
+
+The script activates and instantiates scripts/Project.toml internally.
+""",
+    )
+
+    @add_arg_table! settings begin
+        "--raw-data-dir"
+        help = "Raw data directory where caid_2 and caid_3 folders will be created."
+        arg_type = String
+        default = RAW_DATA_DIR
+    end
+
+    parsed = parse_args(args, settings)
+    raw_data_dir = haskey(parsed, "raw_data_dir") ? parsed["raw_data_dir"] :
+                   parsed["raw-data-dir"]
+    return (; raw_data_dir = normpath(raw_data_dir))
+end
+
+function main()
+    options = parse_command_line(ARGS)
+    download_caid_reference_data(options.raw_data_dir)
+    return nothing
+end
+
+main()

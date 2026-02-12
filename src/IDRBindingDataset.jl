@@ -8,7 +8,11 @@ export download_to_gzip_file_with_retries
 export ensure_files_within_size_limit
 export utc_now_iso8601
 export write_download_report
+export upsert_caid_folders_section
+export append_caid_mention_to_raw_readme
+export download_caid_reference_data
 
 include("raw_data_download.jl")
+include("caid_data_download.jl")
 
 end

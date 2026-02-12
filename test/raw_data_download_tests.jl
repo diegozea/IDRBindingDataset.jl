@@ -160,6 +160,66 @@ end
     @test header == UInt8[0x1f, 0x8b]
 end
 
+@testitem "Download to gzip helper runs precompress validator" begin
+    using Test
+    using IDRBindingDataset: download_to_gzip_file_with_retries
+
+    tmp_dir = mktempdir()
+    destination = joinpath(tmp_dir, "downloaded.txt.gz")
+    validator_calls = Ref(0)
+
+    function fake_downloader(::AbstractString, path::AbstractString)
+        write(path, "raw-payload")
+        return path
+    end
+
+    function validator(path::AbstractString)
+        validator_calls[] += 1
+        @test isfile(path)
+        @test read(path, String) == "raw-payload"
+        return nothing
+    end
+
+    download_to_gzip_file_with_retries(
+        "https://example.org/payload.txt",
+        destination;
+        delays = [0.0],
+        downloader = fake_downloader,
+        logger = _ -> nothing,
+        precompress_validator = validator
+    )
+
+    @test validator_calls[] == 1
+    @test isfile(destination)
+end
+
+@testitem "Download to gzip helper fails when precompress validator fails" begin
+    using Test
+    using IDRBindingDataset: download_to_gzip_file_with_retries
+
+    tmp_dir = mktempdir()
+    destination = joinpath(tmp_dir, "downloaded.txt.gz")
+
+    function fake_downloader(::AbstractString, path::AbstractString)
+        write(path, "raw-payload")
+        return path
+    end
+
+    function failing_validator(::AbstractString)
+        error("invalid header")
+    end
+
+    @test_throws ErrorException download_to_gzip_file_with_retries(
+        "https://example.org/payload.txt",
+        destination;
+        delays = [0.0],
+        downloader = fake_downloader,
+        logger = _ -> nothing,
+        precompress_validator = failing_validator
+    )
+    @test !isfile(destination)
+end
+
 @testitem "Git/GitHub file-size validator accepts files within limit" begin
     using Test
     using IDRBindingDataset: ensure_files_within_size_limit

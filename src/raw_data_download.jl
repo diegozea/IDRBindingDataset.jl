@@ -52,12 +52,12 @@ function remove_files(paths)::Nothing
 end
 
 """
-    download_to_file_with_retries(url, destination;
-        delays = ExponentialBackOff(n = 5), downloader = Downloads.download,
-        logger = println, log_success = true)
+    _attempt_download(url, destination, downloader, logger, log_success)
 
-Download `url` into `destination` using atomic writes and bounded retries.
-If all attempts fail, the last exception is rethrown.
+Run a single atomic download attempt into `destination`.
+
+The payload is first downloaded into a temporary file in the destination folder
+and only moved into place on success.
 """
 function _attempt_download(
         url::AbstractString,
@@ -85,6 +85,14 @@ function _attempt_download(
     end
 end
 
+"""
+    download_to_file_with_retries(url, destination;
+        delays = ExponentialBackOff(n = 5), downloader = Downloads.download,
+        logger = println, log_success = true)
+
+Download `url` into `destination` using atomic writes and bounded retries.
+If all attempts fail, the last exception is rethrown.
+"""
 function download_to_file_with_retries(
         url::AbstractString,
         destination::AbstractString;
@@ -110,22 +118,37 @@ function download_to_file_with_retries(
     return nothing
 end
 
-bytes_to_mb(bytes::Integer)::Float64 = bytes / 1_000_000
-format_mb(bytes::Integer)::Float64 = round(bytes_to_mb(bytes); digits = 4)
+"""
+    _bytes_to_mb(bytes)
+
+Convert bytes to decimal megabytes.
+"""
+_bytes_to_mb(bytes::Integer)::Float64 = bytes / 1_000_000
+
+"""
+    _format_mb(bytes)
+
+Convert bytes to decimal megabytes and round to 4 decimal digits.
+"""
+_format_mb(bytes::Integer)::Float64 = round(_bytes_to_mb(bytes); digits = 4)
 
 """
     download_to_gzip_file_with_retries(url, destination;
         delays = ExponentialBackOff(n = 5), downloader = Downloads.download,
-        logger = println)
+        logger = println, precompress_validator = nothing)
 
 Download `url`, compress it as gzip, and save it to `destination`.
+
+If `precompress_validator` is provided, it is called with the path to the
+downloaded temporary uncompressed file before compression starts.
 """
 function download_to_gzip_file_with_retries(
         url::AbstractString,
         destination::AbstractString;
         delays = ExponentialBackOff(n = 5),
         downloader::Function = Downloads.download,
-        logger::Function = println
+        logger::Function = println,
+        precompress_validator::Union{Nothing, Function} = nothing
 )::Nothing
     mkpath(dirname(destination))
     raw_tmp_path, raw_tmp_io = mktemp(dirname(destination); cleanup = false)
@@ -143,6 +166,10 @@ function download_to_gzip_file_with_retries(
             log_success = false
         )
 
+        if precompress_validator !== nothing
+            precompress_validator(raw_tmp_path)
+        end
+
         open(raw_tmp_path, "r") do input_io
             open(gzip_tmp_path, "w") do output_io
                 gzip_io = GzipCompressorStream(output_io)
@@ -158,7 +185,7 @@ function download_to_gzip_file_with_retries(
 
         mv(gzip_tmp_path, destination; force = true)
         logger(
-            "Saved $(filesize(destination)) bytes ($(format_mb(filesize(destination))) MB compressed) to $(destination)",
+            "Saved $(filesize(destination)) bytes ($(_format_mb(filesize(destination))) MB compressed) to $(destination)",
         )
         return nothing
     catch err
@@ -263,47 +290,48 @@ function write_download_report(
     report_dir = dirname(report_path)
     total_size_bytes = 0
 
-    open(report_path, "w") do io
-        println(io, "# Raw Data Download")
-        println(io)
-        println(io, "- Status: `$(status)`")
-        println(io, "- Download timestamp (UTC): `$(timestamp_utc)`")
-        println(io, "- DisProt release: `$(release)`")
-        println(io, "- IDPO version: `$(idpo_version)`")
-
-        if error_message !== nothing
-            println(io, "- Error: `$(error_message)`")
-        end
-
-        for (_, filename) in sources
-            destination = joinpath(report_dir, filename)
-            if isfile(destination)
-                total_size_bytes += filesize(destination)
-            end
-        end
-
-        println(
-            io,
-            "- Final size (compressed, total): `$(format_mb(total_size_bytes)) MB`"
-        )
-
-        println(io)
-        println(io, "## Files")
-
-        for (url, filename) in sources
-            destination = joinpath(report_dir, filename)
-            if isfile(destination)
-                size_bytes = filesize(destination)
-                println(
-                    io,
-                    "- `$(filename)` ($(size_bytes) bytes, $(format_mb(size_bytes)) MB)"
-                )
-            else
-                println(io, "- `$(filename)` (missing)")
-            end
-            println(io, "  - Source: `$(url)`")
+    for (_, filename) in sources
+        destination = joinpath(report_dir, filename)
+        if isfile(destination)
+            total_size_bytes += filesize(destination)
         end
     end
 
+    content = """
+# Raw Data Download
+
+- Status: `$(status)`
+- Download timestamp (UTC): `$(timestamp_utc)`
+- DisProt release: `$(release)`
+- IDPO version: `$(idpo_version)`
+"""
+
+    if error_message !== nothing
+        content *= "- Error: `$(error_message)`\n"
+    end
+
+    content *= """
+- Final size (compressed, total): `$(_format_mb(total_size_bytes)) MB`
+
+## Files
+"""
+
+    for (url, filename) in sources
+        destination = joinpath(report_dir, filename)
+        if isfile(destination)
+            size_bytes = filesize(destination)
+            content *= """
+- `$(filename)` ($(size_bytes) bytes, $(_format_mb(size_bytes)) MB)
+  - Source: `$(url)`
+"""
+        else
+            content *= """
+- `$(filename)` (missing)
+  - Source: `$(url)`
+"""
+        end
+    end
+
+    write(report_path, content)
     return nothing
 end

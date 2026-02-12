@@ -19,6 +19,7 @@ Use and reinforce the following structure:
 
 * `src/`
   Reusable functionality implemented as a Julia package (types, parsing, transforms, split logic, validation). No ad-hoc logic duplicated across scripts.
+  Do not redefine helper functions in multiple `src/` files; reuse existing `src/` functions when include order already makes them available.
 
 * `test/`
   Tests that exercise `src/` functionality. All non-trivial logic must be tested here.
@@ -120,6 +121,8 @@ When you use external information (docs, papers, web pages), you MUST:
 * Follow the Julia Style Guide where practical (clarity > cleverness).
 * Prefer functions over top-level scripts; minimize global state.
 * Keep code approachable: short functions, descriptive names, helpful comments, docstrings.
+* Every function defined in `src/` must include a docstring.
+* Any `src/` function that is not exported must start with `_`.
 * Avoid magic constants; name them and cite their origin.
 * Use existing Julia ecosystem solutions when possible.
 
@@ -176,6 +179,9 @@ When you use external information (docs, papers, web pages), you MUST:
   * activate and instantiate their own environment (`Pkg.activate(@__DIR__)`, `Pkg.instantiate()`),
   * use package imports (`using IDRBindingDataset`),
   * expose explicit CLI flags via `ArgParse` for configurable inputs.
+  * keep orchestration in the script and move non-trivial reusable logic into `src/`.
+  * add/update tests in `test/` for that moved logic, using topic-specific files in both `src/` and `test/` so related functionality stays grouped.
+  * when generating `README.md` files from code, prefer plain multiline string assembly for readability; avoid `Markdown.parse`/`md"""..."""` unless there is a specific need.
 * If the Julia MCP is available, prefer it for Julia execution (especially tests and formatting) to reuse a warm Julia session and reduce TTFX.
   * Use shell `julia` only as fallback when the Julia MCP is unavailable or unsuitable.
   * Example (Julia MCP):
