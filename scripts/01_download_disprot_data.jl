@@ -8,7 +8,7 @@ using ArgParse
 
 using IDRBindingDataset:
                          build_disprot_regions_url,
-                         clean_directory,
+                         remove_files,
                          download_to_gzip_file_with_retries,
                          ensure_files_within_size_limit,
                          utc_now_iso8601,
@@ -74,15 +74,16 @@ function main()
     println("Downloading DisProt sources to $(RAW_DATA_DIR)")
     println("Using release = $(release)")
     println("Using IDPO version = $(idpo_version)")
-    println("Cleaning raw data directory before download")
-
-    clean_directory(RAW_DATA_DIR)
+    println("Removing previously downloaded raw data files before download")
 
     sources = (
         (build_disprot_regions_url(release), DISPROT_REGIONS_FILENAME),
         (idpo_url, IDPO_FILENAME),
         (IDPO_MAPPINGS_URL, IDPO_MAPPINGS_FILENAME)
     )
+
+    downloaded_paths = [joinpath(RAW_DATA_DIR, filename) for (_, filename) in sources]
+    remove_files(vcat(downloaded_paths, [report_path]))
 
     try
         for (url, filename) in sources
@@ -95,7 +96,6 @@ function main()
             )
         end
 
-        downloaded_paths = [joinpath(RAW_DATA_DIR, filename) for (_, filename) in sources]
         ensure_files_within_size_limit(
             downloaded_paths;
             max_bytes = GITHUB_SINGLE_FILE_HARD_LIMIT_BYTES,
