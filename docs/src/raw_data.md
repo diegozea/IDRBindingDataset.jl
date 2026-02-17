@@ -4,6 +4,7 @@ This page describes how to generate and update files under `data/raw/` using:
 
 - `scripts/01_download_disprot_data.jl`
 - `scripts/02_download_caid_data.jl`
+- `scripts/03_download_sifts.jl`
 
 Run commands from the repository root.
 
@@ -13,6 +14,7 @@ Run commands from the repository root.
 - Network access to:
   - `https://disprot.org`
   - `https://caid.idpcentral.org`
+  - `https://ftp.ebi.ac.uk`
 
 Both scripts activate and instantiate `scripts/Project.toml` automatically.
 
@@ -23,6 +25,7 @@ Run the scripts in this order:
 ```bash
 julia scripts/01_download_disprot_data.jl
 julia scripts/02_download_caid_data.jl
+julia scripts/03_download_sifts.jl
 ```
 
 ## Optional CLI Arguments
@@ -44,6 +47,14 @@ julia scripts/02_download_caid_data.jl --raw_data_dir data/raw
 
 - `--raw_data_dir`: target root for CAID output folders.
 
+SIFTS download script (`03`):
+
+```bash
+julia scripts/03_download_sifts.jl --raw_data_dir data/raw
+```
+
+- `--raw_data_dir`: target root for the SIFTS output folder.
+
 ## Expected Output Layout
 
 After a successful run:
@@ -58,13 +69,18 @@ data/raw/
 |- caid_2/
 |  |- README.md
 |  `- *.fasta.gz
-`- caid_3/
+|- caid_3/
+|  |- README.md
+|  `- *.fasta.gz
+`- sifts/
    |- README.md
-   `- *.fasta.gz
+   |- pdb_chain_uniprot.csv.gz
+   `- pdb_chain_cath_uniprot.csv.gz
 ```
 
 ## Notes
 
 - `01_download_disprot_data.jl` rewrites DisProt files inside `data/raw/disprot/`.
 - `02_download_caid_data.jl` rewrites CAID files inside `data/raw/caid_2/` and `data/raw/caid_3/`.
+- `03_download_sifts.jl` rewrites SIFTS files inside `data/raw/sifts/`.
 - If a transient network error occurs, rerun the affected script.
