@@ -11,8 +11,10 @@ export ensure_files_within_size_limit
 export utc_now_iso8601
 export write_download_report
 export download_caid_reference_data
+export download_sifts_reference_data
 
 include("raw_data_download.jl")
 include("caid_data_download.jl")
+include("sifts_data_download.jl")
 
 end
