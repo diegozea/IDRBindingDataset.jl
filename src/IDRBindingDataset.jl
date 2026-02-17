@@ -3,6 +3,7 @@ module IDRBindingDataset
 import MIToS
 
 export build_disprot_regions_url
+export parse_disprot_release
 export clean_directory
 export remove_files
 export download_to_file_with_retries

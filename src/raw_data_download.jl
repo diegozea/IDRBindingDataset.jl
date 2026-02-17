@@ -13,6 +13,23 @@ function build_disprot_regions_url(release::AbstractString)::String
 end
 
 """
+    parse_disprot_release(release)
+
+Parse a DisProt release tag in `YYYY_MM` format into a `Date` at the first day
+of that month.
+"""
+function parse_disprot_release(release::AbstractString)::Date
+    try
+        return Date(release, dateformat"y_m")
+    catch err
+        if err isa ArgumentError
+            throw(ArgumentError("Invalid DisProt release tag '$(release)'. Expected format YYYY_MM with month 01-12."))
+        end
+        rethrow(err)
+    end
+end
+
+"""
     utc_now_iso8601(; clock = () -> now(UTC))
 
 Return the current UTC timestamp as `yyyy-mm-ddTHH:MM:SSZ`.

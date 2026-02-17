@@ -8,6 +8,24 @@ using TestItems
     @test build_disprot_regions_url("2025_12") == expected
 end
 
+@testitem "DisProt release parser accepts YYYY_MM tags" begin
+    using Dates
+    using Test
+    using IDRBindingDataset: parse_disprot_release
+
+    @test parse_disprot_release("2022_03") == Date(2022, 3, 1)
+    @test parse_disprot_release("2025_12") == Date(2025, 12, 1)
+end
+
+@testitem "DisProt release parser rejects invalid tags" begin
+    using Test
+    using IDRBindingDataset: parse_disprot_release
+
+    @test_throws ArgumentError parse_disprot_release("2022-03")
+    @test_throws ArgumentError parse_disprot_release("2022_13")
+    @test_throws ArgumentError parse_disprot_release("not_a_release")
+end
+
 @testitem "UTC timestamp formatter" begin
     using Dates
     using Test
