@@ -1,5 +1,7 @@
 module IDRBindingDataset
 
+import MIToS
+
 export build_disprot_regions_url
 export clean_directory
 export remove_files
