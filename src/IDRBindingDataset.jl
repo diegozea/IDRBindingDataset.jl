@@ -13,9 +13,23 @@ export utc_now_iso8601
 export write_download_report
 export download_caid_reference_data
 export download_sifts_reference_data
+export fetch_pdb_initial_release_dates
+export extract_pdb_codes
+export fetch_pdb_holding_statuses
+export classify_pdb_lookup_status
+export collect_disprot_region_level_pdb_refs
+export build_unique_uniprot_pdb_map
+export build_sifts_uniprot_pdb_map_for_disprot
+export build_disprot_sifts_pdb_comparison
+export build_pdb_release_map_from_comparison
+export build_pdb_release_map_from_raw
+export write_pdb_release_map_csv_gz
+export write_pdb_release_readme
 
 include("raw_data_download.jl")
 include("caid_data_download.jl")
 include("sifts_data_download.jl")
+include("pdb_release_dates.jl")
+include("pdb_release_dataset.jl")
 
 end
