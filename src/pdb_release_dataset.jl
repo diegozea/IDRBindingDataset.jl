@@ -1,31 +1,15 @@
 using CodecZlib
+using CSV
 using DataFrames
-using JSON
 
 # ---------------------------------------------------------------------------
 # Input/output file locations and table-shape constants.
 # ---------------------------------------------------------------------------
-const DISPROT_REGIONS_RELATIVE_PATH = joinpath("disprot", "disprot_regions.json.gz")
 const SIFTS_UNIPROT_RELATIVE_PATH = joinpath("sifts", "pdb_chain_uniprot.csv.gz")
 const PDB_LOOKUP_FAILURE_REASON_INVALID_FORMAT = "invalid_format_no_pdb_code"
 const CleanedPDBReferenceRow = NamedTuple{
     (:acc, :pdb, :pdb_reference), Tuple{String, String, String}
 }
-
-# ---------------------------------------------------------------------------
-# Raw input readers.
-# ---------------------------------------------------------------------------
-"""
-    _read_disprot_entries(disprot_regions_path)
-
-Read a DisProt compressed JSON regions file and return the `data` entries array.
-"""
-function _read_disprot_entries(disprot_regions_path::AbstractString)
-    payload = open(disprot_regions_path) do io
-        JSON.parse(read(GzipDecompressorStream(io), String))
-    end
-    return get(payload, "data", Any[])
-end
 
 """
     _read_sifts_uniprot_df(sifts_uniprot_path)
@@ -592,7 +576,7 @@ function write_pdb_release_map_csv_gz(
     open(output_path, "w") do io
         gzip_io = GzipCompressorStream(io)
         try
-            show(gzip_io, MIME("text/csv"), disprot_pdb_map_with_release)
+            CSV.write(gzip_io, disprot_pdb_map_with_release)
         finally
             close(gzip_io)
         end

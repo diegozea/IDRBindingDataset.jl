@@ -4,6 +4,8 @@ import MIToS
 
 export build_disprot_regions_url
 export parse_disprot_release
+export DISPROT_REGIONS_RELATIVE_PATH
+export read_disprot_entries_from_raw_data
 export clean_directory
 export remove_files
 export download_to_file_with_retries
@@ -11,6 +13,19 @@ export download_to_gzip_file_with_retries
 export ensure_files_within_size_limit
 export utc_now_iso8601
 export write_download_report
+export GLOBAL_CLUSTER_MIN_COVERAGE
+export GLOBAL_CLUSTER_MIN_IDENTITY
+export LOCAL_CLUSTER_MIN_IDENTITY
+export LOCAL_CLUSTER_MIN_UNGAPPED_LENGTH
+export DISPROT_FULL_PROTEIN_FASTA_GZ_FILENAME
+export CLUSTERING_README_FILENAME
+export CLUSTER_REPRESENTATIVES_FILENAME
+export extract_disprot_full_protein_sequences
+export write_disprot_full_protein_fasta_gz
+export run_protein_sequence_clustering
+export build_cluster_representatives_table
+export write_cluster_representatives_csv
+export write_sequence_clustering_readme
 export download_caid_reference_data
 export download_sifts_reference_data
 export fetch_pdb_initial_release_dates
@@ -27,6 +42,8 @@ export write_pdb_release_map_csv_gz
 export write_pdb_release_readme
 
 include("raw_data_download.jl")
+include("disprot_data.jl")
+include("sequence_clustering.jl")
 include("caid_data_download.jl")
 include("sifts_data_download.jl")
 include("pdb_release_dates.jl")
