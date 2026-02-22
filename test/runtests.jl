@@ -8,5 +8,7 @@ include("sifts_data_download_tests.jl")
 include("pdb_release_dates_tests.jl")
 include("pdb_release_dataset_tests.jl")
 include("sequence_clustering_tests.jl")
+include("fixed_labels_tests.jl")
+include("dataset_stats_tests.jl")
 
 @run_package_tests

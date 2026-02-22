@@ -40,6 +40,20 @@ export build_pdb_release_map_from_comparison
 export build_pdb_release_map_from_raw
 export write_pdb_release_map_csv_gz
 export write_pdb_release_readme
+export AF2_TRAINING_DATA_CUTOFF_DATE
+export FIXED_DATASET_LABEL_TRAINING
+export FIXED_DATASET_LABEL_CAID
+export build_fixed_labels_table
+export write_fixed_labels_csv_gz
+export write_fixed_labels_readme
+export read_caid_disprot_ids
+export build_oldest_pdb_release_dates
+export build_disprot_release_dates
+export build_disprot_protein_annotations
+export build_dataset_stats_table
+export assign_missing_cluster_labels_by_disprot_cutoff
+export summarize_dataset_labels_by_binding
+export sweep_disprot_cutoff_label_summaries
 
 include("raw_data_download.jl")
 include("disprot_data.jl")
@@ -48,5 +62,7 @@ include("caid_data_download.jl")
 include("sifts_data_download.jl")
 include("pdb_release_dates.jl")
 include("pdb_release_dataset.jl")
+include("fixed_labels.jl")
+include("dataset_stats.jl")
 
 end
