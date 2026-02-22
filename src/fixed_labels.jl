@@ -437,6 +437,7 @@ end
     write_fixed_labels_readme(
         output_path;
         output_csv_path,
+        output_csv_filesystem_path = output_csv_path,
         source_cluster_representatives_path,
         source_disprot_regions_path,
         source_pdb_release_map_path,
@@ -451,6 +452,7 @@ Write a README for the fixed-label derived dataset.
 function write_fixed_labels_readme(
         output_path::AbstractString;
         output_csv_path::AbstractString,
+        output_csv_filesystem_path::AbstractString = output_csv_path,
         source_cluster_representatives_path::AbstractString,
         source_disprot_regions_path::AbstractString,
         source_pdb_release_map_path::AbstractString,
@@ -471,6 +473,12 @@ function write_fixed_labels_readme(
     )
     protein_label_counts = _count_labels(fixed_labels_table, :cluster_fixed_dataset_label)
     cluster_label_counts = _count_labels(unique_clusters, :cluster_fixed_dataset_label)
+    isfile(output_csv_filesystem_path) || throw(
+        ArgumentError(
+        "Fixed-label CSV file does not exist for README metadata: $(output_csv_filesystem_path)",
+    ),
+    )
+    output_csv_size_bytes = filesize(output_csv_filesystem_path)
 
     readme = """
 # Fixed Dataset Labels
@@ -485,7 +493,7 @@ deterministic base split:
 
 ## Artifact
 
-- Compressed CSV: `$(output_csv_path)` (`$(filesize(output_csv_path))` bytes)
+- Compressed CSV: `$(output_csv_path)` (`$(output_csv_size_bytes)` bytes)
 - Number of proteins: `$(nrow(fixed_labels_table))`
 - Number of final clusters: `$(nrow(unique_clusters))`
 

@@ -168,6 +168,7 @@ function main()
     write_fixed_labels_readme(
         readme_path;
         output_csv_path = _relpath_from_repo(output_csv_path),
+        output_csv_filesystem_path = output_csv_path,
         source_cluster_representatives_path = _relpath_from_repo(
             options.cluster_representatives_path
         ),

@@ -164,6 +164,7 @@ end
     write_fixed_labels_readme(
         output_readme_path;
         output_csv_path = "data/derived/fixed/cluster_fixed_labels.csv.gz",
+        output_csv_filesystem_path = output_csv_path,
         source_cluster_representatives_path = "data/derived/clustering/cluster_representatives.csv.gz",
         source_disprot_regions_path = "data/raw/disprot/disprot_regions.json.gz",
         source_pdb_release_map_path = "data/derived/pdb/uniprot_pdb_release_date_map.csv.gz",
@@ -176,6 +177,7 @@ end
 
     readme_text = read(output_readme_path, String)
     @test occursin("Fixed Dataset Labels", readme_text)
+    @test occursin("$(filesize(output_csv_path))", readme_text)
     @test occursin("label `training`: `1`", readme_text)
     @test occursin("label `caid`: `1`", readme_text)
     @test occursin("label `missing`: `1`", readme_text)
