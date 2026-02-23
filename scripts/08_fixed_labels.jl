@@ -7,10 +7,11 @@ Pkg.instantiate()
 using ArgParse
 using CSV
 using DataFrames
-using Dates
 using IDRBindingDataset:
                          AF2_TRAINING_DATA_CUTOFF_DATE,
                          DISPROT_REGIONS_RELATIVE_PATH,
+                         _discover_caid_binding_datasets,
+                         _require_caid_dataset_path,
                          build_disprot_protein_annotations,
                          build_fixed_labels_table,
                          build_oldest_pdb_release_dates,
@@ -26,31 +27,9 @@ const DEFAULT_CLUSTER_REPRESENTATIVES_PATH = normpath(joinpath(
     REPO_ROOT, "data", "derived", "clustering", "cluster_representatives.csv.gz"))
 const DEFAULT_PDB_RELEASE_MAP_PATH = normpath(joinpath(
     REPO_ROOT, "data", "derived", "pdb", "uniprot_pdb_release_date_map.csv.gz"))
-const DEFAULT_CAID2_BINDING_FASTA_PATH = normpath(joinpath(
-    DEFAULT_RAW_DATA_DIR, "caid_2", "binding.fasta.gz"))
-const DEFAULT_CAID3_BINDING_FASTA_PATH = normpath(joinpath(
-    DEFAULT_RAW_DATA_DIR, "caid_3", "binding.fasta.gz"))
 const DEFAULT_OUTPUT_DIR = normpath(joinpath(REPO_ROOT, "data", "derived", "fixed"))
 const DEFAULT_OUTPUT_FILENAME = "cluster_fixed_labels.csv.gz"
 const FIXED_README_FILENAME = "README.md"
-
-"""
-    _parse_date_argument(date_text, argument_name)
-
-Parse one date argument in `yyyy-mm-dd` format.
-"""
-function _parse_date_argument(
-        date_text::AbstractString,
-        argument_name::AbstractString
-)::Date
-    parsed = tryparse(Date, String(date_text), dateformat"yyyy-mm-dd")
-    parsed === nothing && throw(
-        ArgumentError(
-        "Invalid $(argument_name): $(repr(date_text)). Expected format yyyy-mm-dd."
-    ),
-    )
-    return parsed
-end
 
 """
     parse_command_line(args)
@@ -64,14 +43,14 @@ Build the fixed cluster labels table (`cluster_fixed_dataset_label`) from:
 - clustering representatives,
 - DisProt annotations,
 - PDB release-date mappings,
-- CAID2/CAID3 binding FASTA IDs.
+- CAID binding FASTA IDs from all `caid_*` folders found under `raw_data_dir`.
 
 Outputs are written to `data/derived/fixed/`:
 - compressed CSV with per-protein fixed labels,
 - README.md with source provenance and label-count summary.
 
 Run from the repository root:
-  julia scripts/08_fixed_labels.jl --raw_data_dir data/raw --cluster_representatives_path data/derived/clustering/cluster_representatives.csv.gz --pdb_release_map_path data/derived/pdb/uniprot_pdb_release_date_map.csv.gz --output_dir data/derived/fixed --output_filename cluster_fixed_labels.csv.gz --af2_training_cutoff_date 2018-04-30
+  julia scripts/08_fixed_labels.jl --raw_data_dir data/raw --cluster_representatives_path data/derived/clustering/cluster_representatives.csv.gz --pdb_release_map_path data/derived/pdb/uniprot_pdb_release_date_map.csv.gz --output_dir data/derived/fixed --output_filename cluster_fixed_labels.csv.gz
 
 The script activates and instantiates scripts/Project.toml internally.
 """,
@@ -79,7 +58,7 @@ The script activates and instantiates scripts/Project.toml internally.
 
     @add_arg_table! settings begin
         "--raw_data_dir"
-        help = "Raw data directory containing disprot/, caid_2/, and caid_3/."
+        help = "Raw data directory containing disprot/ and one or more caid_*/ folders with binding.fasta.gz."
         arg_type = String
         default = DEFAULT_RAW_DATA_DIR
         "--cluster_representatives_path"
@@ -90,14 +69,6 @@ The script activates and instantiates scripts/Project.toml internally.
         help = "Compressed CSV path for the UniProt-PDB release-date map."
         arg_type = String
         default = DEFAULT_PDB_RELEASE_MAP_PATH
-        "--caid2_binding_fasta_path"
-        help = "CAID2 binding FASTA `.gz` path."
-        arg_type = String
-        default = DEFAULT_CAID2_BINDING_FASTA_PATH
-        "--caid3_binding_fasta_path"
-        help = "CAID3 binding FASTA `.gz` path."
-        arg_type = String
-        default = DEFAULT_CAID3_BINDING_FASTA_PATH
         "--output_dir"
         help = "Output directory for fixed-label artifacts."
         arg_type = String
@@ -106,25 +77,15 @@ The script activates and instantiates scripts/Project.toml internally.
         help = "Output compressed CSV filename written under `output_dir`."
         arg_type = String
         default = DEFAULT_OUTPUT_FILENAME
-        "--af2_training_cutoff_date"
-        help = "AF2 training cutoff in yyyy-mm-dd (inclusive for training assignment)."
-        arg_type = String
-        default = string(AF2_TRAINING_DATA_CUTOFF_DATE)
     end
 
     parsed = parse_args(args, settings)
-    return (
+    (
         raw_data_dir = normpath(parsed["raw_data_dir"]),
         cluster_representatives_path = normpath(parsed["cluster_representatives_path"]),
         pdb_release_map_path = normpath(parsed["pdb_release_map_path"]),
-        caid2_binding_fasta_path = normpath(parsed["caid2_binding_fasta_path"]),
-        caid3_binding_fasta_path = normpath(parsed["caid3_binding_fasta_path"]),
         output_dir = normpath(parsed["output_dir"]),
-        output_filename = String(parsed["output_filename"]),
-        af2_training_cutoff_date = _parse_date_argument(
-            parsed["af2_training_cutoff_date"],
-            "--af2_training_cutoff_date"
-        )
+        output_filename = String(parsed["output_filename"])
     )
 end
 
@@ -149,16 +110,28 @@ function main()
     disprot_entries = read_disprot_entries_from_raw_data(options.raw_data_dir)
     disprot_annotations = build_disprot_protein_annotations(disprot_entries)
     oldest_pdb_release_dates = build_oldest_pdb_release_dates(pdb_release_map)
-    caid2_disprot_ids = read_caid_disprot_ids(options.caid2_binding_fasta_path)
-    caid3_disprot_ids = read_caid_disprot_ids(options.caid3_binding_fasta_path)
+    caid_datasets = _discover_caid_binding_datasets(options.raw_data_dir)
+    _require_caid_dataset_path(caid_datasets, 2)
+    caid_non2_binding_fasta_paths = [dataset.binding_fasta_path
+                                     for dataset in caid_datasets
+                                     if dataset.number != 2]
+    isempty(caid_non2_binding_fasta_paths) && throw(
+        ArgumentError(
+        "No CAID datasets beyond caid_2 were found under $(options.raw_data_dir). At least one additional caid_* dataset is required."
+    ),
+    )
+
+    caid_disprot_ids_by_dataset = Dict(
+        dataset.number => read_caid_disprot_ids(dataset.binding_fasta_path)
+    for dataset in caid_datasets
+    )
 
     fixed_labels_table = build_fixed_labels_table(
         cluster_representatives,
         disprot_annotations,
         oldest_pdb_release_dates,
-        caid2_disprot_ids,
-        caid3_disprot_ids;
-        af2_training_cutoff_date = options.af2_training_cutoff_date
+        caid_disprot_ids_by_dataset;
+        af2_training_cutoff_date = AF2_TRAINING_DATA_CUTOFF_DATE
     )
 
     write_fixed_labels_csv_gz(fixed_labels_table, output_csv_path)
@@ -174,9 +147,11 @@ function main()
         ),
         source_disprot_regions_path = _relpath_from_repo(disprot_regions_path),
         source_pdb_release_map_path = _relpath_from_repo(options.pdb_release_map_path),
-        source_caid2_binding_fasta_path = _relpath_from_repo(options.caid2_binding_fasta_path),
-        source_caid3_binding_fasta_path = _relpath_from_repo(options.caid3_binding_fasta_path),
-        af2_training_cutoff_date = options.af2_training_cutoff_date,
+        source_caid_binding_fasta_paths_by_version = Dict(
+            dataset.number => _relpath_from_repo(dataset.binding_fasta_path)
+        for dataset in caid_datasets
+        ),
+        af2_training_cutoff_date = AF2_TRAINING_DATA_CUTOFF_DATE,
         fixed_labels_table = fixed_labels_table
     )
 

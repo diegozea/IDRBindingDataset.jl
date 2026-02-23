@@ -81,6 +81,181 @@ using TestItems
     @test ismissing(by_acc["P_D1"].cluster_fixed_dataset_label)
 end
 
+@testitem "Build fixed labels table accepts multiple CAID datasets via dictionary input" begin
+    using Dates
+    using Test
+    using IDRBindingDataset:
+                             build_disprot_protein_annotations,
+                             build_fixed_labels_table
+
+    cluster_representatives = IDRBindingDataset.DataFrames.DataFrame(
+        protein_id = ["P_A1", "P_B1"],
+        global_representative_id = ["P_A1", "P_B1"],
+        local_representative_id = ["P_A1", "P_B1"],
+        final_cluster_id = ["cluster_A", "cluster_B"]
+    )
+    disprot_entries = Any[
+    Dict(
+        "acc" => "P_A1", "disprot_id" => "DP_A1", "released" => "2020_01", "regions" => Any[]),
+    Dict(
+        "acc" => "P_B1", "disprot_id" => "DP_B1", "released" => "2020_01", "regions" => Any[])
+]
+    disprot_annotations = build_disprot_protein_annotations(disprot_entries)
+
+    oldest_pdb_release_dates = IDRBindingDataset.DataFrames.DataFrame(
+        acc = String[],
+        oldest_pdb_release_date = Union{Missing, Date}[],
+        has_pdb_structure = Bool[],
+        has_missing_pdb_release_date = Bool[]
+    )
+
+    caid_disprot_ids_by_dataset = Dict(
+        "caid_2" => Set{String}(),
+        "caid_3" => Set{String}(),
+        "caid_4" => Set(["DP_B1"])
+    )
+
+    fixed_labels = build_fixed_labels_table(
+        cluster_representatives,
+        disprot_annotations,
+        oldest_pdb_release_dates,
+        caid_disprot_ids_by_dataset
+    )
+    by_acc = Dict(row.protein_id => row for row in eachrow(fixed_labels))
+
+    @test !by_acc["P_A1"].protein_in_caid2
+    @test !by_acc["P_A1"].protein_in_caid3
+    @test ismissing(by_acc["P_A1"].cluster_fixed_dataset_label)
+
+    @test !by_acc["P_B1"].protein_in_caid2
+    @test !by_acc["P_B1"].protein_in_caid3
+    @test by_acc["P_B1"].protein_in_caid4
+    @test by_acc["P_B1"].cluster_in_caid4
+    @test by_acc["P_B1"].cluster_fixed_dataset_label == "caid"
+    @test "protein_in_caid4" in names(fixed_labels)
+    @test "cluster_in_caid4" in names(fixed_labels)
+end
+
+@testitem "Build fixed labels table rejects duplicate CAID version keys" begin
+    using Dates
+    using Test
+    using IDRBindingDataset:
+                             build_disprot_protein_annotations,
+                             build_fixed_labels_table
+
+    cluster_representatives = IDRBindingDataset.DataFrames.DataFrame(
+        protein_id = ["P_A1", "P_B1"],
+        global_representative_id = ["P_A1", "P_B1"],
+        local_representative_id = ["P_A1", "P_B1"],
+        final_cluster_id = ["cluster_A", "cluster_B"]
+    )
+    disprot_entries = Any[
+    Dict(
+        "acc" => "P_A1", "disprot_id" => "DP_A1", "released" => "2020_01", "regions" => Any[]),
+    Dict(
+        "acc" => "P_B1", "disprot_id" => "DP_B1", "released" => "2020_01", "regions" => Any[])
+]
+    disprot_annotations = build_disprot_protein_annotations(disprot_entries)
+    oldest_pdb_release_dates = IDRBindingDataset.DataFrames.DataFrame(
+        acc = String[],
+        oldest_pdb_release_date = Union{Missing, Date}[],
+        has_pdb_structure = Bool[],
+        has_missing_pdb_release_date = Bool[]
+    )
+    caid_disprot_ids_by_dataset = Dict(
+        "caid_3" => Set(["DP_A1"]),
+        "caid_03" => Set(["DP_B1"])
+    )
+
+    error = try
+        build_fixed_labels_table(
+            cluster_representatives,
+            disprot_annotations,
+            oldest_pdb_release_dates,
+            caid_disprot_ids_by_dataset
+        )
+        nothing
+    catch e
+        e
+    end
+    @test error isa ArgumentError
+    @test occursin("Duplicate CAID dataset version 3", sprint(showerror, error))
+end
+
+@testitem "Discover CAID binding datasets and require specific versions" begin
+    using Test
+    using IDRBindingDataset:
+                             _discover_caid_binding_datasets,
+                             _require_caid_dataset_path
+
+    raw_data_dir = mktempdir()
+    mkpath(joinpath(raw_data_dir, "caid_2"))
+    write(joinpath(raw_data_dir, "caid_2", "binding.fasta.gz"), "")
+    mkpath(joinpath(raw_data_dir, "caid_4"))
+    write(joinpath(raw_data_dir, "caid_4", "binding.fasta.gz"), "")
+    mkpath(joinpath(raw_data_dir, "not_a_caid_folder"))
+
+    datasets = _discover_caid_binding_datasets(raw_data_dir)
+    @test [dataset.name for dataset in datasets] == ["caid_2", "caid_4"]
+    @test [dataset.number for dataset in datasets] == [2, 4]
+
+    caid2_path = _require_caid_dataset_path(datasets, 2)
+    @test caid2_path == normpath(joinpath(raw_data_dir, "caid_2", "binding.fasta.gz"))
+
+    error = try
+        _require_caid_dataset_path(datasets, 3)
+        nothing
+    catch e
+        e
+    end
+    @test error isa ArgumentError
+    @test occursin(
+        "Required CAID dataset folder not found: caid_3",
+        sprint(showerror, error)
+    )
+end
+
+@testitem "Discover CAID binding datasets rejects duplicate normalized versions" begin
+    using Test
+    using IDRBindingDataset: _discover_caid_binding_datasets
+
+    raw_data_dir = mktempdir()
+    for folder_name in ("caid_3", "caid_03")
+        mkpath(joinpath(raw_data_dir, folder_name))
+        write(joinpath(raw_data_dir, folder_name, "binding.fasta.gz"), "")
+    end
+
+    error = try
+        _discover_caid_binding_datasets(raw_data_dir)
+        nothing
+    catch e
+        e
+    end
+    @test error isa ArgumentError
+    error_message = sprint(showerror, error)
+    @test occursin("Duplicate CAID dataset version numbers found", error_message)
+    @test occursin("caid_03", error_message)
+    @test occursin("caid_3", error_message)
+end
+
+@testitem "Parse date argument enforces yyyy-mm-dd format" begin
+    using Dates
+    using Test
+    using IDRBindingDataset: _parse_date_argument
+
+    @test _parse_date_argument("2018-04-30", "--af2_training_cutoff_date") ==
+          Date(2018, 4, 30)
+
+    error = try
+        _parse_date_argument("30-04-2018", "--af2_training_cutoff_date")
+        nothing
+    catch e
+        e
+    end
+    @test error isa ArgumentError
+    @test occursin("Invalid --af2_training_cutoff_date", sprint(showerror, error))
+end
+
 @testitem "Build fixed labels table requires explicit PDB boolean columns" begin
     using Dates
     using Test
@@ -162,8 +337,11 @@ end
         source_cluster_representatives_path = "data/derived/clustering/cluster_representatives.csv.gz",
         source_disprot_regions_path = "data/raw/disprot/disprot_regions.json.gz",
         source_pdb_release_map_path = "data/derived/pdb/uniprot_pdb_release_date_map.csv.gz",
-        source_caid2_binding_fasta_path = "data/raw/caid_2/binding.fasta.gz",
-        source_caid3_binding_fasta_path = "data/raw/caid_3/binding.fasta.gz",
+        source_caid_binding_fasta_paths_by_version = Dict(
+            2 => "data/raw/caid_2/binding.fasta.gz",
+            3 => "data/raw/caid_3/binding.fasta.gz",
+            4 => "data/raw/caid_4/binding.fasta.gz"
+        ),
         af2_training_cutoff_date = AF2_TRAINING_DATA_CUTOFF_DATE,
         fixed_labels_table = fixed_labels
     )
@@ -175,4 +353,7 @@ end
     @test occursin("label `training`: `1`", readme_text)
     @test occursin("label `caid`: `1`", readme_text)
     @test occursin("label `missing`: `1`", readme_text)
+    @test occursin("source_caid2_binding_fasta_path", readme_text)
+    @test occursin("source_caid3_binding_fasta_path", readme_text)
+    @test occursin("source_caid4_binding_fasta_path", readme_text)
 end
