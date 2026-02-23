@@ -81,7 +81,7 @@ using TestItems
     @test ismissing(by_acc["P_D1"].cluster_fixed_dataset_label)
 end
 
-@testitem "Build fixed labels table infers conservative split defaults for legacy oldest-PDB table" begin
+@testitem "Build fixed labels table requires explicit PDB boolean columns" begin
     using Dates
     using Test
     using IDRBindingDataset:
@@ -104,35 +104,29 @@ end
 ]
     disprot_annotations = build_disprot_protein_annotations(disprot_entries)
 
-    # Legacy two-column format: no explicit boolean columns.
+    # Legacy two-column format: missing explicit boolean columns.
     oldest_pdb_release_dates_legacy = IDRBindingDataset.DataFrames.DataFrame(
         acc = ["P_A1", "P_B1"],
         oldest_pdb_release_date = Any[missing, Date(2020, 1, 1)]
     )
 
-    fixed_labels = build_fixed_labels_table(
-        cluster_representatives,
-        disprot_annotations,
-        oldest_pdb_release_dates_legacy,
-        Set{String}(),
-        Set{String}()
-    )
-    by_acc = Dict(row.protein_id => row for row in eachrow(fixed_labels))
-
-    # Missing oldest release date in legacy inputs is interpreted conservatively:
-    # known PDB structure + missing release date, which keeps the cluster in
-    # training.
-    @test by_acc["P_A1"].protein_has_pdb_structure
-    @test by_acc["P_A1"].protein_has_missing_pdb_release_date
-    @test by_acc["P_A1"].cluster_fixed_dataset_label == "training"
-
-    @test by_acc["P_B1"].protein_has_pdb_structure
-    @test !by_acc["P_B1"].protein_has_missing_pdb_release_date
-    @test ismissing(by_acc["P_B1"].cluster_fixed_dataset_label)
-
-    @test !by_acc["P_C1"].protein_has_pdb_structure
-    @test !by_acc["P_C1"].protein_has_missing_pdb_release_date
-    @test ismissing(by_acc["P_C1"].cluster_fixed_dataset_label)
+    error = try
+        build_fixed_labels_table(
+            cluster_representatives,
+            disprot_annotations,
+            oldest_pdb_release_dates_legacy,
+            Set{String}(),
+            Set{String}()
+        )
+        nothing
+    catch e
+        e
+    end
+    @test error isa ArgumentError
+    error_message = sprint(showerror, error)
+    @test occursin("oldest_pdb_release_dates is missing required columns", error_message)
+    @test occursin("has_pdb_structure", error_message)
+    @test occursin("has_missing_pdb_release_date", error_message)
 end
 
 @testitem "Write fixed labels CSV.gz and README artifacts" begin

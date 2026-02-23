@@ -20,13 +20,11 @@ Validate that `df` contains all `required_columns`. Throws an `ArgumentError`
 listing missing columns when validation fails.
 """
 function _require_columns(
-        df::DataFrame,
-        required_columns,
+        df::AbstractDataFrame,
+        required_columns::AbstractVector{Symbol},
         table_name::AbstractString
-)::Nothing
-    existing = Set(Symbol.(names(df)))
-    missing_columns = [Symbol(column)
-                       for column in required_columns if !(Symbol(column) in existing)]
+)
+    missing_columns = setdiff(required_columns, propertynames(df))
 
     isempty(missing_columns) || throw(
         ArgumentError(
@@ -34,7 +32,7 @@ function _require_columns(
     ),
     )
 
-    return nothing
+    nothing
 end
 
 """
@@ -43,10 +41,8 @@ end
 Return the oldest non-missing date in `values`, or `missing` when no date is
 available.
 """
-function _minimum_date_or_missing(values)::Union{Missing, Date}
-    nonmissing = collect(skipmissing(values))
-    isempty(nonmissing) && return missing
-    return minimum(nonmissing)
+function _minimum_date_or_missing(values)
+    (v = collect(skipmissing(values)); isempty(v) ? missing : minimum(v))
 end
 
 """
@@ -55,9 +51,7 @@ end
 Return `true` when at least one value in `values` is a non-missing boolean
 true.
 """
-function _any_true(values)::Bool
-    return any(value -> !ismissing(value) && Bool(value), values)
-end
+_any_true(values) = any(skipmissing(values))
 
 """
     _normalize_oldest_pdb_release_dates_table(oldest_pdb_release_dates)
@@ -67,63 +61,21 @@ Ensure that `oldest_pdb_release_dates` includes:
 - `oldest_pdb_release_date`
 - `has_pdb_structure`
 - `has_missing_pdb_release_date`
-
-If optional boolean columns are absent, conservative defaults are inferred.
 """
 function _normalize_oldest_pdb_release_dates_table(
-        oldest_pdb_release_dates::DataFrame
-)::DataFrame
+        oldest_pdb_release_dates::AbstractDataFrame
+)
     _require_columns(
         oldest_pdb_release_dates,
-        [:acc, :oldest_pdb_release_date],
+        [:acc, :oldest_pdb_release_date, :has_pdb_structure, :has_missing_pdb_release_date],
         "oldest_pdb_release_dates"
     )
 
     normalized = copy(oldest_pdb_release_dates)
-    has_pdb_structure_present = :has_pdb_structure in Symbol.(names(normalized))
-    has_missing_release_present = :has_missing_pdb_release_date in Symbol.(names(normalized))
+    _normalize_optional_bool_column!(normalized, :has_pdb_structure)
+    _normalize_optional_bool_column!(normalized, :has_missing_pdb_release_date)
 
-    if !has_pdb_structure_present
-        if has_missing_release_present
-            transform!(
-                normalized,
-                [
-                    :oldest_pdb_release_date, :has_missing_pdb_release_date] => ByRow(
-                    (release_date,
-                    has_missing_release) -> !ismissing(release_date) ||
-                                            (!ismissing(has_missing_release) &&
-                                             Bool(has_missing_release))
-                ) => :has_pdb_structure
-            )
-        else
-            # Conservative inference for legacy 2-column tables (`acc`,
-            # `oldest_pdb_release_date`): each row is treated as a known PDB
-            # mapping even when the oldest release date is missing.
-            normalized.has_pdb_structure = trues(nrow(normalized))
-        end
-    end
-
-    if !has_missing_release_present
-        transform!(
-            normalized,
-            [
-                :oldest_pdb_release_date, :has_pdb_structure] => ByRow((
-                release_date, has_pdb_structure) -> !ismissing(has_pdb_structure) &&
-                                                    Bool(has_pdb_structure) &&
-                                                    ismissing(release_date)
-            ) => :has_missing_pdb_release_date
-        )
-    end
-
-    transform!(
-        normalized,
-        :has_pdb_structure => ByRow(x -> !ismissing(x) && Bool(x)) => :has_pdb_structure,
-        :has_missing_pdb_release_date => ByRow(
-            x -> !ismissing(x) && Bool(x)
-        ) => :has_missing_pdb_release_date
-    )
-
-    return normalized
+    normalized
 end
 
 """
@@ -148,16 +100,11 @@ function _fixed_dataset_label_for_cluster(
         cluster_has_pdb_structure::Bool,
         cluster_has_missing_pdb_release_date::Bool
 )::Union{Missing, String}
-    if cluster_has_caid
-        return _FIXED_DATASET_LABEL_CAID
-    end
-
-    if cluster_has_af2_training_structure ||
-       (cluster_has_pdb_structure && cluster_has_missing_pdb_release_date)
+    cluster_has_caid && return _FIXED_DATASET_LABEL_CAID
+    (cluster_has_af2_training_structure ||
+     (cluster_has_pdb_structure && cluster_has_missing_pdb_release_date)) &&
         return _FIXED_DATASET_LABEL_TRAINING
-    end
-
-    return missing
+    missing
 end
 
 """
@@ -169,7 +116,7 @@ Build one row per `final_cluster_id` containing:
 - `cluster_in_caid3`
 - `cluster_fixed_dataset_label`
 """
-function _build_cluster_split_labels(stats::DataFrame)::DataFrame
+function _build_cluster_split_labels(stats::AbstractDataFrame)
     _require_columns(
         stats,
         [
@@ -194,9 +141,7 @@ function _build_cluster_split_labels(stats::DataFrame)::DataFrame
 
     transform!(
         cluster_flags,
-        [
-            :cluster_in_caid2, :cluster_in_caid3] => ByRow((
-            x, y) -> x || y) => :cluster_has_caid
+        [:cluster_in_caid2, :cluster_in_caid3] => ByRow(|) => :cluster_has_caid
     )
     transform!(
         cluster_flags,
@@ -208,7 +153,7 @@ function _build_cluster_split_labels(stats::DataFrame)::DataFrame
         ] => ByRow(_fixed_dataset_label_for_cluster) => :cluster_fixed_dataset_label
     )
 
-    return select(
+    select(
         cluster_flags,
         :final_cluster_id,
         :cluster_in_af2_training_set,
@@ -223,9 +168,7 @@ end
 
 Normalize an iterable collection of identifiers to a `Set{String}`.
 """
-function _to_string_set(values)::Set{String}
-    return Set(String.(collect(values)))
-end
+_to_string_set(values)::Set{String} = Set(String.(values))
 
 """
     _normalize_optional_bool_column!(df, column_name)
@@ -234,14 +177,19 @@ Normalize an optional boolean column in-place, replacing `missing` with
 `false`.
 """
 function _normalize_optional_bool_column!(
-        df::DataFrame,
+        df::AbstractDataFrame,
         column_name::Symbol
-)::Nothing
-    transform!(
-        df,
-        column_name => ByRow(x -> ismissing(x) ? false : Bool(x)) => column_name
-    )
-    return nothing
+)
+    column = df[!, column_name]
+    if eltype(column) <: Union{Missing, Bool}
+        df[!, column_name] = coalesce.(column, false)
+    else
+        transform!(
+            df,
+            column_name => ByRow(x -> ismissing(x) ? false : Bool(x)) => column_name
+        )
+    end
+    nothing
 end
 
 """
@@ -273,13 +221,13 @@ Returned columns include:
 - `cluster_fixed_dataset_label`.
 """
 function build_fixed_labels_table(
-        cluster_representatives::DataFrame,
-        disprot_annotations::DataFrame,
-        oldest_pdb_release_dates::DataFrame,
+        cluster_representatives::AbstractDataFrame,
+        disprot_annotations::AbstractDataFrame,
+        oldest_pdb_release_dates::AbstractDataFrame,
         caid2_disprot_ids,
         caid3_disprot_ids;
         af2_training_cutoff_date::Date = AF2_TRAINING_DATA_CUTOFF_DATE
-)::DataFrame
+)
     _require_columns(
         cluster_representatives,
         [:protein_id, :final_cluster_id],
@@ -334,15 +282,14 @@ function build_fixed_labels_table(
     transform!(
         stats,
         :protein_oldest_pdb_release_date => ByRow(
-            x -> !ismissing(x) &&
-                 x <= af2_training_cutoff_date
+            x -> coalesce(x <= af2_training_cutoff_date, false)
         ) => :protein_in_af2_training_set
     )
 
     cluster_split_labels = _build_cluster_split_labels(stats)
     stats = leftjoin(stats, cluster_split_labels, on = :final_cluster_id)
 
-    cluster_columns = Symbol.(names(cluster_representatives))
+    cluster_columns = propertynames(cluster_representatives)
     output_columns = unique([
         cluster_columns...,
         :protein_disprot_id,
@@ -361,7 +308,7 @@ function build_fixed_labels_table(
     stats = select(stats, output_columns)
 
     sort!(stats, :protein_id)
-    return stats
+    stats
 end
 
 """
@@ -370,19 +317,14 @@ end
 Write `fixed_labels_table` to a gzip-compressed CSV file.
 """
 function write_fixed_labels_csv_gz(
-        fixed_labels_table::DataFrame,
+        fixed_labels_table::AbstractDataFrame,
         output_path::AbstractString
-)::Nothing
+)
     mkpath(dirname(output_path))
-    open(output_path, "w") do io
-        gzip_io = GzipCompressorStream(io)
-        try
-            CSV.write(gzip_io, fixed_labels_table)
-        finally
-            close(gzip_io)
-        end
+    open(GzipCompressorStream, output_path, "w") do io
+        CSV.write(io, fixed_labels_table)
     end
-    return nothing
+    nothing
 end
 
 """
@@ -390,24 +332,21 @@ end
 
 Normalize a split label for reporting, using `"missing"` for `missing` values.
 """
-function _normalize_label_for_report(label)::String
-    ismissing(label) && return "missing"
-    return String(label)
-end
+_normalize_label_for_report(label)::String = String(coalesce(label, "missing"))
 
 """
     _count_labels(table, label_column)
 
 Count rows by string-normalized values in `label_column`.
 """
-function _count_labels(table::DataFrame, label_column::Symbol)::Dict{String, Int}
+function _count_labels(table::AbstractDataFrame, label_column::Symbol)::Dict{String, Int}
     _require_columns(table, [label_column], "table")
     counts = Dict{String, Int}()
     for value in table[!, label_column]
         label = _normalize_label_for_report(value)
         counts[label] = get(counts, label, 0) + 1
     end
-    return counts
+    counts
 end
 
 """
@@ -459,8 +398,8 @@ function write_fixed_labels_readme(
         source_caid2_binding_fasta_path::AbstractString,
         source_caid3_binding_fasta_path::AbstractString,
         af2_training_cutoff_date::Date = AF2_TRAINING_DATA_CUTOFF_DATE,
-        fixed_labels_table::DataFrame
-)::Nothing
+        fixed_labels_table::AbstractDataFrame
+)
     _require_columns(
         fixed_labels_table,
         [:final_cluster_id, :cluster_fixed_dataset_label],
@@ -515,5 +454,5 @@ $( _render_readme_summary_lines(cluster_label_counts; prefix = "label"))
 """
 
     write(output_path, readme)
-    return nothing
+    nothing
 end
