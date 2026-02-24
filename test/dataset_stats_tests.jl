@@ -215,8 +215,10 @@ end
         cluster_representatives,
         disprot_annotations,
         oldest_pdb,
-        Set(["DP00001", "DP00003"]),
-        Set(["DP00002"])
+        Dict(
+            "caid_2" => Set(["DP00001", "DP00003"]),
+            "caid_3" => Set(["DP00002"])
+        )
     )
 
     @test names(stats) == [
@@ -292,8 +294,10 @@ end
         cluster_representatives,
         disprot_entries,
         pdb_release_map,
-        Set(["DP00001"]),
-        Set(["DP00002"])
+        Dict(
+            "caid_2" => Set(["DP00001"]),
+            "caid_3" => Set(["DP00002"])
+        )
     )
 
     by_acc = Dict(row.protein_id => row for row in eachrow(stats))
@@ -302,6 +306,55 @@ end
     @test by_acc["P11111"].protein_in_caid2
     @test by_acc["P22222"].protein_in_caid3
     @test by_acc["P11111"].cluster_fixed_dataset_label == "caid"
+    @test by_acc["P22222"].cluster_fixed_dataset_label == "caid"
+end
+
+@testitem "Build dataset stats table keeps CAID columns fully dynamic" begin
+    using Dates
+    using Test
+    using IDRBindingDataset: build_dataset_stats_table
+
+    cluster_representatives = IDRBindingDataset.DataFrames.DataFrame(
+        protein_id = ["P11111", "P22222"],
+        global_representative_id = ["P11111", "P22222"],
+        local_representative_id = ["P11111", "P22222"],
+        final_cluster_id = ["cluster_000001", "cluster_000002"]
+    )
+    disprot_entries = Any[
+    Dict(
+        "acc" => "P11111",
+        "disprot_id" => "DP00001",
+        "released" => "2020_04",
+        "regions" => Any[Dict("released" => "2020_04", "term_name" => "disorder")]
+    ),
+    Dict(
+        "acc" => "P22222",
+        "disprot_id" => "DP00002",
+        "released" => "2020_07",
+        "regions" => Any[Dict("released" => "2021_01", "term_name" => "protein binding")]
+    )
+]
+    pdb_release_map = IDRBindingDataset.DataFrames.DataFrame(
+        acc = String[],
+        pdb_release_date = String[]
+    )
+
+    stats = build_dataset_stats_table(
+        cluster_representatives,
+        disprot_entries,
+        pdb_release_map,
+        Dict("caid_4" => Set(["DP00002"]))
+    )
+
+    @test "protein_in_caid4" in names(stats)
+    @test "cluster_in_caid4" in names(stats)
+    @test "protein_in_caid2" ∉ names(stats)
+    @test "protein_in_caid3" ∉ names(stats)
+    @test "cluster_in_caid2" ∉ names(stats)
+    @test "cluster_in_caid3" ∉ names(stats)
+
+    by_acc = Dict(row.protein_id => row for row in eachrow(stats))
+    @test ismissing(by_acc["P11111"].cluster_fixed_dataset_label)
     @test by_acc["P22222"].cluster_fixed_dataset_label == "caid"
 end
 

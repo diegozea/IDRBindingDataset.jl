@@ -37,8 +37,10 @@ using TestItems
         cluster_representatives,
         disprot_annotations,
         oldest_pdb,
-        Set(["DP_C1"]), # CAID overrides to caid
-        Set{String}()
+        Dict(
+            "caid_2" => Set(["DP_C1"]), # CAID overrides to caid
+            "caid_3" => Set{String}()
+        )
     )
 
     @test names(fixed_labels) == [
@@ -81,7 +83,7 @@ using TestItems
     @test ismissing(by_acc["P_D1"].cluster_fixed_dataset_label)
 end
 
-@testitem "Build fixed labels table accepts multiple CAID datasets via dictionary input" begin
+@testitem "Build fixed labels table includes only provided CAID versions" begin
     using Dates
     using Test
     using IDRBindingDataset:
@@ -110,8 +112,6 @@ end
     )
 
     caid_disprot_ids_by_dataset = Dict(
-        "caid_2" => Set{String}(),
-        "caid_3" => Set{String}(),
         "caid_4" => Set(["DP_B1"])
     )
 
@@ -123,17 +123,17 @@ end
     )
     by_acc = Dict(row.protein_id => row for row in eachrow(fixed_labels))
 
-    @test !by_acc["P_A1"].protein_in_caid2
-    @test !by_acc["P_A1"].protein_in_caid3
     @test ismissing(by_acc["P_A1"].cluster_fixed_dataset_label)
 
-    @test !by_acc["P_B1"].protein_in_caid2
-    @test !by_acc["P_B1"].protein_in_caid3
     @test by_acc["P_B1"].protein_in_caid4
     @test by_acc["P_B1"].cluster_in_caid4
     @test by_acc["P_B1"].cluster_fixed_dataset_label == "caid"
     @test "protein_in_caid4" in names(fixed_labels)
     @test "cluster_in_caid4" in names(fixed_labels)
+    @test "protein_in_caid2" ∉ names(fixed_labels)
+    @test "protein_in_caid3" ∉ names(fixed_labels)
+    @test "cluster_in_caid2" ∉ names(fixed_labels)
+    @test "cluster_in_caid3" ∉ names(fixed_labels)
 end
 
 @testitem "Build fixed labels table rejects duplicate CAID version keys" begin
@@ -290,8 +290,7 @@ end
             cluster_representatives,
             disprot_annotations,
             oldest_pdb_release_dates_legacy,
-            Set{String}(),
-            Set{String}()
+            Dict{String, Set{String}}()
         )
         nothing
     catch e

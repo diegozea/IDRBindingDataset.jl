@@ -145,6 +145,28 @@ function _split_label_sort_key(label)::Int
 end
 
 """
+    _sorted_caid_membership_columns(column_names, prefix)
+
+Return CAID membership columns that match `prefix * <number>`, sorted by CAID
+dataset version number.
+"""
+function _sorted_caid_membership_columns(
+        column_names::AbstractVector{Symbol},
+        prefix::AbstractString
+)::Vector{Symbol}
+    pattern = Regex("^$(prefix)(\\d+)\$")
+    caid_columns = Symbol[]
+    for column_name in column_names
+        match(pattern, String(column_name)) === nothing || push!(caid_columns, column_name)
+    end
+    sort!(
+        caid_columns;
+        by = column_name -> _caid_number_from_membership_column(column_name, prefix)
+    )
+    caid_columns
+end
+
+"""
     _complete_split_label_summary_rows(summary)
 
 Ensure `summary` contains one row for each split label
@@ -390,8 +412,7 @@ end
         cluster_representatives,
         disprot_annotations,
         oldest_pdb_release_dates,
-        caid2_disprot_ids,
-        caid3_disprot_ids;
+        caid_disprot_ids_by_dataset;
         af2_training_cutoff_date = AF2_TRAINING_DATA_CUTOFF_DATE
     )
 
@@ -404,20 +425,17 @@ Output columns include all columns from `cluster_representatives`, plus:
 - `protein_oldest_pdb_release_date`
 - `protein_has_pdb_structure`
 - `protein_has_missing_pdb_release_date`
-- `protein_in_caid2`
-- `protein_in_caid3`
+- one `protein_in_caid<N>` column per provided CAID dataset
 - `protein_in_af2_training_set`
 - `cluster_in_af2_training_set`
-- `cluster_in_caid2`
-- `cluster_in_caid3`
+- one `cluster_in_caid<N>` column per provided CAID dataset
 - `cluster_fixed_dataset_label` (`training`, `caid`, or `missing`)
 """
 function build_dataset_stats_table(
         cluster_representatives::DataFrame,
         disprot_annotations::DataFrame,
         oldest_pdb_release_dates::DataFrame,
-        caid2_disprot_ids,
-        caid3_disprot_ids;
+        caid_disprot_ids_by_dataset::AbstractDict;
         af2_training_cutoff_date::Date = AF2_TRAINING_DATA_CUTOFF_DATE
 )::DataFrame
     _require_columns(
@@ -434,8 +452,7 @@ function build_dataset_stats_table(
         cluster_representatives,
         disprot_annotations,
         oldest_pdb_release_dates,
-        caid2_disprot_ids,
-        caid3_disprot_ids;
+        caid_disprot_ids_by_dataset;
         af2_training_cutoff_date = af2_training_cutoff_date
     )
 
@@ -449,6 +466,16 @@ function build_dataset_stats_table(
         on = :protein_id => :acc
     )
 
+    stats_column_names = Symbol.(names(stats))
+    protein_caid_columns = _sorted_caid_membership_columns(
+        stats_column_names,
+        "protein_in_caid"
+    )
+    cluster_caid_columns = _sorted_caid_membership_columns(
+        stats_column_names,
+        "cluster_in_caid"
+    )
+
     cluster_columns = Symbol.(names(cluster_representatives))
     output_columns = unique([
         cluster_columns...,
@@ -458,12 +485,10 @@ function build_dataset_stats_table(
         :protein_oldest_pdb_release_date,
         :protein_has_pdb_structure,
         :protein_has_missing_pdb_release_date,
-        :protein_in_caid2,
-        :protein_in_caid3,
+        protein_caid_columns...,
         :protein_in_af2_training_set,
         :cluster_in_af2_training_set,
-        :cluster_in_caid2,
-        :cluster_in_caid3,
+        cluster_caid_columns...,
         :cluster_fixed_dataset_label
     ])
     stats = select(stats, output_columns)
@@ -692,8 +717,7 @@ end
         cluster_representatives,
         disprot_entries,
         pdb_release_map,
-        caid2_disprot_ids,
-        caid3_disprot_ids;
+        caid_disprot_ids_by_dataset;
         af2_training_cutoff_date = AF2_TRAINING_DATA_CUTOFF_DATE
     )
 
@@ -704,8 +728,7 @@ function build_dataset_stats_table(
         cluster_representatives::DataFrame,
         disprot_entries,
         pdb_release_map::DataFrame,
-        caid2_disprot_ids,
-        caid3_disprot_ids;
+        caid_disprot_ids_by_dataset::AbstractDict;
         af2_training_cutoff_date::Date = AF2_TRAINING_DATA_CUTOFF_DATE
 )::DataFrame
     disprot_annotations = build_disprot_protein_annotations(disprot_entries)
@@ -715,8 +738,7 @@ function build_dataset_stats_table(
         cluster_representatives,
         disprot_annotations,
         oldest_pdb_release_dates,
-        caid2_disprot_ids,
-        caid3_disprot_ids;
+        caid_disprot_ids_by_dataset;
         af2_training_cutoff_date = af2_training_cutoff_date
     )
 end

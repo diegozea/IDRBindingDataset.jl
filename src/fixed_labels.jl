@@ -140,8 +140,7 @@ Build one row per `final_cluster_id` containing:
 """
 function _build_cluster_split_labels(
         stats::AbstractDataFrame;
-        protein_caid_columns::AbstractVector{Symbol} = [
-            :protein_in_caid2, :protein_in_caid3]
+        protein_caid_columns::AbstractVector{Symbol} = Symbol[]
 )
     _require_columns(
         stats,
@@ -382,16 +381,6 @@ function _add_caid_membership_columns!(
         push!(protein_caid_columns, column_name)
     end
 
-    # Preserve legacy columns even if a given dataset version is absent.
-    if !haskey(caid_ids_by_number, 2)
-        stats.protein_in_caid2 = falses(nrow(stats))
-        push!(protein_caid_columns, :protein_in_caid2)
-    end
-    if !haskey(caid_ids_by_number, 3)
-        stats.protein_in_caid3 = falses(nrow(stats))
-        push!(protein_caid_columns, :protein_in_caid3)
-    end
-
     sort!(
         unique(protein_caid_columns);
         by = column_name -> _caid_number_from_membership_column(
@@ -433,8 +422,7 @@ end
         cluster_representatives,
         disprot_annotations,
         oldest_pdb_release_dates,
-        caid2_disprot_ids,
-        caid3_disprot_ids;
+        caid_disprot_ids_by_dataset;
         af2_training_cutoff_date = AF2_TRAINING_DATA_CUTOFF_DATE
     )
 
@@ -448,14 +436,10 @@ Returned columns include:
 - `protein_oldest_pdb_release_date`,
 - `protein_has_pdb_structure`,
 - `protein_has_missing_pdb_release_date`,
-- `protein_in_caid2`,
-- `protein_in_caid3`,
-- optional additional CAID membership columns: `protein_in_caid<N>`,
+- one `protein_in_caid<N>` column per provided CAID dataset,
 - `protein_in_af2_training_set`,
 - `cluster_in_af2_training_set`,
-- `cluster_in_caid2`,
-- `cluster_in_caid3`,
-- optional additional CAID cluster columns: `cluster_in_caid<N>`,
+- one `cluster_in_caid<N>` column per provided CAID dataset,
 - `cluster_fixed_dataset_label`.
 """
 function _build_fixed_labels_table_from_caid_datasets(
@@ -551,48 +535,12 @@ end
         cluster_representatives,
         disprot_annotations,
         oldest_pdb_release_dates,
-        caid2_disprot_ids,
-        caid3_disprot_ids;
-        af2_training_cutoff_date = AF2_TRAINING_DATA_CUTOFF_DATE
-    )
-
-Build fixed labels from explicit CAID-2 and CAID-3 DisProt ID collections.
-"""
-function build_fixed_labels_table(
-        cluster_representatives::AbstractDataFrame,
-        disprot_annotations::AbstractDataFrame,
-        oldest_pdb_release_dates::AbstractDataFrame,
-        caid2_disprot_ids,
-        caid3_disprot_ids;
-        af2_training_cutoff_date::Date = AF2_TRAINING_DATA_CUTOFF_DATE
-)
-    _build_fixed_labels_table_from_caid_datasets(
-        cluster_representatives,
-        disprot_annotations,
-        oldest_pdb_release_dates,
-        Dict(
-            2 => _to_string_set(caid2_disprot_ids),
-            3 => _to_string_set(caid3_disprot_ids)
-        );
-        af2_training_cutoff_date = af2_training_cutoff_date
-    )
-end
-
-"""
-    build_fixed_labels_table(
-        cluster_representatives,
-        disprot_annotations,
-        oldest_pdb_release_dates,
         caid_disprot_ids_by_dataset;
         af2_training_cutoff_date = AF2_TRAINING_DATA_CUTOFF_DATE
     )
 
 Build fixed labels from many CAID dataset ID collections, keyed by dataset name
 (for example `caid_2`, `caid_3`, `caid_4`) or by integer dataset number.
-
-Columns `protein_in_caid2` and `protein_in_caid3` retain their existing
-meanings. Additional CAID datasets are handled independently for fixed-label
-assignment without being merged into `protein_in_caid3`.
 """
 function build_fixed_labels_table(
         cluster_representatives::AbstractDataFrame,
@@ -676,14 +624,12 @@ function _render_readme_summary_lines(
 end
 
 """
-    _normalize_caid_source_paths_by_version(; kwargs...)
+    _normalize_caid_source_paths_by_version(; source_caid_binding_fasta_paths_by_version)
 
 Normalize CAID source FASTA paths to `Dict{Int, String}` keyed by CAID version.
 """
 function _normalize_caid_source_paths_by_version(;
-        source_caid2_binding_fasta_path::Union{Nothing, AbstractString} = nothing,
-        source_caid3_binding_fasta_path::Union{Nothing, AbstractString} = nothing,
-        source_caid_binding_fasta_paths_by_version::AbstractDict = Dict()
+        source_caid_binding_fasta_paths_by_version::AbstractDict
 )::Dict{Int, String}
     paths_by_version = Dict{Int, String}()
     for (version_key, path) in pairs(source_caid_binding_fasta_paths_by_version)
@@ -695,12 +641,6 @@ function _normalize_caid_source_paths_by_version(;
         )
         paths_by_version[version] = String(path)
     end
-
-    # Legacy explicit kwargs remain supported and override version-map entries.
-    source_caid2_binding_fasta_path !== nothing &&
-        (paths_by_version[2] = String(source_caid2_binding_fasta_path))
-    source_caid3_binding_fasta_path !== nothing &&
-        (paths_by_version[3] = String(source_caid3_binding_fasta_path))
 
     isempty(paths_by_version) && throw(
         ArgumentError("At least one CAID source FASTA path must be provided."),
@@ -732,9 +672,7 @@ end
         source_cluster_representatives_path,
         source_disprot_regions_path,
         source_pdb_release_map_path,
-        source_caid2_binding_fasta_path = nothing,
-        source_caid3_binding_fasta_path = nothing,
-        source_caid_binding_fasta_paths_by_version = Dict(),
+        source_caid_binding_fasta_paths_by_version,
         af2_training_cutoff_date = AF2_TRAINING_DATA_CUTOFF_DATE,
         fixed_labels_table
     )
@@ -748,9 +686,7 @@ function write_fixed_labels_readme(
         source_cluster_representatives_path::AbstractString,
         source_disprot_regions_path::AbstractString,
         source_pdb_release_map_path::AbstractString,
-        source_caid2_binding_fasta_path::Union{Nothing, AbstractString} = nothing,
-        source_caid3_binding_fasta_path::Union{Nothing, AbstractString} = nothing,
-        source_caid_binding_fasta_paths_by_version::AbstractDict = Dict(),
+        source_caid_binding_fasta_paths_by_version::AbstractDict,
         af2_training_cutoff_date::Date = AF2_TRAINING_DATA_CUTOFF_DATE,
         fixed_labels_table::AbstractDataFrame
 )
@@ -773,8 +709,6 @@ function write_fixed_labels_readme(
     )
     output_csv_size_bytes = filesize(output_csv_filesystem_path)
     caid_source_paths_by_version = _normalize_caid_source_paths_by_version(
-        source_caid2_binding_fasta_path = source_caid2_binding_fasta_path,
-        source_caid3_binding_fasta_path = source_caid3_binding_fasta_path,
         source_caid_binding_fasta_paths_by_version = source_caid_binding_fasta_paths_by_version
     )
 
@@ -787,7 +721,7 @@ deterministic base split:
   training cutoff (`$(af2_training_cutoff_date)`), or has PDB mappings with
   missing release dates (conservative assignment).
 - `caid`: cluster contains at least one protein in the CAID reference sets
-  used for this build (including CAID2/CAID3).
+  used for this build.
 - `missing`: cluster does not satisfy either rule above.
 
 ## Artifact
