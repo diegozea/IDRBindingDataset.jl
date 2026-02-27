@@ -1,2 +1,5 @@
 /docs/Manifest*.toml
 /docs/build/
+
+# VS Code
+.vscode/

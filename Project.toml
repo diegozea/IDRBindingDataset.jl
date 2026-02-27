@@ -5,8 +5,9 @@ authors = ["Diego Javier Zea <diegozea@gmail.com> and contributors"]
 
 [deps]
 ArgCheck = "dce04be8-c92d-5529-be00-80e4d2c0e197"
-CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
+CompariMotif = "aecef331-8c7a-44c4-b913-ba8debb6e116"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
@@ -20,6 +21,7 @@ MIToS = "51bafb47-8a16-5ded-8b04-24ef4eede0b5"
 ArgCheck = "2.5"
 CSV = "0.10"
 CodecZlib = "0.7.8"
+CompariMotif = "0.1.0"
 DataFrames = "1.8"
 DataStructures = "0.19"
 Dates = "1"

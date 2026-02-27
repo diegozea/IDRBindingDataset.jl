@@ -2,7 +2,7 @@
 
 julia_version = "1.12.5"
 manifest_format = "2.0"
-project_hash = "58a0433a349a6a34d55785acf78e9de7a4b36e3c"
+project_hash = "8410c4774a8c7bd9111676f0b42866c3117c611e"
 
 [[deps.AliasTables]]
 deps = ["PtrArrays", "Random"]
@@ -27,6 +27,20 @@ version = "1.11.0"
 git-tree-sha1 = "4ec6b48702dacc5994a835c1189831755e4e76ef"
 uuid = "15f4f7f2-30c1-5605-9d31-71845cf9641f"
 version = "2.2.0"
+
+[[deps.AutoPrettyPrinting]]
+deps = ["Dates", "MacroUtilities", "PrecompileTools", "PrettyPrinting", "ScopedValues", "Sockets"]
+git-tree-sha1 = "9dd28d3bca43dc579e4449872a3d681f20599373"
+uuid = "9109d3c5-9510-494f-be9f-db449708e717"
+version = "0.1.8"
+
+    [deps.AutoPrettyPrinting.extensions]
+    AutoPrettyPrintingDictionariesExt = "Dictionaries"
+    AutoPrettyPrintingTimeZonesExt = "TimeZones"
+
+    [deps.AutoPrettyPrinting.weakdeps]
+    Dictionaries = "85a47980-9c8c-11e8-2b9f-f7ca1fa99fb4"
+    TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
 
 [[deps.Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
@@ -91,6 +105,14 @@ git-tree-sha1 = "c761b00e7755700f9cdf5b02039939d1359330e1"
 uuid = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
 version = "1.1.0"
 
+[[deps.CompariMotif]]
+deps = ["AutoPrettyPrinting"]
+git-tree-sha1 = "cb018eb3eb420d89af54531012923fa475869eac"
+repo-rev = "0.1.0"
+repo-url = "https://github.com/diegozea/CompariMotif.jl"
+uuid = "aecef331-8c7a-44c4-b913-ba8debb6e116"
+version = "0.1.0"
+
 [[deps.Compat]]
 deps = ["TOML", "UUIDs"]
 git-tree-sha1 = "9d8a54ce4b17aa5bdce0ea5c34bc5e7c340d16ad"
@@ -108,9 +130,9 @@ version = "1.3.0+1"
 
 [[deps.ConcurrentUtilities]]
 deps = ["Serialization", "Sockets"]
-git-tree-sha1 = "d9d26935a0bcffc87d2613ce14c527c99fc543fd"
+git-tree-sha1 = "21d088c496ea22914fe80906eb5bce65755e5ec8"
 uuid = "f0e56b4a-5159-44fe-b623-3e5288b988bb"
-version = "2.5.0"
+version = "2.5.1"
 
 [[deps.Crayons]]
 git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
@@ -215,8 +237,13 @@ git-tree-sha1 = "5e6fe50ae7f23d171f44e311c2960294aaa0beb5"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 version = "1.10.19"
 
+[[deps.HashArrayMappedTries]]
+git-tree-sha1 = "2eaa69a7cab70a52b9687c8bf950a5a93ec895ae"
+uuid = "076d061b-32b6-4027-95e0-9a2c6f6d7e74"
+version = "0.2.0"
+
 [[deps.IDRBindingDataset]]
-deps = ["ArgCheck", "CSV", "CodecZlib", "DataFrames", "DataStructures", "Dates", "Diamond_jll", "Downloads", "HTTP", "JSON", "MIToS"]
+deps = ["ArgCheck", "CSV", "CodecZlib", "CompariMotif", "DataFrames", "DataStructures", "Dates", "Diamond_jll", "Downloads", "HTTP", "JSON", "MIToS"]
 path = "."
 uuid = "4ed5ff09-7a8d-4be1-90a2-095b546ff853"
 version = "0.1.0"
@@ -360,6 +387,17 @@ version = "3.9.0"
     Clustering = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
     ROCAnalysis = "f535d66d-59bb-5153-8d2b-ef0a426c6aff"
 
+[[deps.MLStyle]]
+git-tree-sha1 = "bc38dff0548128765760c79eb7388a4b37fae2c8"
+uuid = "d8e11817-5142-5d16-987a-aa16d5891078"
+version = "0.4.17"
+
+[[deps.MacroUtilities]]
+deps = ["MLStyle", "OrderedCollections", "PrecompileTools", "Tricks"]
+git-tree-sha1 = "3d18b5f423ee67ca441d99f20aaf0f3e1813107e"
+uuid = "274a0f0b-05f4-4024-87ff-de4a5b524b4f"
+version = "1.18.0"
+
 [[deps.Markdown]]
 deps = ["Base64", "JuliaSyntaxHighlighting", "StyledStrings"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
@@ -367,9 +405,9 @@ version = "1.11.0"
 
 [[deps.MbedTLS]]
 deps = ["Dates", "MbedTLS_jll", "MozillaCACerts_jll", "NetworkOptions", "Random", "Sockets"]
-git-tree-sha1 = "c067a280ddc25f196b5e7df3877c6b226d390aaf"
+git-tree-sha1 = "8785729fa736197687541f7053f6d8ab7fc44f92"
 uuid = "739be429-bea8-5141-9913-cc70e7f3736d"
-version = "1.1.9"
+version = "1.1.10"
 
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -448,9 +486,14 @@ version = "1.3.3"
 
 [[deps.Preferences]]
 deps = ["TOML"]
-git-tree-sha1 = "522f093a29b31a93e34eaea17ba055d850edea28"
+git-tree-sha1 = "8b770b60760d4451834fe79dd483e318eee709c4"
 uuid = "21216c6a-2e73-6563-6e65-726566657250"
-version = "1.5.1"
+version = "1.5.2"
+
+[[deps.PrettyPrinting]]
+git-tree-sha1 = "142ee93724a9c5d04d78df7006670a93ed1b244e"
+uuid = "54e16d92-306c-5ea0-a30b-337be88ac337"
+version = "0.4.2"
 
 [[deps.PrettyTables]]
 deps = ["Crayons", "LaTeXStrings", "Markdown", "PrecompileTools", "Printf", "REPL", "Reexport", "StringManipulation", "Tables"]
@@ -470,9 +513,9 @@ uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 version = "1.11.0"
 
 [[deps.PtrArrays]]
-git-tree-sha1 = "1d36ef11a9aaf1e8b74dacc6a731dd1de8fd493d"
+git-tree-sha1 = "4fbbafbc6251b883f4d2705356f3641f3652a7fe"
 uuid = "43287f4e-b6f4-7ad1-bb20-aadabca52c3d"
-version = "1.3.0"
+version = "1.4.0"
 
 [[deps.REPL]]
 deps = ["InteractiveUtils", "JuliaSyntaxHighlighting", "Markdown", "Sockets", "StyledStrings", "Unicode"]
@@ -504,6 +547,12 @@ version = "1.3.1"
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 version = "0.7.0"
+
+[[deps.ScopedValues]]
+deps = ["HashArrayMappedTries", "Logging"]
+git-tree-sha1 = "c3b2323466378a2ba15bea4b2f73b081e022f473"
+uuid = "7e506255-f358-4e82-b7e4-beb19740aa63"
+version = "1.5.0"
 
 [[deps.SentinelArrays]]
 deps = ["Dates", "Random"]
@@ -537,9 +586,9 @@ version = "1.12.0"
 
 [[deps.StaticArrays]]
 deps = ["LinearAlgebra", "PrecompileTools", "Random", "StaticArraysCore"]
-git-tree-sha1 = "eee1b9ad8b29ef0d936e3ec9838c7ec089620308"
+git-tree-sha1 = "0f529006004a8be48f1be25f3451186579392d47"
 uuid = "90137ffa-7385-5640-81b9-e52037218182"
-version = "1.9.16"
+version = "1.9.17"
 
     [deps.StaticArrays.extensions]
     StaticArraysChainRulesCoreExt = "ChainRulesCore"
@@ -578,9 +627,9 @@ version = "0.34.10"
 
 [[deps.StringManipulation]]
 deps = ["PrecompileTools"]
-git-tree-sha1 = "a3c1536470bf8c5e02096ad4853606d7c8f62721"
+git-tree-sha1 = "d05693d339e37d6ab134c5ab53c29fce5ee5d7d5"
 uuid = "892a3eda-7b42-436c-8928-eab12a02cf0e"
-version = "0.4.2"
+version = "0.4.4"
 
 [[deps.StructUtils]]
 deps = ["Dates", "UUIDs"]
@@ -631,6 +680,11 @@ version = "1.11.0"
 git-tree-sha1 = "0c45878dcfdcfa8480052b6ab162cdd138781742"
 uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
 version = "0.11.3"
+
+[[deps.Tricks]]
+git-tree-sha1 = "311349fd1c93a31f783f977a71e8b062a57d4101"
+uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
+version = "0.1.13"
 
 [[deps.URIs]]
 git-tree-sha1 = "bef26fb046d031353ef97a82e3fdb6afe7f21b1a"
