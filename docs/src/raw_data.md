@@ -6,6 +6,10 @@ This page describes how to generate and update files under `data/raw/` using:
 - `scripts/02_download_caid_data.jl`
 - `scripts/03_download_sifts.jl`
 
+It also documents the optional ELM scratch download script for non-redistributable data:
+
+- `scripts/09_download_elm.jl`
+
 Run commands from the repository root.
 
 ## Prerequisites
@@ -15,6 +19,7 @@ Run commands from the repository root.
   - `https://disprot.org`
   - `https://caid.idpcentral.org`
   - `https://ftp.ebi.ac.uk`
+  - `https://elm.eu.org` (with automatic fallback to `http://elm.eu.org` in script `09`)
 
 Both scripts activate and instantiate `scripts/Project.toml` automatically.
 
@@ -26,6 +31,12 @@ Run the scripts in this order:
 julia scripts/01_download_disprot_data.jl
 julia scripts/02_download_caid_data.jl
 julia scripts/03_download_sifts.jl
+```
+
+Optional scratch download (ELM instances + motif regex index):
+
+```bash
+julia scripts/09_download_elm.jl
 ```
 
 ## Optional CLI Arguments
@@ -55,6 +66,19 @@ julia scripts/03_download_sifts.jl --raw_data_dir data/raw
 
 - `--raw_data_dir`: target root for the SIFTS output folder.
 
+ELM scratch download script (`09`):
+
+```bash
+julia scripts/09_download_elm.jl --instances_url "https://elm.eu.org/instances.tsv?q=*" --elms_index_url "http://elm.eu.org/elms/elms_index.tsv" --timeout_seconds 180
+```
+
+- `--instances_url`: ELM instances endpoint.
+- `--elms_index_url`: ELM classes index endpoint (includes motif regexes).
+- `--timeout_seconds`: HTTP timeout per attempt.
+- Output location is fixed by design to avoid accidental commits and to keep downstream scripts deterministic:
+  - `data/scratch/elm/instances.tsv`
+  - `data/scratch/elm/elms_index.tsv`
+
 ## Expected Output Layout
 
 After a successful run:
@@ -78,9 +102,20 @@ data/raw/
    `- pdb_chain_cath_uniprot.csv.gz
 ```
 
+Optional scratch outputs:
+
+```text
+data/scratch/
+`- elm/
+   |- README.md
+   |- instances.tsv
+   `- elms_index.tsv
+```
+
 ## Notes
 
 - `01_download_disprot_data.jl` rewrites DisProt files inside `data/raw/disprot/`.
 - `02_download_caid_data.jl` rewrites CAID files inside `data/raw/caid_2/` and `data/raw/caid_3/`.
 - `03_download_sifts.jl` rewrites SIFTS files inside `data/raw/sifts/`.
+- `09_download_elm.jl` writes ELM scratch files into `data/scratch/elm/` (intended for local, non-redistributable data).
 - If a transient network error occurs, rerun the affected script.

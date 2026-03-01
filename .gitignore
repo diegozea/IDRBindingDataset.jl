@@ -1,5 +1,6 @@
 /docs/Manifest*.toml
 /docs/build/
+/data/scratch/
 
 # VS Code
 .vscode/

@@ -56,23 +56,6 @@ Recommended convention (adjust if the repo already uses something else):
 3. Prefer small, testable changes. Keep scripts and functions short and readable.
 4. Add or update tests for any behavior change.
 5. Run the full test suite (and any linters/formatters configured) before finishing.
-6. Record what you did in AGENT_NOTES.md (see below), including sources and exact versions.
-
-## Lab notebook: AGENT_NOTES.md (agent-owned)
-
-Maintain a repo file named `AGENT_NOTES.md` as *your* lab notebook. Do NOT write to `NOTES.md` (the human uses that).
-
-Rules:
-
-* Append-only. Do not rewrite history; add corrections under the same date.
-* Use dates as H1 headers, exactly: `# DD-MM-YYYY`
-* Within each date:
-    * keep track of your goal, 
-    * what  you have tried, 
-    * the results and observations you have made, 
-    * decisions (tradeoffs; rationale), 
-    * sources (with citations and access date), 
-    * and anything you have learned that can speed up the project in the future.
 
 ## FAIR dataset requirements (apply to the “database”)
 
@@ -104,13 +87,13 @@ Train/test split requirements:
 
 * Deterministic split and recorded rationale.
 * Guard against leakage.
-* Record the split protocol in docs and AGENT_NOTES.md.
+* Record the split protocol in docs.
 
 ## Citations & sources (must be correct)
 
 When you use external information (docs, papers, web pages), you MUST:
 
-* Cite it in AGENT_NOTES.md (and in docs where appropriate).
+* Cite it in docs where appropriate.
 * Verify each citation points to the exact claim you used.
 * Prefer stable identifiers: DOI, arXiv, PubMed, official docs pages.
 * Record “accessed on DD-MM-YYYY” for web sources.
@@ -133,7 +116,6 @@ When you use external information (docs, papers, web pages), you MUST:
 
   * check existing deps,
   * confirm it solves the need cleanly,
-  * document why in AGENT_NOTES.md,
   * add `[compat]` bounds.
 
 ## License hygiene (MIT repo; be respectful)
@@ -159,7 +141,6 @@ When you use external information (docs, papers, web pages), you MUST:
 * Do not fabricate citations.
 * Do not silently change public APIs.
 * Do not add large dependencies without justification.
-* Do not write to NOTES.md; use AGENT_NOTES.md.
 
 ## Repo operational conventions (agent)
 
@@ -198,8 +179,7 @@ When you use external information (docs, papers, web pages), you MUST:
   * one complete invocation example.
 * If a script filename changes, update:
   * usage/help text in the script,
-  * workflow/docs references,
-  * AGENT_NOTES.md (append-only).
+  * workflow/docs references.
 * Minimum validation before finishing:
   * run full tests (prefer via the Julia MCP),
   * `--help` smoke test for modified scripts.
