@@ -13,5 +13,6 @@ include("elm_motifs_tests.jl")
 include("elm_motif_clustering_tests.jl")
 include("dataset_stats_tests.jl")
 include("dataset_finalization_tests.jl")
+include("dataset_json_export_tests.jl")
 
 @run_package_tests

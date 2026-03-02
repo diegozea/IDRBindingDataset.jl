@@ -44,3 +44,38 @@ Complete example:
 ```bash
 julia scripts/13_assing_missing_labels.jl --fixed_labels_path data/derived/fixed/cluster_fixed_labels.csv.gz --elm_motif_clustering_path data/derived/elm/elm_motif_clustering.csv.gz --output_dir data/dataset --output_filename cluster_dataset_labels.csv.gz --missing_label validation
 ```
+
+## JSON Artifact
+
+- Compressed JSON: `data/dataset/cluster_dataset_labels.json.gz` (`1293876` bytes; `1.234` MiB)
+- Generated at (UTC): `2026-03-02 22:21:20 UTC`
+- Number of proteins: `3199`
+
+### Content
+
+- Preserves all columns from `cluster_dataset_labels.csv.gz`.
+- Adds `sequence`: full protein sequence from DisProt.
+- Adds `residue_labels`: per-residue integer vector with `0 = ordered`,
+  `1 = disordered`, and `2 = binding`.
+- Label precedence is monotonic (`0 -> 1 -> 2`), so residues labeled as
+  `2` are never downgraded by later overlapping regions.
+
+### Source Inputs
+
+- Final dataset CSV: `data/dataset/cluster_dataset_labels.csv.gz`
+- DisProt regions JSON: `data/raw/disprot/disprot_regions.json.gz`
+
+### Reproducibility
+
+Run from repository root:
+
+```bash
+julia scripts/14_json_format.jl
+```
+
+Complete example:
+
+```bash
+julia scripts/14_json_format.jl --dataset_csv_path data/dataset/cluster_dataset_labels.csv.gz --raw_data_dir data/raw --output_dir data/dataset --output_filename cluster_dataset_labels.json.gz
+```
+
