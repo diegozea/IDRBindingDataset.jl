@@ -67,6 +67,11 @@ export build_dataset_stats_table
 export assign_missing_cluster_labels_by_disprot_cutoff
 export summarize_dataset_labels_by_binding
 export sweep_disprot_cutoff_label_summaries
+export FINAL_DATASET_LABEL_VALIDATION
+export build_protein_elm_clusters_table
+export build_final_cluster_dataset_table
+export write_final_dataset_csv_gz
+export write_final_dataset_readme
 
 include("raw_data_download.jl")
 include("disprot_data.jl")
@@ -79,5 +84,6 @@ include("fixed_labels.jl")
 include("elm_motifs.jl")
 include("elm_motif_clustering.jl")
 include("dataset_stats.jl")
+include("dataset_finalization.jl")
 
 end
