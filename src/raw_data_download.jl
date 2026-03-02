@@ -54,6 +54,47 @@ function clean_directory(path::AbstractString)::Nothing
 end
 
 """
+    _is_path_within_directory(path, directory)
+
+Return `true` when `path` is the same as, or nested under, `directory` after
+normalizing both to absolute paths.
+"""
+function _is_path_within_directory(
+        path::AbstractString,
+        directory::AbstractString
+)::Bool
+    normalized_path = normpath(abspath(path))
+    normalized_directory = normpath(abspath(directory))
+
+    normalized_path == normalized_directory && return true
+    startswith(normalized_path, joinpath(normalized_directory, ""))
+end
+
+"""
+    _ensure_path_not_within_directory(path, directory;
+        path_label = "path", directory_label = "directory")
+
+Throw an `ArgumentError` when `path` is the same as, or nested under,
+`directory`.
+"""
+function _ensure_path_not_within_directory(
+        path::AbstractString,
+        directory::AbstractString;
+        path_label::AbstractString = "path",
+        directory_label::AbstractString = "directory"
+)::Nothing
+    _is_path_within_directory(path, directory) || return nothing
+
+    normalized_path = normpath(path)
+    normalized_directory = normpath(directory)
+    throw(
+        ArgumentError(
+        "Refusing to clean $(directory_label)=$(repr(normalized_directory)) because $(path_label)=$(repr(normalized_path)) is inside it. Choose a non-overlapping directory."
+    ),
+    )
+end
+
+"""
     remove_files(paths)
 
 Remove each file path in `paths` if it exists. Parent directories are kept.

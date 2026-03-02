@@ -14,7 +14,8 @@ makedocs(;
     ),
     pages = [
         "Home" => "index.md",
-        "Raw Data Workflow" => "raw_data.md"
+        "Raw Data Workflow" => "raw_data.md",
+        "ELM Motif Workflow" => "elm_motifs.md"
     ]
 )
 

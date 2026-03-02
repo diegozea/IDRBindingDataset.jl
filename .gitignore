@@ -1,6 +1,12 @@
 /docs/Manifest*.toml
 /docs/build/
-/data/scratch/
+/data/scratch/*
+!/data/scratch/elm/
+/data/scratch/elm/*
+!/data/scratch/elm/mapping/
+/data/scratch/elm/mapping/*
+!/data/scratch/elm/mapping/README.md
+/data/scratch/elm/mapping/motifs.csv.gz
 
 # VS Code
 .vscode/

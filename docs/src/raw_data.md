@@ -10,6 +10,12 @@ It also documents the optional ELM scratch download script for non-redistributab
 
 - `scripts/09_download_elm.jl`
 
+Downstream motif mapping from ELM scratch files to cluster proteins is documented in:
+
+- `scripts/10_mapping_elm_motifs.jl`
+- `scripts/11_elm_motif_clustering.jl`
+- [ELM Motif Workflow](elm_motifs.md)
+
 Run commands from the repository root.
 
 ## Prerequisites
@@ -37,6 +43,13 @@ Optional scratch download (ELM instances + motif regex index):
 
 ```bash
 julia scripts/09_download_elm.jl
+```
+
+Optional derived mapping (requires `09` outputs and clustering output):
+
+```bash
+julia scripts/10_mapping_elm_motifs.jl
+julia scripts/11_elm_motif_clustering.jl
 ```
 
 ## Optional CLI Arguments
@@ -118,4 +131,6 @@ data/scratch/
 - `02_download_caid_data.jl` rewrites CAID files inside `data/raw/caid_2/` and `data/raw/caid_3/`.
 - `03_download_sifts.jl` rewrites SIFTS files inside `data/raw/sifts/`.
 - `09_download_elm.jl` writes ELM scratch files into `data/scratch/elm/` (intended for local, non-redistributable data).
+- `10_mapping_elm_motifs.jl` writes scratch mapping files into `data/scratch/elm/mapping/`.
+- `11_elm_motif_clustering.jl` writes `data/derived/elm/elm_motif_clustering.csv.gz` and `data/derived/elm/README.md`, plus scratch regex clusters in `data/scratch/elm/clustering/`.
 - If a transient network error occurs, rerun the affected script.

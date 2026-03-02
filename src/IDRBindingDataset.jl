@@ -46,6 +46,19 @@ export FIXED_DATASET_LABEL_CAID
 export build_fixed_labels_table
 export write_fixed_labels_csv_gz
 export write_fixed_labels_readme
+export DEFAULT_ELM_EXCLUDED_INSTANCE_LOGIC
+export build_cluster_elm_motifs_table
+export write_elm_motifs_csv_gz
+export write_elm_motifs_readme
+export DEFAULT_ELM_MOTIF_CLUSTER_NORMIC_THRESHOLD
+export DEFAULT_ELM_MOTIF_CLUSTER_MATCHIC_THRESHOLD
+export DEFAULT_ELM_MOTIF_CLUSTER_SCORE_THRESHOLD
+export DEFAULT_ELM_MOTIF_CLUSTER_MIN_SHARED_POSITIONS
+export build_regex_motif_clusters_table
+export build_protein_elm_motif_cluster_table
+export write_regex_motif_clusters_csv_gz
+export write_elm_motif_clustering_csv_gz
+export write_elm_motif_clustering_readme
 export read_caid_disprot_ids
 export build_oldest_pdb_release_dates
 export build_disprot_release_dates
@@ -63,6 +76,8 @@ include("sifts_data_download.jl")
 include("pdb_release_dates.jl")
 include("pdb_release_dataset.jl")
 include("fixed_labels.jl")
+include("elm_motifs.jl")
+include("elm_motif_clustering.jl")
 include("dataset_stats.jl")
 
 end

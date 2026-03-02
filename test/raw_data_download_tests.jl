@@ -66,6 +66,40 @@ end
     @test isempty(readdir(target_dir))
 end
 
+@testitem "Path guard blocks destructive cleanup overlaps" begin
+    using Test
+    using IDRBindingDataset: _ensure_path_not_within_directory
+
+    tmp_dir = mktempdir()
+    motifs_path = joinpath(tmp_dir, "elm", "mapping", "motifs.csv.gz")
+    safe_dir = joinpath(tmp_dir, "elm", "clustering")
+    overlapping_dir = joinpath(tmp_dir, "elm")
+
+    @test _ensure_path_not_within_directory(
+        motifs_path,
+        safe_dir;
+        path_label = "--motifs_path",
+        directory_label = "--regex_cluster_output_dir"
+    ) === nothing
+
+    err = try
+        _ensure_path_not_within_directory(
+            motifs_path,
+            overlapping_dir;
+            path_label = "--motifs_path",
+            directory_label = "--regex_cluster_output_dir"
+        )
+        nothing
+    catch caught
+        caught
+    end
+
+    @test err isa ArgumentError
+    message = sprint(showerror, err)
+    @test occursin("--motifs_path", message)
+    @test occursin("--regex_cluster_output_dir", message)
+end
+
 @testitem "Download helper retries and writes destination" begin
     using Test
     using IDRBindingDataset: download_to_file_with_retries
