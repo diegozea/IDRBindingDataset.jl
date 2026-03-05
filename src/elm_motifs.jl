@@ -1,5 +1,3 @@
-using CodecZlib
-using CSV
 using DataFrames
 using Statistics
 
@@ -302,12 +300,7 @@ function write_elm_motifs_csv_gz(
 )::Nothing
     _require_columns(motif_table, _REQUIRED_ELM_MOTIF_OUTPUT_COLUMNS, "motif_table")
 
-    mkpath(dirname(output_path))
-    open(GzipCompressorStream, output_path, "w") do io
-        CSV.write(io, motif_table)
-    end
-
-    nothing
+    _write_csv_gz(motif_table, output_path)
 end
 
 """
@@ -466,6 +459,5 @@ julia $(script_relpath) --instances_path data/scratch/elm/instances.tsv --elms_i
 ```
 """
 
-    write(output_path, readme_text)
-    nothing
+    _write_text_file(output_path, readme_text)
 end

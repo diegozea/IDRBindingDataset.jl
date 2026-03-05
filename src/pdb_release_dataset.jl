@@ -1,5 +1,3 @@
-using CodecZlib
-using CSV
 using DataFrames
 
 # ---------------------------------------------------------------------------
@@ -571,18 +569,7 @@ function write_pdb_release_map_csv_gz(
         disprot_pdb_map_with_release::DataFrame,
         output_path::AbstractString
 )::Nothing
-    mkpath(dirname(output_path))
-
-    open(output_path, "w") do io
-        gzip_io = GzipCompressorStream(io)
-        try
-            CSV.write(gzip_io, disprot_pdb_map_with_release)
-        finally
-            close(gzip_io)
-        end
-    end
-
-    return nothing
+    _write_csv_gz(disprot_pdb_map_with_release, output_path)
 end
 
 """
@@ -617,7 +604,6 @@ function write_pdb_release_readme(
         generated_at_utc::AbstractString = utc_now_iso8601()
 )::Nothing
     batch_size > 0 || throw(ArgumentError("`batch_size` must be greater than zero."))
-    mkpath(dirname(readme_path))
 
     output_exists = isfile(output_csv_path)
     output_size_bytes = output_exists ? filesize(output_csv_path) : missing
@@ -660,6 +646,5 @@ function write_pdb_release_readme(
         end
     end
 
-    write(readme_path, content)
-    return nothing
+    _write_text_file(readme_path, content)
 end

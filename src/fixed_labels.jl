@@ -1,5 +1,3 @@
-using CodecZlib
-using CSV
 using DataFrames
 using Dates
 
@@ -571,56 +569,7 @@ function write_fixed_labels_csv_gz(
         fixed_labels_table::AbstractDataFrame,
         output_path::AbstractString
 )
-    mkpath(dirname(output_path))
-    open(GzipCompressorStream, output_path, "w") do io
-        CSV.write(io, fixed_labels_table)
-    end
-    nothing
-end
-
-"""
-    _normalize_label_for_report(label)
-
-Normalize a split label for reporting, using `"missing"` for `missing` values.
-"""
-_normalize_label_for_report(label)::String = String(coalesce(label, "missing"))
-
-"""
-    _count_labels(table, label_column)
-
-Count rows by string-normalized values in `label_column`.
-"""
-function _count_labels(table::AbstractDataFrame, label_column::Symbol)::Dict{String, Int}
-    _require_columns(table, [label_column], "table")
-    counts = Dict{String, Int}()
-    for value in table[!, label_column]
-        label = _normalize_label_for_report(value)
-        counts[label] = get(counts, label, 0) + 1
-    end
-    counts
-end
-
-"""
-    _render_readme_summary_lines(label_counts; prefix)
-
-Render markdown bullet lines for one summary dictionary.
-"""
-function _render_readme_summary_lines(
-        label_counts::Dict{String, Int};
-        prefix::AbstractString
-)::String
-    ordered_labels = ["training", "caid", "missing"]
-    lines = String[]
-
-    for label in ordered_labels
-        push!(lines, "- $(prefix) `$(label)`: `$(get(label_counts, label, 0))`")
-    end
-
-    for label in sort(setdiff(collect(keys(label_counts)), ordered_labels))
-        push!(lines, "- $(prefix) `$(label)`: `$(label_counts[label])`")
-    end
-
-    return join(lines, "\n")
+    _write_csv_gz(fixed_labels_table, output_path)
 end
 
 """
@@ -700,8 +649,16 @@ function write_fixed_labels_readme(
         select(fixed_labels_table, :final_cluster_id, :cluster_fixed_dataset_label),
         :final_cluster_id
     )
-    protein_label_counts = _count_labels(fixed_labels_table, :cluster_fixed_dataset_label)
-    cluster_label_counts = _count_labels(unique_clusters, :cluster_fixed_dataset_label)
+    protein_label_counts = _count_labels_by_value(
+        fixed_labels_table,
+        :cluster_fixed_dataset_label;
+        table_name = "fixed_labels_table"
+    )
+    cluster_label_counts = _count_labels_by_value(
+        unique_clusters,
+        :cluster_fixed_dataset_label;
+        table_name = "unique_clusters"
+    )
     isfile(output_csv_filesystem_path) || throw(
         ArgumentError(
         "Fixed-label CSV file does not exist for README metadata: $(output_csv_filesystem_path)",
@@ -733,10 +690,18 @@ deterministic base split:
 ## Counts by Fixed Label
 
 ### Proteins
-$( _render_readme_summary_lines(protein_label_counts; prefix = "label"))
+$( _render_label_count_lines(
+    protein_label_counts;
+    ordered_labels = ["training", "caid", "missing"],
+    prefix = "label"
+))
 
 ### Final clusters
-$( _render_readme_summary_lines(cluster_label_counts; prefix = "label"))
+$( _render_label_count_lines(
+    cluster_label_counts;
+    ordered_labels = ["training", "caid", "missing"],
+    prefix = "label"
+))
 
 ## Source Inputs
 
@@ -746,6 +711,5 @@ $( _render_readme_summary_lines(cluster_label_counts; prefix = "label"))
 $( _render_caid_source_lines(caid_source_paths_by_version))
 """
 
-    write(output_path, readme)
-    nothing
+    _write_text_file(output_path, readme)
 end

@@ -638,8 +638,7 @@ function summarize_dataset_labels_by_binding(
     summary.n_idr_binding_clusters = coalesce.(summary.n_idr_binding_clusters, 0)
     transform!(
         summary,
-        :dataset_label => ByRow(x -> ismissing(x) ? "missing" :
-                                     String(x)) => :dataset_label
+        :dataset_label => ByRow(value -> _normalize_label_for_report(value)) => :dataset_label
     )
     summary._dataset_label_sort_key = _split_label_sort_key.(summary.dataset_label)
     sort!(summary, :_dataset_label_sort_key)

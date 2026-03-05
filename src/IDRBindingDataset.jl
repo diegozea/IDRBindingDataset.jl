@@ -77,6 +77,7 @@ export write_dataset_json_gz
 export write_dataset_json_readme_section
 
 include("raw_data_download.jl")
+include("shared_helpers.jl")
 include("disprot_data.jl")
 include("sequence_clustering.jl")
 include("caid_data_download.jl")

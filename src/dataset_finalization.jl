@@ -1,5 +1,3 @@
-using CodecZlib
-using CSV
 using DataFrames
 using Dates
 
@@ -347,12 +345,7 @@ function write_final_dataset_csv_gz(
         "final_dataset_table"
     )
 
-    mkpath(dirname(output_path))
-    open(GzipCompressorStream, output_path, "w") do io
-        CSV.write(io, final_dataset_table)
-    end
-
-    nothing
+    _write_csv_gz(final_dataset_table, output_path)
 end
 
 """
@@ -476,8 +469,7 @@ function _summarize_final_dataset_by_label(
     summary.n_unique_elm_clusters = coalesce.(summary.n_unique_elm_clusters, 0)
     transform!(
         summary,
-        :dataset_label => ByRow(value -> ismissing(value) ? "missing" :
-                                         string(value)) => :dataset_label
+        :dataset_label => ByRow(value -> _normalize_label_for_report(value)) => :dataset_label
     )
 
     summary._sort_key = _final_dataset_label_sort_key.(summary.dataset_label)
@@ -643,6 +635,5 @@ julia $(script_relpath) --fixed_labels_path data/derived/fixed/cluster_fixed_lab
 ```
 """
 
-    write(output_path, readme_text)
-    nothing
+    _write_text_file(output_path, readme_text)
 end

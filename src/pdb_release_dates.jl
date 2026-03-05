@@ -434,11 +434,15 @@ function _normalize_optional_string(
         value;
         uppercase_output::Bool = false
 )::Union{Missing, String}
-    value === nothing && return missing
+    ismissing(value) && return uppercase_output ? "MISSING" : "missing"
 
-    text = strip(String(value))
-    isempty(text) && return missing
-    return uppercase_output ? uppercase(text) : text
+    normalized = _normalize_optional_text(
+        value;
+        uppercase_output = uppercase_output,
+        missing_value = nothing
+    )
+    normalized === nothing && return missing
+    normalized
 end
 
 """

@@ -874,22 +874,6 @@ function write_cluster_representatives_csv(
 end
 
 """
-    _write_text_output(path, content)
-
-Write plain text to `path`.
-"""
-function _write_text_output(
-        path::AbstractString,
-        content::AbstractString
-)::Nothing
-    output_path = String(path)
-    mkpath(dirname(output_path))
-
-    write(output_path, content)
-    return nothing
-end
-
-"""
     _bytes_and_mb_string(size_in_bytes)
 
 Render a file size as bytes plus decimal megabytes.
@@ -982,6 +966,6 @@ Generated at (UTC): $(generated_at_utc)
 - DisProt regions JSON: $(source_disprot_regions_path) ($(_bytes_and_mb_string(source_disprot_regions_size_bytes)))
 """
 
-    _write_text_output(output_path, readme_text)
+    _write_text_file(output_path, readme_text)
     return nothing
 end

@@ -1,5 +1,3 @@
-using CodecZlib
-using CSV
 using DataFrames
 using Statistics
 
@@ -319,12 +317,7 @@ function write_regex_motif_clusters_csv_gz(
 )::Nothing
     _require_columns(regex_cluster_table, _REQUIRED_REGEX_CLUSTER_COLUMNS, "regex_cluster_table")
 
-    mkpath(dirname(output_path))
-    open(GzipCompressorStream, output_path, "w") do io
-        CSV.write(io, regex_cluster_table)
-    end
-
-    nothing
+    _write_csv_gz(regex_cluster_table, output_path)
 end
 
 """
@@ -342,12 +335,7 @@ function write_elm_motif_clustering_csv_gz(
         "protein_cluster_table"
     )
 
-    mkpath(dirname(output_path))
-    open(GzipCompressorStream, output_path, "w") do io
-        CSV.write(io, protein_cluster_table)
-    end
-
-    nothing
+    _write_csv_gz(protein_cluster_table, output_path)
 end
 
 """
@@ -518,6 +506,5 @@ julia $(script_relpath) --motifs_path data/scratch/elm/mapping/motifs.csv.gz --r
 ```
 """
 
-    write(output_path, readme_text)
-    nothing
+    _write_text_file(output_path, readme_text)
 end

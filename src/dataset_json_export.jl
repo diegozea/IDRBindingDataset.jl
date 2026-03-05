@@ -449,7 +449,5 @@ function write_dataset_json_readme_section(
     merged_readme = isempty(base_readme) ? json_section :
                     string(base_readme, "\n\n", json_section)
 
-    mkpath(dirname(readme_path))
-    write(readme_path, string(merged_readme, "\n"))
-    nothing
+    _write_text_file(readme_path, string(merged_readme, "\n"))
 end
