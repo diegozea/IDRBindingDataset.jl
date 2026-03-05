@@ -71,10 +71,9 @@ export FINAL_DATASET_LABEL_VALIDATION
 export build_protein_elm_clusters_table
 export build_final_cluster_dataset_table
 export write_final_dataset_csv_gz
-export write_final_dataset_readme
 export build_dataset_json_records
+export build_dataset_csv_table
 export write_dataset_json_gz
-export write_dataset_json_readme_section
 
 include("raw_data_download.jl")
 include("shared_helpers.jl")

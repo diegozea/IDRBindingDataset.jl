@@ -1,5 +1,5 @@
 using CodecZlib
-using Dates
+using DataFrames
 using JSON
 
 const _DISPROT_DISORDER_TERM_ID = "IDPO:0000002"
@@ -16,8 +16,6 @@ const _DISPROT_DISORDER_LABEL_PATTERN = r"\bdisorder\b"i
 const _RESIDUE_LABEL_ORDERED = 0
 const _RESIDUE_LABEL_DISORDERED = 1
 const _RESIDUE_LABEL_BINDING = 2
-const _JSON_README_SECTION_HEADER = "## JSON Artifact"
-const _JSON_DEFAULT_SCRIPT_RELPATH = "scripts/14_json_format.jl"
 
 """
     _build_disprot_entry_index(disprot_entries)
@@ -260,6 +258,68 @@ function build_dataset_json_records(
 end
 
 """
+    _residue_label_to_char(value)::Char
+
+Convert one residue label value (`0`, `1`, `2`) to its one-character string
+code.
+"""
+function _residue_label_to_char(value)::Char
+    value isa Integer || throw(
+        ArgumentError(
+        "Residue label values must be integers `0`, `1`, or `2`; found $(repr(value))."
+    ),
+    )
+
+    label = Int(value)
+    label in (_RESIDUE_LABEL_ORDERED, _RESIDUE_LABEL_DISORDERED, _RESIDUE_LABEL_BINDING) ||
+        throw(
+            ArgumentError(
+            "Residue label values must be integers `0`, `1`, or `2`; found $(repr(value))."
+        ),
+        )
+
+    Char(Int('0') + label)
+end
+
+"""
+    _encode_residue_labels(labels)::String
+
+Encode one per-residue integer-label vector as a compact string with one
+character per residue (`0`, `1`, `2`).
+"""
+function _encode_residue_labels(labels)::String
+    labels isa AbstractVector || throw(
+        ArgumentError("`residue_labels` must be a vector-like value."),
+    )
+
+    encoded = Vector{Char}(undef, length(labels))
+    for (index, label) in enumerate(labels)
+        encoded[index] = _residue_label_to_char(label)
+    end
+
+    String(encoded)
+end
+
+"""
+    build_dataset_csv_table(json_records)::DataFrame
+
+Build one CSV-ready table from JSON-ready records. All record fields are
+preserved, and `residue_labels` is encoded from integer vectors to compact
+strings with one character per residue (`0`, `1`, `2`).
+"""
+function build_dataset_csv_table(json_records)::DataFrame
+    table = DataFrame(json_records)
+    _require_columns(table, [:residue_labels], "json_records")
+
+    transform!(
+        table,
+        :residue_labels => ByRow(_encode_residue_labels) => :residue_labels
+    )
+
+    table
+end
+
+"""
     _json_ready_value(value)
 
 Recursively convert Julia values to JSON-friendly values, including conversion
@@ -319,135 +379,4 @@ function write_dataset_json_gz(records, output_path::AbstractString)::Nothing
     end
 
     nothing
-end
-
-"""
-    _strip_json_readme_section(readme_text)
-
-Remove one existing `## JSON Artifact` section from the last occurrence of the
-section header to the end of the README text.
-"""
-function _strip_json_readme_section(readme_text::AbstractString)::String
-    section_range = findlast(_JSON_README_SECTION_HEADER, readme_text)
-    isnothing(section_range) && return rstrip(readme_text)
-
-    section_start = first(section_range)
-    section_start == firstindex(readme_text) && return ""
-
-    prefix_end = prevind(readme_text, section_start)
-    rstrip(readme_text[firstindex(readme_text):prefix_end])
-end
-
-"""
-    _render_dataset_json_readme_section(;
-        output_json_path,
-        output_json_filesystem_path,
-        source_dataset_csv_path,
-        source_disprot_regions_path,
-        n_proteins,
-        generated_at_utc,
-        script_relpath
-    )
-
-Render one deterministic README markdown section describing the JSON artifact.
-"""
-function _render_dataset_json_readme_section(;
-        output_json_path::AbstractString,
-        output_json_filesystem_path::AbstractString,
-        source_dataset_csv_path::AbstractString,
-        source_disprot_regions_path::AbstractString,
-        n_proteins::Integer,
-        generated_at_utc::DateTime,
-        script_relpath::AbstractString
-)::String
-    n_proteins >= 0 || throw(ArgumentError("n_proteins must be non-negative."))
-
-    isfile(output_json_filesystem_path) || throw(
-        ArgumentError(
-        "Final dataset JSON file does not exist for README metadata: $(output_json_filesystem_path)",
-    ),
-    )
-
-    generated_at_text = _format_generated_at_utc(generated_at_utc)
-    output_json_size_bytes = filesize(output_json_filesystem_path)
-    output_json_size_mb = output_json_size_bytes / 1024^2
-
-    """
-$_JSON_README_SECTION_HEADER
-
-- Compressed JSON: `$(output_json_path)` (`$(output_json_size_bytes)` bytes; `$(round(output_json_size_mb; digits = 3))` MiB)
-- Generated at (UTC): `$(generated_at_text)`
-- Number of proteins: `$(n_proteins)`
-
-### Content
-
-- Preserves all columns from `cluster_dataset_labels.csv.gz`.
-- Adds `sequence`: full protein sequence from DisProt.
-- Adds `residue_labels`: per-residue integer vector with `0 = ordered`,
-  `1 = disordered`, and `2 = binding`.
-- Label precedence is monotonic (`0 -> 1 -> 2`), so residues labeled as
-  `2` are never downgraded by later overlapping regions.
-
-### Source Inputs
-
-- Final dataset CSV: `$(source_dataset_csv_path)`
-- DisProt regions JSON: `$(source_disprot_regions_path)`
-
-### Reproducibility
-
-Run from repository root:
-
-```bash
-julia $(script_relpath)
-```
-
-Complete example:
-
-```bash
-julia $(script_relpath) --dataset_csv_path data/dataset/cluster_dataset_labels.csv.gz --raw_data_dir data/raw --output_dir data/dataset --output_filename cluster_dataset_labels.json.gz
-```
-"""
-end
-
-"""
-    write_dataset_json_readme_section(
-        readme_path;
-        output_json_path,
-        output_json_filesystem_path = output_json_path,
-        source_dataset_csv_path,
-        source_disprot_regions_path,
-        n_proteins,
-        generated_at_utc = now(UTC),
-        script_relpath = "scripts/14_json_format.jl"
-    )
-
-Append one JSON artifact section at the end of a dataset README, replacing any
-previous `## JSON Artifact` section written by this pipeline.
-"""
-function write_dataset_json_readme_section(
-        readme_path::AbstractString;
-        output_json_path::AbstractString,
-        output_json_filesystem_path::AbstractString = output_json_path,
-        source_dataset_csv_path::AbstractString,
-        source_disprot_regions_path::AbstractString,
-        n_proteins::Integer,
-        generated_at_utc::DateTime = now(UTC),
-        script_relpath::AbstractString = _JSON_DEFAULT_SCRIPT_RELPATH
-)::Nothing
-    json_section = _render_dataset_json_readme_section(
-        output_json_path = output_json_path,
-        output_json_filesystem_path = output_json_filesystem_path,
-        source_dataset_csv_path = source_dataset_csv_path,
-        source_disprot_regions_path = source_disprot_regions_path,
-        n_proteins = n_proteins,
-        generated_at_utc = generated_at_utc,
-        script_relpath = script_relpath
-    )
-
-    existing_readme = isfile(readme_path) ? read(readme_path, String) : ""
-    base_readme = _strip_json_readme_section(existing_readme)
-    merged_readme = isempty(base_readme) ? json_section :
-                    string(base_readme, "\n\n", json_section)
-
-    _write_text_file(readme_path, string(merged_readme, "\n"))
 end

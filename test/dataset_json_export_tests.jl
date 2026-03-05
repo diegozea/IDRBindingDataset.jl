@@ -173,85 +173,39 @@ end
     @test row["residue_labels"] == [0, 2, 2, 0, 0]
 end
 
-@testitem "Write dataset JSON README section appends and replaces one JSON section" begin
-    using Dates
+@testitem "Build dataset CSV table encodes residue labels as compact strings" begin
     using Test
-    using IDRBindingDataset: write_dataset_json_readme_section
+    using IDRBindingDataset: build_dataset_csv_table
 
-    tmp_dir = mktempdir()
-    readme_path = joinpath(tmp_dir, "README.md")
-    json_path = joinpath(tmp_dir, "cluster_dataset_labels.json.gz")
-
-    write(
-        readme_path,
-        """
-# Final Dataset
-
-## Artifact
-
-- Compressed CSV: `data/dataset/cluster_dataset_labels.csv.gz`
-"""
+    records = [
+        (
+        protein_id = "P00007",
+        cluster_dataset_label = "training",
+        sequence = "ABCDE",
+        residue_labels = [0, 1, 2, 2, 0],
+        protein_elm_clusters = missing
     )
-    write(json_path, "[]\n")
+    ]
 
-    write_dataset_json_readme_section(
-        readme_path;
-        output_json_path = "data/dataset/cluster_dataset_labels.json.gz",
-        output_json_filesystem_path = json_path,
-        source_dataset_csv_path = "data/dataset/cluster_dataset_labels.csv.gz",
-        source_disprot_regions_path = "data/raw/disprot/disprot_regions.json.gz",
-        n_proteins = 7,
-        generated_at_utc = DateTime(2026, 3, 2, 10, 11, 12),
-        script_relpath = "scripts/14_json_format.jl"
-    )
-
-    first_render = read(readme_path, String)
-    @test occursin("# Final Dataset", first_render)
-    @test occursin("## JSON Artifact", first_render)
-    @test occursin("- Number of proteins: `7`", first_render)
-    @test occursin("- Generated at (UTC): `2026-03-02 10:11:12 UTC`", first_render)
-    @test occursin(
-        "- DisProt regions JSON: `data/raw/disprot/disprot_regions.json.gz`",
-        first_render
-    )
-    @test length(collect(eachmatch(r"## JSON Artifact", first_render))) == 1
-
-    write_dataset_json_readme_section(
-        readme_path;
-        output_json_path = "data/dataset/cluster_dataset_labels.json.gz",
-        output_json_filesystem_path = json_path,
-        source_dataset_csv_path = "data/dataset/cluster_dataset_labels.csv.gz",
-        source_disprot_regions_path = "data/raw/disprot/disprot_regions.json.gz",
-        n_proteins = 9,
-        generated_at_utc = DateTime(2026, 3, 2, 20, 21, 22),
-        script_relpath = "scripts/14_json_format.jl"
-    )
-
-    second_render = read(readme_path, String)
-    @test length(collect(eachmatch(r"## JSON Artifact", second_render))) == 1
-    @test occursin("- Number of proteins: `9`", second_render)
-    @test !occursin("- Number of proteins: `7`", second_render)
-    @test occursin("- Generated at (UTC): `2026-03-02 20:21:22 UTC`", second_render)
-    json_section_start = findfirst("## JSON Artifact", second_render)
-    @test !isnothing(json_section_start)
-    json_section_tail = second_render[first(json_section_start):end]
-    @test isnothing(findnext("\n## ", json_section_tail, 2))
+    table = build_dataset_csv_table(records)
+    @test length(table.protein_id) == 1
+    @test only(table.protein_id) == "P00007"
+    @test only(table.sequence) == "ABCDE"
+    @test only(table.residue_labels) == "01220"
+    @test ismissing(only(table.protein_elm_clusters))
 end
 
-@testitem "Write dataset JSON README section requires JSON artifact file" begin
+@testitem "Build dataset CSV table validates residue label values" begin
     using Test
-    using IDRBindingDataset: write_dataset_json_readme_section
+    using IDRBindingDataset: build_dataset_csv_table
 
-    tmp_dir = mktempdir()
-    readme_path = joinpath(tmp_dir, "README.md")
-    missing_json_path = joinpath(tmp_dir, "missing.json.gz")
-
-    @test_throws ArgumentError write_dataset_json_readme_section(
-        readme_path;
-        output_json_path = "data/dataset/cluster_dataset_labels.json.gz",
-        output_json_filesystem_path = missing_json_path,
-        source_dataset_csv_path = "data/dataset/cluster_dataset_labels.csv.gz",
-        source_disprot_regions_path = "data/raw/disprot/disprot_regions.json.gz",
-        n_proteins = 1
+    invalid_records = [
+        (
+        protein_id = "P00008",
+        sequence = "AB",
+        residue_labels = [0, 3]
     )
+    ]
+
+    @test_throws ArgumentError build_dataset_csv_table(invalid_records)
 end
