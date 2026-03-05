@@ -10,3 +10,6 @@
 
 # VS Code
 .vscode/
+
+# Backups
+backups/*
