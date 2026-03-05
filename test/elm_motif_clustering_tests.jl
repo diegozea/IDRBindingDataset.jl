@@ -1,5 +1,16 @@
 using TestItems
 
+@testitem "Parse optional score threshold CLI option" begin
+    using Test
+    using IDRBindingDataset: _parse_optional_score_threshold
+
+    @test _parse_optional_score_threshold("") === nothing
+    @test _parse_optional_score_threshold("nothing") === nothing
+    @test _parse_optional_score_threshold("  Nothing  ") === nothing
+    @test _parse_optional_score_threshold("0.75") ≈ 0.75
+    @test_throws ArgumentError _parse_optional_score_threshold("invalid")
+end
+
 @testitem "Regex motif clustering builds thresholded connected components" begin
     using Test
     using IDRBindingDataset

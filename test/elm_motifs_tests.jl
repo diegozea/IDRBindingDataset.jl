@@ -1,5 +1,15 @@
 using TestItems
 
+@testitem "Parse excluded InstanceLogic CLI option" begin
+    using Test
+    using IDRBindingDataset: _parse_excluded_instance_logic
+
+    parsed = _parse_excluded_instance_logic(
+        "false positive, \"true negative\", , false positive"
+    )
+    @test parsed == ["false positive", "true negative"]
+end
+
 @testitem "ELM InstanceLogic filtering normalizes quoted values" begin
     using Test
     using IDRBindingDataset

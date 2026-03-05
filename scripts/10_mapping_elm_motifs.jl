@@ -10,7 +10,8 @@ using DataFrames
 using IDRBindingDataset:
                          DEFAULT_ELM_EXCLUDED_INSTANCE_LOGIC,
                          _filter_elm_instances_by_logic,
-                         _normalize_logic_values,
+                         _parse_excluded_instance_logic,
+                         _relpath_from_repo,
                          build_cluster_elm_motifs_table,
                          clean_directory,
                          write_elm_motifs_csv_gz,
@@ -38,25 +39,6 @@ const DEFAULT_OUTPUT_DIR = normpath(joinpath(
 const DEFAULT_OUTPUT_FILENAME = "motifs.csv.gz"
 const ELM_MOTIFS_README_FILENAME = "README.md"
 const DEFAULT_EXCLUDE_INSTANCE_LOGIC_TEXT = join(DEFAULT_ELM_EXCLUDED_INSTANCE_LOGIC, ",")
-
-"""
-    _relpath_from_repo(path)
-
-Return one normalized path relative to repository root.
-"""
-function _relpath_from_repo(path::AbstractString)::String
-    relpath(normpath(path), REPO_ROOT)
-end
-
-"""
-    _parse_excluded_instance_logic(option_value)
-
-Parse one comma-separated command-line value for `InstanceLogic` exclusions.
-Wrapping quote characters are ignored.
-"""
-function _parse_excluded_instance_logic(option_value::AbstractString)::Vector{String}
-    _normalize_logic_values(split(String(option_value), ","))
-end
 
 """
     parse_command_line(args)

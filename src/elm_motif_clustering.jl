@@ -22,6 +22,29 @@ const _REQUIRED_MOTIF_TABLE_COLUMNS_FOR_CLUSTERING = [:protein_id, :regex]
 const _REQUIRED_PROTEIN_CLUSTER_COLUMNS = [:protein_id, :elm_motif_cluster]
 
 """
+    _parse_optional_score_threshold(raw_value)
+
+Parse one optional score-threshold CLI value.
+Returns `nothing` when the value is empty or `"nothing"` (case-insensitive).
+"""
+function _parse_optional_score_threshold(
+        raw_value::AbstractString
+)::Union{Nothing, Float64}
+    cleaned_value = strip(String(raw_value))
+    isempty(cleaned_value) && return DEFAULT_ELM_MOTIF_CLUSTER_SCORE_THRESHOLD
+    lowercase(cleaned_value) == "nothing" &&
+        return DEFAULT_ELM_MOTIF_CLUSTER_SCORE_THRESHOLD
+
+    parsed_value = tryparse(Float64, cleaned_value)
+    parsed_value === nothing && throw(
+        ArgumentError(
+        "Invalid --score_threshold value: $(repr(raw_value)). Expected a floating-point number, empty string, or 'nothing'."
+    ),
+    )
+    parsed_value
+end
+
+"""
     _coerce_similarity_bool(value, column_name)
 
 Coerce one boolean-like similarity value to `Bool`.

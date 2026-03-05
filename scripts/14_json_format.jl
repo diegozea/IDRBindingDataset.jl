@@ -8,6 +8,7 @@ using ArgParse
 using CSV
 using DataFrames
 using IDRBindingDataset: DISPROT_REGIONS_RELATIVE_PATH,
+                         _relpath_from_repo,
                          build_dataset_json_records,
                          read_disprot_entries_from_raw_data,
                          write_dataset_json_gz,
@@ -24,15 +25,6 @@ const DEFAULT_RAW_DATA_DIR = normpath(joinpath(REPO_ROOT, "data", "raw"))
 const DEFAULT_OUTPUT_DIR = normpath(joinpath(REPO_ROOT, "data", "dataset"))
 const DEFAULT_OUTPUT_FILENAME = "cluster_dataset_labels.json.gz"
 const FINAL_DATASET_README_FILENAME = "README.md"
-
-"""
-    _relpath_from_repo(path)
-
-Return one normalized path relative to repository root.
-"""
-function _relpath_from_repo(path::AbstractString)::String
-    relpath(normpath(path), REPO_ROOT)
-end
 
 """
     parse_command_line(args)

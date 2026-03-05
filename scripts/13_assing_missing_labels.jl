@@ -9,6 +9,7 @@ using CSV
 using DataFrames
 using IDRBindingDataset:
                          FINAL_DATASET_LABEL_VALIDATION,
+                         _relpath_from_repo,
                          build_final_cluster_dataset_table,
                          build_protein_elm_clusters_table,
                          clean_directory,
@@ -34,15 +35,6 @@ const DEFAULT_OUTPUT_DIR = normpath(joinpath(REPO_ROOT, "data", "dataset"))
 const DEFAULT_OUTPUT_FILENAME = "cluster_dataset_labels.csv.gz"
 const DEFAULT_ELM_CLUSTER_SEPARATOR = "-"
 const FINAL_DATASET_README_FILENAME = "README.md"
-
-"""
-    _relpath_from_repo(path)
-
-Return one normalized path relative to repository root.
-"""
-function _relpath_from_repo(path::AbstractString)::String
-    relpath(normpath(path), REPO_ROOT)
-end
 
 """
     parse_command_line(args)

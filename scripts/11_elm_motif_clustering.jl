@@ -12,8 +12,9 @@ using IDRBindingDataset:
                          DEFAULT_ELM_MOTIF_CLUSTER_MATCHIC_THRESHOLD,
                          DEFAULT_ELM_MOTIF_CLUSTER_MIN_SHARED_POSITIONS,
                          DEFAULT_ELM_MOTIF_CLUSTER_NORMIC_THRESHOLD,
-                         DEFAULT_ELM_MOTIF_CLUSTER_SCORE_THRESHOLD,
                          _ensure_path_not_within_directory,
+                         _parse_optional_score_threshold,
+                         _relpath_from_repo,
                          build_protein_elm_motif_cluster_table,
                          build_regex_motif_clusters_table,
                          clean_directory,
@@ -42,38 +43,6 @@ const DEFAULT_OUTPUT_DIR = normpath(joinpath(REPO_ROOT, "data", "derived", "elm"
 const DEFAULT_OUTPUT_FILENAME = "elm_motif_clustering.csv.gz"
 const ELM_MOTIF_CLUSTERING_README_FILENAME = "README.md"
 const DEFAULT_CLUSTERING_REFERENCE_DOI = "10.1093/bioinformatics/btv155"
-
-"""
-    _relpath_from_repo(path)
-
-Return one normalized path relative to repository root.
-"""
-function _relpath_from_repo(path::AbstractString)::String
-    relpath(normpath(path), REPO_ROOT)
-end
-
-"""
-    _parse_optional_score_threshold(raw_value)
-
-Parse an optional score-threshold CLI value. Returns `nothing` when the value is
-empty or `"nothing"` (case-insensitive).
-"""
-function _parse_optional_score_threshold(
-        raw_value::AbstractString
-)::Union{Nothing, Float64}
-    cleaned_value = strip(String(raw_value))
-    isempty(cleaned_value) && return DEFAULT_ELM_MOTIF_CLUSTER_SCORE_THRESHOLD
-    lowercase(cleaned_value) == "nothing" &&
-        return DEFAULT_ELM_MOTIF_CLUSTER_SCORE_THRESHOLD
-
-    parsed_value = tryparse(Float64, cleaned_value)
-    parsed_value === nothing && throw(
-        ArgumentError(
-        "Invalid --score_threshold value: $(repr(raw_value)). Expected a floating-point number, empty string, or 'nothing'."
-    ),
-    )
-    parsed_value
-end
 
 """
     parse_command_line(args)

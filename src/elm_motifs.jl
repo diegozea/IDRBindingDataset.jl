@@ -50,6 +50,16 @@ function _normalize_logic_values(values::AbstractVector)::Vector{String}
 end
 
 """
+    _parse_excluded_instance_logic(option_value)
+
+Parse one comma-separated command-line value for `InstanceLogic` exclusions.
+Wrapping quote characters are ignored.
+"""
+function _parse_excluded_instance_logic(option_value::AbstractString)::Vector{String}
+    _normalize_logic_values(split(String(option_value), ","))
+end
+
+"""
     _coerce_position(value, column_name)
 
 Coerce one motif coordinate value to `Int`.

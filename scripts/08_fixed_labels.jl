@@ -11,6 +11,7 @@ using IDRBindingDataset:
                          AF2_TRAINING_DATA_CUTOFF_DATE,
                          DISPROT_REGIONS_RELATIVE_PATH,
                          _discover_caid_binding_datasets,
+                         _relpath_from_repo,
                          _require_caid_dataset_path,
                          build_disprot_protein_annotations,
                          build_fixed_labels_table,
@@ -87,15 +88,6 @@ The script activates and instantiates scripts/Project.toml internally.
         output_dir = normpath(parsed["output_dir"]),
         output_filename = String(parsed["output_filename"])
     )
-end
-
-"""
-    _relpath_from_repo(path)
-
-Return the path relative to repository root.
-"""
-function _relpath_from_repo(path::AbstractString)::String
-    return relpath(normpath(path), REPO_ROOT)
 end
 
 function main()

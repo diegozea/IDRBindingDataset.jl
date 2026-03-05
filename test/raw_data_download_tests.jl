@@ -8,6 +8,18 @@ using TestItems
     @test build_disprot_regions_url("2025_12") == expected
 end
 
+@testitem "Repository relative path helper normalizes paths" begin
+    using Test
+    using IDRBindingDataset: _relpath_from_repo
+
+    repo_root = normpath(joinpath(dirname(pathof(IDRBindingDataset)), ".."))
+    nested_path = normpath(joinpath(repo_root, "data", "dataset", "README.md"))
+    root_path = repo_root
+
+    @test _relpath_from_repo(nested_path) == joinpath("data", "dataset", "README.md")
+    @test _relpath_from_repo(root_path) == "."
+end
+
 @testitem "DisProt release parser accepts YYYY_MM tags" begin
     using Dates
     using Test

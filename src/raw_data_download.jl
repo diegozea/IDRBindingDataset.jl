@@ -2,6 +2,17 @@ using CodecZlib
 using Dates
 using Downloads
 
+const _REPO_ROOT_PATH = normpath(joinpath(@__DIR__, ".."))
+
+"""
+    _relpath_from_repo(path)
+
+Return one normalized path relative to this repository root.
+"""
+function _relpath_from_repo(path::AbstractString)::String
+    relpath(normpath(path), _REPO_ROOT_PATH)
+end
+
 """
     build_disprot_regions_url(release)
 
