@@ -28,7 +28,7 @@ function parse_command_line(args)
 Build a derived UniProt-PDB-release-date map from raw DisProt+SIFTS inputs.
 
 Run from the repository root:
-  julia scripts/05_pdb_release_dates.jl --raw_data_dir data/raw --output_path data/derived/pdb/uniprot_pdb_release_date_map.csv.gz --batch_size 300
+  julia scripts/08_pdb_release_dates.jl --raw_data_dir data/raw --output_path data/derived/pdb/uniprot_pdb_release_date_map.csv.gz --batch_size 300
 
 The script activates and instantiates scripts/Project.toml internally.
 """,

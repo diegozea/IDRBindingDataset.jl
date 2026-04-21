@@ -3,9 +3,9 @@
 This workflow builds a protein-level ELM motif clustering artifact in two
 steps:
 
-1. `scripts/10_mapping_elm_motifs.jl`: map ELM instances to protein regex hits
+1. `scripts/13_mapping_elm_motifs.jl`: map ELM instances to protein regex hits
    (scratch, non-redistributable intermediate).
-2. `scripts/11_elm_motif_clustering.jl`: cluster regexes with
+2. `scripts/14_elm_motif_clustering.jl`: cluster regexes with
    `CompariMotif.jl` and map resulting motif clusters to proteins
    (derived artifact).
 
@@ -15,8 +15,8 @@ Run commands from repository root.
 
 Inputs:
 
-- `data/scratch/elm/instances.tsv` (from `scripts/09_download_elm.jl`)
-- `data/scratch/elm/elms_index.tsv` (from `scripts/09_download_elm.jl`)
+- `data/scratch/elm/instances.tsv` (from `scripts/11_download_elm.jl`)
+- `data/scratch/elm/elms_index.tsv` (from `scripts/11_download_elm.jl`)
 - `data/derived/clustering/cluster_representatives.csv.gz`
 
 Outputs (fixed by script design):
@@ -27,13 +27,13 @@ Outputs (fixed by script design):
 Command:
 
 ```bash
-julia scripts/10_mapping_elm_motifs.jl
+julia scripts/13_mapping_elm_motifs.jl
 ```
 
 Complete example:
 
 ```bash
-julia scripts/10_mapping_elm_motifs.jl --instances_path data/scratch/elm/instances.tsv --elms_index_path data/scratch/elm/elms_index.tsv --cluster_representatives_path data/derived/clustering/cluster_representatives.csv.gz --exclude_instance_logic "false positive,true negative"
+julia scripts/13_mapping_elm_motifs.jl --instances_path data/scratch/elm/instances.tsv --elms_index_path data/scratch/elm/elms_index.tsv --cluster_representatives_path data/derived/clustering/cluster_representatives.csv.gz --exclude_instance_logic "false positive,true negative"
 ```
 
 ## Step 2: Cluster Regexes And Map Proteins
@@ -53,13 +53,13 @@ Outputs:
 Command:
 
 ```bash
-julia scripts/11_elm_motif_clustering.jl
+julia scripts/14_elm_motif_clustering.jl
 ```
 
 Complete example:
 
 ```bash
-julia scripts/11_elm_motif_clustering.jl --motifs_path data/scratch/elm/mapping/motifs.csv.gz --regex_cluster_output_dir data/scratch/elm/clustering --regex_cluster_output_filename regex.csv.gz --output_dir data/derived/elm --output_filename elm_motif_clustering.csv.gz --normic_threshold 0.5 --matchic_threshold 1.5
+julia scripts/14_elm_motif_clustering.jl --motifs_path data/scratch/elm/mapping/motifs.csv.gz --regex_cluster_output_dir data/scratch/elm/clustering --regex_cluster_output_filename regex.csv.gz --output_dir data/derived/elm --output_filename elm_motif_clustering.csv.gz --normic_threshold 0.5 --matchic_threshold 1.5
 ```
 
 ## Clustering Protocol

@@ -1,6 +1,6 @@
 # Derived UniProt-PDB Release-Date Map
 
-- Generated at (UTC): `2026-04-21T15:02:29Z`
+- Generated at (UTC): `2026-04-21T16:39:55Z`
 - GraphQL batch size: `300`
 - Output file: `/home/diego.zea/.julia/dev/IDRBindingDataset.jl/data/derived/pdb/uniprot_pdb_release_date_map.csv.gz`
 - Output exists: `true`

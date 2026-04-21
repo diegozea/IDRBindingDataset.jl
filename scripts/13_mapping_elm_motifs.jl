@@ -63,7 +63,7 @@ To avoid accidental redistribution of ELM-derived data, output is fixed to:
 - `data/scratch/elm/mapping/README.md`
 
 Run from repository root:
-  julia scripts/10_mapping_elm_motifs.jl --instances_path data/scratch/elm/instances.tsv --elms_index_path data/scratch/elm/elms_index.tsv --cluster_representatives_path data/derived/clustering/cluster_representatives.csv.gz --exclude_instance_logic "false positive,true negative"
+  julia scripts/13_mapping_elm_motifs.jl --instances_path data/scratch/elm/instances.tsv --elms_index_path data/scratch/elm/elms_index.tsv --cluster_representatives_path data/derived/clustering/cluster_representatives.csv.gz --exclude_instance_logic "false positive,true negative"
 
 The script activates and instantiates `scripts/Project.toml` internally.
 """,
@@ -71,7 +71,7 @@ The script activates and instantiates `scripts/Project.toml` internally.
 
     @add_arg_table! settings begin
         "--instances_path"
-        help = "ELM instances TSV path (downloaded with scripts/09_download_elm.jl)."
+        help = "ELM instances TSV path (downloaded with scripts/11_download_elm.jl)."
         arg_type = String
         default = DEFAULT_INSTANCES_PATH
         "--elms_index_path"

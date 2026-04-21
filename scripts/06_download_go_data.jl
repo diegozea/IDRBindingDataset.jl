@@ -21,7 +21,7 @@ Download Gene Ontology `go-basic.obo` into data/raw/go and validate it using OBO
 The stored artifact is gzip-compressed as `go-basic.obo.gz`.
 
 Run from the repository root:
-  julia scripts/15_download_go_data.jl --raw_data_dir data/raw
+  julia scripts/06_download_go_data.jl --raw_data_dir data/raw
 
 The script activates and instantiates scripts/Project.toml internally.
 """,

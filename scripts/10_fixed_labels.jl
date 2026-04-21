@@ -53,7 +53,7 @@ Outputs are written to `data/derived/fixed/`:
 - README.md with source provenance and label-count summary.
 
 Run from the repository root:
-  julia scripts/08_fixed_labels.jl --raw_data_dir data/raw --cluster_representatives_path data/derived/clustering/cluster_representatives.csv.gz --pdb_release_map_path data/derived/pdb/uniprot_pdb_release_date_map.csv.gz --output_dir data/derived/fixed --output_filename cluster_fixed_labels.csv.gz
+  julia scripts/10_fixed_labels.jl --raw_data_dir data/raw --cluster_representatives_path data/derived/clustering/cluster_representatives.csv.gz --pdb_release_map_path data/derived/pdb/uniprot_pdb_release_date_map.csv.gz --output_dir data/derived/fixed --output_filename cluster_fixed_labels.csv.gz
 
 The script activates and instantiates scripts/Project.toml internally.
 """,

@@ -50,11 +50,11 @@ regex similarity graph connected components.
 Run from repository root:
 
 ```bash
-julia scripts/11_elm_motif_clustering.jl
+julia scripts/14_elm_motif_clustering.jl
 ```
 
 Complete example:
 
 ```bash
-julia scripts/11_elm_motif_clustering.jl --motifs_path data/scratch/elm/mapping/motifs.csv.gz --regex_cluster_output_dir data/scratch/elm/clustering --regex_cluster_output_filename regex.csv.gz --output_dir data/derived/elm --output_filename elm_motif_clustering.csv.gz --normic_threshold 0.5 --matchic_threshold 1.5
+julia scripts/14_elm_motif_clustering.jl --motifs_path data/scratch/elm/mapping/motifs.csv.gz --regex_cluster_output_dir data/scratch/elm/clustering --regex_cluster_output_filename regex.csv.gz --output_dir data/derived/elm --output_filename elm_motif_clustering.csv.gz --normic_threshold 0.5 --matchic_threshold 1.5
 ```

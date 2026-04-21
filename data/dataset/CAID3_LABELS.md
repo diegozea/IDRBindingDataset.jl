@@ -1,6 +1,6 @@
 # CAID-3 Binding IDR Label Check
 
-- Generated (UTC): `2026-04-21T15:10:01Z`
+- Generated (UTC): `2026-04-21T16:47:44Z`
 - Script: `scripts/16_check_idr_binding.jl`
 - CAID-3 `binding_idr` FASTA: `data/raw/caid_3/binding_idr.fasta.gz`
 - Final dataset JSON: `data/dataset/cluster_dataset_labels.json.gz`

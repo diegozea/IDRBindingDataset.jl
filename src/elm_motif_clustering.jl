@@ -398,7 +398,7 @@ end
         score_threshold = DEFAULT_ELM_MOTIF_CLUSTER_SCORE_THRESHOLD,
         regex_cluster_table,
         protein_cluster_table,
-        script_relpath = "scripts/11_elm_motif_clustering.jl"
+        script_relpath = "scripts/14_elm_motif_clustering.jl"
     )
 
 Write a README for the derived protein motif-cluster mapping artifact.
@@ -415,7 +415,7 @@ function write_elm_motif_clustering_readme(
         score_threshold::Union{Nothing, Float64} = DEFAULT_ELM_MOTIF_CLUSTER_SCORE_THRESHOLD,
         regex_cluster_table::AbstractDataFrame,
         protein_cluster_table::AbstractDataFrame,
-        script_relpath::AbstractString = "scripts/11_elm_motif_clustering.jl"
+        script_relpath::AbstractString = "scripts/14_elm_motif_clustering.jl"
 )::Nothing
     _require_columns(regex_cluster_table, _REQUIRED_REGEX_CLUSTER_COLUMNS, "regex_cluster_table")
     _require_columns(

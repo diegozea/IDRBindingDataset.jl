@@ -51,7 +51,7 @@ It downloads both:
 - ELM classes index TSV with motif regexes (`elms_index.tsv`)
 
 Run from the repository root:
-  julia scripts/09_download_elm.jl --instances_url "https://elm.eu.org/instances.tsv?q=*" --elms_index_url "http://elm.eu.org/elms/elms_index.tsv" --timeout_seconds 180
+  julia scripts/11_download_elm.jl --instances_url "https://elm.eu.org/instances.tsv?q=*" --elms_index_url "http://elm.eu.org/elms/elms_index.tsv" --timeout_seconds 180
 
 Output location is fixed to:
   data/scratch/elm/instances.tsv

@@ -1,7 +1,7 @@
 # Raw Data Download
 
 - Status: `SUCCESS`
-- Download timestamp (UTC): `2026-04-21T15:00:24Z`
+- Download timestamp (UTC): `2026-04-21T16:37:38Z`
 - DisProt release: `2025_12`
 - IDPO release tag: `v2025-10-01`
 - Final size (compressed, total): `5.1806 MB`

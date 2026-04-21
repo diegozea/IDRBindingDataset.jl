@@ -23,7 +23,7 @@ function parse_command_line(args)
 Download the CAID-3 invalid-region curation TSV into data/raw/caid_3.
 
 Run from the repository root:
-  julia scripts/14_download_invalid_regions.jl --output_dir data/raw/caid_3 --filename invalid_regions_fullCAID3.tsv --source_url https://raw.githubusercontent.com/BioComputingUP/caid-reference/main/data/disprot/invalid_regions_fullCAID3.tsv
+  julia scripts/05_download_invalid_regions.jl --output_dir data/raw/caid_3 --filename invalid_regions_fullCAID3.tsv --source_url https://raw.githubusercontent.com/BioComputingUP/caid-reference/main/data/disprot/invalid_regions_fullCAID3.tsv
 
 The script activates and instantiates scripts/Project.toml internally.
 """,

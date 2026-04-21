@@ -45,7 +45,7 @@ Final artifacts are:
 - `README.md` (run summary).
 
 Run from the repository root:
-  julia scripts/06_clustering.jl --raw_data_dir data/raw --output_dir data/derived/clustering --threads 8 --global_cluster_memory_limit 16G
+  julia scripts/09_clustering.jl --raw_data_dir data/raw --output_dir data/derived/clustering --threads 8 --global_cluster_memory_limit 16G
 
 The script activates and instantiates scripts/Project.toml internally.
 """,

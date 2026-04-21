@@ -1,6 +1,6 @@
 # CAID-3 Raw Reference Data
 
-- Download timestamp (UTC): `2026-04-21T15:01:24Z`
+- Download timestamp (UTC): `2026-04-21T16:38:38Z`
 - Final size (total): `0.244 MB`
 
 ## Files

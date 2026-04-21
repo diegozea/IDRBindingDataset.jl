@@ -139,5 +139,5 @@ end
     @test occursin("# ELM Motif Mapping", readme_text)
     @test occursin("false positive", readme_text)
     @test occursin("Average motifs per motif-positive protein", readme_text)
-    @test occursin("julia scripts/10_mapping_elm_motifs.jl", readme_text)
+    @test occursin("julia scripts/13_mapping_elm_motifs.jl", readme_text)
 end

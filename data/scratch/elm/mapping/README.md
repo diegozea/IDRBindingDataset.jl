@@ -53,11 +53,11 @@ cluster-representative table.
 Run from repository root:
 
 ```bash
-julia scripts/10_mapping_elm_motifs.jl
+julia scripts/13_mapping_elm_motifs.jl
 ```
 
 Complete example:
 
 ```bash
-julia scripts/10_mapping_elm_motifs.jl --instances_path data/scratch/elm/instances.tsv --elms_index_path data/scratch/elm/elms_index.tsv --cluster_representatives_path data/derived/clustering/cluster_representatives.csv.gz --exclude_instance_logic "false positive,true negative"
+julia scripts/13_mapping_elm_motifs.jl --instances_path data/scratch/elm/instances.tsv --elms_index_path data/scratch/elm/elms_index.tsv --cluster_representatives_path data/derived/clustering/cluster_representatives.csv.gz --exclude_instance_logic "false positive,true negative"
 ```

@@ -65,10 +65,10 @@ Create both final dataset artifacts in one run:
      per-residue integer vectors.
 
 Run from repository root:
-  julia scripts/13_final_dataset.jl
+  julia scripts/15_final_dataset.jl
 
 Complete example:
-  julia scripts/13_final_dataset.jl --fixed_labels_path data/derived/fixed/cluster_fixed_labels.csv.gz --elm_motif_clustering_path data/derived/elm/elm_motif_clustering.csv.gz --raw_data_dir data/raw --output_dir data/dataset --output_csv_filename cluster_dataset_labels.csv.gz --output_json_filename cluster_dataset_labels.json.gz --missing_label validation
+  julia scripts/15_final_dataset.jl --fixed_labels_path data/derived/fixed/cluster_fixed_labels.csv.gz --elm_motif_clustering_path data/derived/elm/elm_motif_clustering.csv.gz --raw_data_dir data/raw --output_dir data/dataset --output_csv_filename cluster_dataset_labels.csv.gz --output_json_filename cluster_dataset_labels.json.gz --missing_label validation
 
 The script activates and instantiates `scripts/Project.toml` internally.
 """,

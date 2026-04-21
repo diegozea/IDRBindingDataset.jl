@@ -56,7 +56,7 @@ Cluster ELM motif regexes using `CompariMotif.jl` and map resulting regex
 clusters to proteins.
 
 Inputs:
-- `data/scratch/elm/mapping/motifs.csv.gz` (from `scripts/10_mapping_elm_motifs.jl`)
+- `data/scratch/elm/mapping/motifs.csv.gz` (from `scripts/13_mapping_elm_motifs.jl`)
 
 Outputs:
 - scratch regex clusters: `data/scratch/elm/clustering/regex.csv.gz`
@@ -68,7 +68,7 @@ Palopoli NT, Lythgow KT, Edwards RJ (2015). Bioinformatics 31(14):2284-2293.
 DOI: `$(DEFAULT_CLUSTERING_REFERENCE_DOI)`.
 
 Run from repository root:
-  julia scripts/11_elm_motif_clustering.jl --motifs_path data/scratch/elm/mapping/motifs.csv.gz --regex_cluster_output_dir data/scratch/elm/clustering --regex_cluster_output_filename regex.csv.gz --output_dir data/derived/elm --output_filename elm_motif_clustering.csv.gz
+  julia scripts/14_elm_motif_clustering.jl --motifs_path data/scratch/elm/mapping/motifs.csv.gz --regex_cluster_output_dir data/scratch/elm/clustering --regex_cluster_output_filename regex.csv.gz --output_dir data/derived/elm --output_filename elm_motif_clustering.csv.gz
 
 The script activates and instantiates `scripts/Project.toml` internally.
 """,
@@ -76,7 +76,7 @@ The script activates and instantiates `scripts/Project.toml` internally.
 
     @add_arg_table! settings begin
         "--motifs_path"
-        help = "Input motifs compressed CSV path from scripts/10_mapping_elm_motifs.jl."
+        help = "Input motifs compressed CSV path from scripts/13_mapping_elm_motifs.jl."
         arg_type = String
         default = DEFAULT_MOTIFS_PATH
         "--regex_cluster_output_dir"

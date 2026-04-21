@@ -5,17 +5,17 @@ This page describes how to generate and update files under `data/raw/` using:
 - `scripts/01_download_disprot_data.jl`
 - `scripts/02_download_caid_data.jl`
 - `scripts/03_download_sifts.jl`
-- `scripts/14_download_invalid_regions.jl`
-- `scripts/15_download_go_data.jl`
+- `scripts/05_download_invalid_regions.jl`
+- `scripts/06_download_go_data.jl`
 
 It also documents the optional ELM scratch download script for non-redistributable data:
 
-- `scripts/09_download_elm.jl`
+- `scripts/11_download_elm.jl`
 
 Downstream motif mapping from ELM scratch files to cluster proteins is documented in:
 
-- `scripts/10_mapping_elm_motifs.jl`
-- `scripts/11_elm_motif_clustering.jl`
+- `scripts/13_mapping_elm_motifs.jl`
+- `scripts/14_elm_motif_clustering.jl`
 - [ELM Motif Workflow](elm_motifs.md)
 
 Run commands from the repository root.
@@ -41,8 +41,8 @@ Run the scripts in this order:
 julia scripts/01_download_disprot_data.jl
 julia scripts/02_download_caid_data.jl
 julia scripts/03_download_sifts.jl
-julia scripts/14_download_invalid_regions.jl
-julia scripts/15_download_go_data.jl
+julia scripts/05_download_invalid_regions.jl
+julia scripts/06_download_go_data.jl
 ```
 
 ## Full Pipeline Run
@@ -61,14 +61,14 @@ Use `--allow_mismatch` only for report-only diagnostic runs.
 Optional scratch download (ELM instances + motif regex index):
 
 ```bash
-julia scripts/09_download_elm.jl
+julia scripts/11_download_elm.jl
 ```
 
 Optional derived mapping (requires `09` outputs and clustering output):
 
 ```bash
-julia scripts/10_mapping_elm_motifs.jl
-julia scripts/11_elm_motif_clustering.jl
+julia scripts/13_mapping_elm_motifs.jl
+julia scripts/14_elm_motif_clustering.jl
 ```
 
 ## Optional CLI Arguments
@@ -101,7 +101,7 @@ julia scripts/03_download_sifts.jl --raw_data_dir data/raw
 CAID-3 invalid-region download script (`14`):
 
 ```bash
-julia scripts/14_download_invalid_regions.jl --output_dir data/raw/caid_3 --filename invalid_regions_fullCAID3.tsv --source_url https://raw.githubusercontent.com/BioComputingUP/caid-reference/main/data/disprot/invalid_regions_fullCAID3.tsv
+julia scripts/05_download_invalid_regions.jl --output_dir data/raw/caid_3 --filename invalid_regions_fullCAID3.tsv --source_url https://raw.githubusercontent.com/BioComputingUP/caid-reference/main/data/disprot/invalid_regions_fullCAID3.tsv
 ```
 
 - `--output_dir`: target directory for the invalid-region TSV and CAID-3 README updates.
@@ -111,7 +111,7 @@ julia scripts/14_download_invalid_regions.jl --output_dir data/raw/caid_3 --file
 GO download script (`15`):
 
 ```bash
-julia scripts/15_download_go_data.jl --raw_data_dir data/raw
+julia scripts/06_download_go_data.jl --raw_data_dir data/raw
 ```
 
 - `--raw_data_dir`: target root for `data/raw/go/`.
@@ -119,7 +119,7 @@ julia scripts/15_download_go_data.jl --raw_data_dir data/raw
 ELM scratch download script (`09`):
 
 ```bash
-julia scripts/09_download_elm.jl --instances_url "https://elm.eu.org/instances.tsv?q=*" --elms_index_url "http://elm.eu.org/elms/elms_index.tsv" --timeout_seconds 180
+julia scripts/11_download_elm.jl --instances_url "https://elm.eu.org/instances.tsv?q=*" --elms_index_url "http://elm.eu.org/elms/elms_index.tsv" --timeout_seconds 180
 ```
 
 - `--instances_url`: ELM instances endpoint.
@@ -171,9 +171,9 @@ data/scratch/
 - `01_download_disprot_data.jl` rewrites DisProt files inside `data/raw/disprot/`.
 - `02_download_caid_data.jl` rewrites CAID files inside `data/raw/caid_2/` and `data/raw/caid_3/`.
 - `03_download_sifts.jl` rewrites SIFTS files inside `data/raw/sifts/`.
-- `14_download_invalid_regions.jl` refreshes `data/raw/caid_3/invalid_regions_fullCAID3.tsv`.
-- `15_download_go_data.jl` rewrites GO files inside `data/raw/go/`.
-- `09_download_elm.jl` writes ELM scratch files into `data/scratch/elm/` (intended for local, non-redistributable data).
-- `10_mapping_elm_motifs.jl` writes scratch mapping files into `data/scratch/elm/mapping/`.
-- `11_elm_motif_clustering.jl` writes `data/derived/elm/elm_motif_clustering.csv.gz` and `data/derived/elm/README.md`, plus scratch regex clusters in `data/scratch/elm/clustering/`.
+- `05_download_invalid_regions.jl` refreshes `data/raw/caid_3/invalid_regions_fullCAID3.tsv`.
+- `06_download_go_data.jl` rewrites GO files inside `data/raw/go/`.
+- `11_download_elm.jl` writes ELM scratch files into `data/scratch/elm/` (intended for local, non-redistributable data).
+- `13_mapping_elm_motifs.jl` writes scratch mapping files into `data/scratch/elm/mapping/`.
+- `14_elm_motif_clustering.jl` writes `data/derived/elm/elm_motif_clustering.csv.gz` and `data/derived/elm/README.md`, plus scratch regex clusters in `data/scratch/elm/clustering/`.
 - If a transient network error occurs, rerun the affected script.
