@@ -11,6 +11,7 @@ using IDRBindingDataset:
                          _parse_elm_header_metadata,
                          _parse_required_header_int,
                          _write_elm_download_readme,
+                         remove_files,
                          utc_now_iso8601
 
 const REPO_ROOT = normpath(joinpath(@__DIR__, ".."))
@@ -90,8 +91,10 @@ function main()
     elm_dir = normpath(joinpath(DEFAULT_SCRATCH_DIR, DEFAULT_ELM_SUBDIR))
     instances_path = normpath(joinpath(elm_dir, DEFAULT_INSTANCES_FILENAME))
     classes_index_path = normpath(joinpath(elm_dir, DEFAULT_ELMS_INDEX_FILENAME))
+    readme_path = normpath(joinpath(elm_dir, ELM_README_FILENAME))
 
     mkpath(elm_dir)
+    remove_files([instances_path, classes_index_path, readme_path])
     resolved_instances_url = _download_elm_tsv(
         options.instances_url,
         instances_path;
@@ -125,7 +128,7 @@ function main()
     )
 
     _write_elm_download_readme(
-        joinpath(elm_dir, ELM_README_FILENAME);
+        readme_path;
         instances_file_report = (
             requested_url = options.instances_url,
             resolved_url = resolved_instances_url

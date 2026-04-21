@@ -2,17 +2,6 @@ using CodecZlib
 using DataFrames
 using JSON
 
-const _DISPROT_DISORDER_TERM_ID = "IDPO:0000002"
-const _DISPROT_DISORDER_TRANSITION_TERM_ID_DISORDER_TO_ORDER = "IDPO:0000011"
-const _DISPROT_DISORDER_TRANSITION_TERM_ID_DISORDER_TO_DISORDER = "IDPO:0000017"
-const _DISPROT_DISORDER_TRANSITION_TERM_ID_ORDER_TO_DISORDER = "IDPO:0000014"
-const _DISPROT_DISORDER_TERM_IDS = Set([
-    _DISPROT_DISORDER_TERM_ID,
-    _DISPROT_DISORDER_TRANSITION_TERM_ID_DISORDER_TO_ORDER,
-    _DISPROT_DISORDER_TRANSITION_TERM_ID_DISORDER_TO_DISORDER,
-    _DISPROT_DISORDER_TRANSITION_TERM_ID_ORDER_TO_DISORDER
-])
-const _DISPROT_DISORDER_LABEL_PATTERN = r"\bdisorder\b"i
 const _RESIDUE_LABEL_ORDERED = 0
 const _RESIDUE_LABEL_DISORDERED = 1
 const _RESIDUE_LABEL_BINDING = 2
@@ -64,34 +53,32 @@ function _build_disprot_entry_index(disprot_entries)::Dict{
 end
 
 """
-    _region_has_disorder_annotation(region)
+    _region_has_disorder_annotation(region, term_rules)
 
-Return `true` when one region is annotated as disorder (`IDPO:0000002`),
-one disorder-transition term (`IDPO:0000011`, `IDPO:0000017`,
-`IDPO:0000014`), or, for compatibility, when `term_name` includes the token
-`disorder` (case-insensitive).
+Return `true` when one region term ID belongs to the ontology-derived IDPO
+disorder challenge set.
 """
-function _region_has_disorder_annotation(region)::Bool
-    region isa AbstractDict || return false
-
-    term_id = get(region, "term_id", missing)
-    if term_id isa AbstractString && strip(String(term_id)) in _DISPROT_DISORDER_TERM_IDS
-        return true
-    end
-
-    term_name = get(region, "term_name", missing)
-    term_name isa AbstractString || return false
-    occursin(_DISPROT_DISORDER_LABEL_PATTERN, String(term_name))
+function _region_has_disorder_annotation(
+        region,
+        term_rules::_DisProtChallengeTermRules
+)::Bool
+    term_id = _region_term_id(region)
+    term_id === nothing && return false
+    startswith(term_id, "IDPO:") || return false
+    term_id in term_rules.idpo_disorder_terms
 end
 
 """
-    _region_has_binding_annotation(region)
+    _region_has_binding_annotation(region, term_rules)
 
-Return `true` when one region is annotated as binding using the same logic as
-`build_disprot_protein_annotations`.
+Return `true` when one region term ID belongs to the ontology-derived GO
+binding challenge set.
 """
-function _region_has_binding_annotation(region)::Bool
-    _region_has_idr_binding_annotation(region)
+function _region_has_binding_annotation(
+        region,
+        term_rules::_DisProtChallengeTermRules
+)::Bool
+    _region_has_idr_binding_annotation(region, term_rules)
 end
 
 """
@@ -178,14 +165,19 @@ Build one residue-label vector:
 function _build_residue_labels(
         sequence::AbstractString,
         regions;
-        protein_id::AbstractString
+        protein_id::AbstractString,
+        term_rules::_DisProtChallengeTermRules,
+        invalid_region_ids::Union{Nothing, Set{String}} = nothing
 )::Vector{Int}
     residue_labels = fill(_RESIDUE_LABEL_ORDERED, length(sequence))
 
     for region in regions
         region isa AbstractDict || continue
+        invalid_region_ids !== nothing &&
+            _region_is_marked_invalid(region, invalid_region_ids) && continue
 
-        if _region_has_disorder_annotation(region)
+        has_disorder_annotation = _region_has_disorder_annotation(region, term_rules)
+        if has_disorder_annotation
             _paint_region_labels!(
                 residue_labels,
                 region;
@@ -195,7 +187,8 @@ function _build_residue_labels(
             )
         end
 
-        if _region_has_binding_annotation(region)
+        has_binding_annotation = _region_has_binding_annotation(region, term_rules)
+        if has_binding_annotation
             _paint_region_labels!(
                 residue_labels,
                 region;
@@ -210,16 +203,29 @@ function _build_residue_labels(
 end
 
 """
-    build_dataset_json_records(final_dataset_table, disprot_entries)
+    build_dataset_json_records(
+        final_dataset_table,
+        disprot_entries;
+        term_rules,
+        invalid_region_ids = nothing
+    )
 
 Build JSON-ready records from one final dataset table by preserving all original
 columns and adding:
 - `sequence`
 - `residue_labels`
+
+Region classification uses ontology-derived GO and IDPO term sets from
+`term_rules`.
+
+When `invalid_region_ids` is provided, regions whose `region_id` is present in
+that set are skipped.
 """
 function build_dataset_json_records(
         final_dataset_table::AbstractDataFrame,
-        disprot_entries
+        disprot_entries;
+        term_rules::_DisProtChallengeTermRules,
+        invalid_region_ids::Union{Nothing, Set{String}} = nothing
 )::Vector{NamedTuple}
     _require_columns(final_dataset_table, [:protein_id], "final_dataset_table")
 
@@ -244,7 +250,9 @@ function build_dataset_json_records(
         residue_labels = _build_residue_labels(
             sequence,
             disprot_entry.regions;
-            protein_id = protein_id
+            protein_id = protein_id,
+            term_rules = term_rules,
+            invalid_region_ids = invalid_region_ids
         )
         record_values = tuple(
             (row[column_name] for column_name in dataset_columns)...,

@@ -76,12 +76,12 @@ end
         "regions" => Any[
             Dict(
                 "released" => "2021_01",
-                "term_name" => "disorder",
+                "term_id" => "IDPO:0000002",
                 "term_is_binding" => false
             ),
             Dict(
                 "released" => "2020_09",
-                "term_name" => "protein binding",
+                "term_id" => "GO:0005515",
                 "term_is_binding" => true
             )
         ]
@@ -93,7 +93,7 @@ end
         "regions" => Any[
             Dict(
             "released" => "2021_07",
-            "term_name" => "RNA binding"
+            "term_id" => "GO:0003676"
         )
         ]
     ),
@@ -102,12 +102,27 @@ end
         "disprot_id" => "DP00003",
         "released" => "2022_02",
         "regions" => Any[
-            Dict("released" => "2022_08", "term_name" => "disorder")
+            Dict("released" => "2022_08", "term_id" => "IDPO:0000002")
         ]
     )
 ]
 
-    annotations = build_disprot_protein_annotations(disprot_entries)
+    annotations = build_disprot_protein_annotations(
+        disprot_entries;
+        term_rules = IDRBindingDataset._DisProtChallengeTermRules(
+            Set(["GO:0005488", "GO:0005515", "GO:0003676"]),
+            Set(["GO:0003676"]),
+            Set(["GO:0005515"]),
+            Set([
+                "IDPO:0000002",
+                "IDPO:0000003",
+                "IDPO:0000004",
+                "IDPO:0000011",
+                "IDPO:0000017",
+                "IDPO:0000014"
+            ])
+        )
+    )
     @test annotations.acc == ["P11111", "P22222", "P33333"]
 
     by_acc = Dict(row.acc => row for row in eachrow(annotations))
@@ -117,6 +132,84 @@ end
     @test by_acc["P11111"].has_idr_binding_annotation
     @test by_acc["P22222"].has_idr_binding_annotation
     @test !by_acc["P33333"].has_idr_binding_annotation
+end
+
+@testitem "Build DisProt protein annotations uses ontology rules when provided" begin
+    using Test
+    using IDRBindingDataset:
+                             _DisProtChallengeTermRules,
+                             build_disprot_protein_annotations
+
+    term_rules = _DisProtChallengeTermRules(
+        Set(["GO:0005488", "GO:0005515"]),
+        Set(["GO:0003676"]),
+        Set(["GO:0005515"]),
+        Set(["IDPO:0000002"])
+    )
+
+    disprot_entries = Any[
+    Dict(
+        "acc" => "P11111",
+        "disprot_id" => "DP00001",
+        "released" => "2020_04",
+        "regions" => Any[
+            Dict(
+            "term_id" => "GO:0060090",
+            "term_name" => "molecular adaptor activity",
+            "term_is_binding" => true
+        )
+        ]
+    ),
+    Dict(
+        "acc" => "P22222",
+        "disprot_id" => "DP00002",
+        "released" => "2020_07",
+        "regions" => Any[
+            Dict("term_id" => "GO:0005515", "term_name" => "protein binding")
+        ]
+    )
+]
+
+    annotations = build_disprot_protein_annotations(
+        disprot_entries;
+        term_rules = term_rules
+    )
+    by_acc = Dict(row.acc => row for row in eachrow(annotations))
+
+    @test !by_acc["P11111"].has_idr_binding_annotation
+    @test by_acc["P22222"].has_idr_binding_annotation
+end
+
+@testitem "Build DisProt protein annotations can filter invalid region IDs" begin
+    using Test
+    using IDRBindingDataset:
+                             _DisProtChallengeTermRules,
+                             build_disprot_protein_annotations
+
+    term_rules = _DisProtChallengeTermRules(
+        Set(["GO:0005488", "GO:0005515"]),
+        Set(["GO:0003676"]),
+        Set(["GO:0005515"]),
+        Set(["IDPO:0000002"])
+    )
+
+    disprot_entries = Any[
+    Dict(
+        "acc" => "P11111",
+        "disprot_id" => "DP00001",
+        "released" => "2020_04",
+        "regions" => Any[
+            Dict("region_id" => "DP00001r001", "term_id" => "GO:0005515")
+        ]
+    )
+]
+
+    annotations = build_disprot_protein_annotations(
+        disprot_entries;
+        term_rules = term_rules,
+        invalid_region_ids = Set(["DP00001r001"])
+    )
+    @test !only(annotations.has_idr_binding_annotation)
 end
 
 @testitem "Build DisProt release dates extracts unique sorted dates" begin
@@ -188,22 +281,37 @@ end
         "acc" => "P11111",
         "disprot_id" => "DP00001",
         "released" => "2020_04",
-        "regions" => Any[Dict("released" => "2020_04", "term_name" => "disorder")]
+        "regions" => Any[Dict("released" => "2020_04", "term_id" => "IDPO:0000002")]
     ),
     Dict(
         "acc" => "P22222",
         "disprot_id" => "DP00002",
         "released" => "2021_03",
-        "regions" => Any[Dict("released" => "2021_06", "term_name" => "protein binding")]
+        "regions" => Any[Dict("released" => "2021_06", "term_id" => "GO:0005515")]
     ),
     Dict(
         "acc" => "P33333",
         "disprot_id" => "DP00003",
         "released" => "2022_02",
-        "regions" => Any[Dict("released" => "2022_02", "term_name" => "disorder")]
+        "regions" => Any[Dict("released" => "2022_02", "term_id" => "IDPO:0000002")]
     )
 ]
-    disprot_annotations = build_disprot_protein_annotations(disprot_entries)
+    disprot_annotations = build_disprot_protein_annotations(
+        disprot_entries;
+        term_rules = IDRBindingDataset._DisProtChallengeTermRules(
+            Set(["GO:0005488", "GO:0005515", "GO:0003676"]),
+            Set(["GO:0003676"]),
+            Set(["GO:0005515"]),
+            Set([
+                "IDPO:0000002",
+                "IDPO:0000003",
+                "IDPO:0000004",
+                "IDPO:0000011",
+                "IDPO:0000017",
+                "IDPO:0000014"
+            ])
+        )
+    )
 
     pdb_release_map = IDRBindingDataset.DataFrames.DataFrame(
         acc = ["P11111", "P11111", "P33333"],
@@ -276,13 +384,13 @@ end
         "acc" => "P11111",
         "disprot_id" => "DP00001",
         "released" => "2020_04",
-        "regions" => Any[Dict("released" => "2020_04", "term_name" => "disorder")]
+        "regions" => Any[Dict("released" => "2020_04", "term_id" => "IDPO:0000002")]
     ),
     Dict(
         "acc" => "P22222",
         "disprot_id" => "DP00002",
         "released" => "2020_07",
-        "regions" => Any[Dict("released" => "2021_01", "term_name" => "protein binding")]
+        "regions" => Any[Dict("released" => "2021_01", "term_id" => "GO:0005515")]
     )
 ]
     pdb_release_map = IDRBindingDataset.DataFrames.DataFrame(
@@ -297,6 +405,19 @@ end
         Dict(
             "caid_2" => Set(["DP00001"]),
             "caid_3" => Set(["DP00002"])
+        );
+        term_rules = IDRBindingDataset._DisProtChallengeTermRules(
+            Set(["GO:0005488", "GO:0005515", "GO:0003676"]),
+            Set(["GO:0003676"]),
+            Set(["GO:0005515"]),
+            Set([
+                "IDPO:0000002",
+                "IDPO:0000003",
+                "IDPO:0000004",
+                "IDPO:0000011",
+                "IDPO:0000017",
+                "IDPO:0000014"
+            ])
         )
     )
 
@@ -325,13 +446,13 @@ end
         "acc" => "P11111",
         "disprot_id" => "DP00001",
         "released" => "2020_04",
-        "regions" => Any[Dict("released" => "2020_04", "term_name" => "disorder")]
+        "regions" => Any[Dict("released" => "2020_04", "term_id" => "IDPO:0000002")]
     ),
     Dict(
         "acc" => "P22222",
         "disprot_id" => "DP00002",
         "released" => "2020_07",
-        "regions" => Any[Dict("released" => "2021_01", "term_name" => "protein binding")]
+        "regions" => Any[Dict("released" => "2021_01", "term_id" => "GO:0005515")]
     )
 ]
     pdb_release_map = IDRBindingDataset.DataFrames.DataFrame(
@@ -343,7 +464,20 @@ end
         cluster_representatives,
         disprot_entries,
         pdb_release_map,
-        Dict("caid_4" => Set(["DP00002"]))
+        Dict("caid_4" => Set(["DP00002"]));
+        term_rules = IDRBindingDataset._DisProtChallengeTermRules(
+            Set(["GO:0005488", "GO:0005515", "GO:0003676"]),
+            Set(["GO:0003676"]),
+            Set(["GO:0005515"]),
+            Set([
+                "IDPO:0000002",
+                "IDPO:0000003",
+                "IDPO:0000004",
+                "IDPO:0000011",
+                "IDPO:0000017",
+                "IDPO:0000014"
+            ])
+        )
     )
 
     @test "protein_in_caid4" in names(stats)

@@ -1,7 +1,6 @@
 using DataFrames
 using Dates
 
-const _DISPROT_BINDING_LABEL_PATTERN = r"binding"i
 const _FIXED_DATASET_LABEL_TESTING = "testing"
 const _SPLIT_DATASET_LABELS = [
     FIXED_DATASET_LABEL_TRAINING, FIXED_DATASET_LABEL_CAID, _FIXED_DATASET_LABEL_TESTING]
@@ -284,37 +283,19 @@ function _normalize_disprot_release_tag(value)::Union{Missing, Date}
 end
 
 """
-    _region_has_idr_binding_annotation(region)
+    _region_has_idr_binding_annotation(region, term_rules)
 
-Return `true` when one region is annotated as binding. The function prioritizes
-the explicit `term_is_binding` flag, with a fallback to `term_name` containing
-the word `binding`.
+Return `true` when one region term ID belongs to the ontology-derived GO
+binding challenge set.
 """
-function _region_has_idr_binding_annotation(region)::Bool
-    region isa AbstractDict || return false
-
-    # Region records include ontology metadata (`term_name`, `term_namespace`).
-    # The same paper describes ontology aspects via a namespace field and reports
-    # that interaction-partner annotations are mainly binding related.
-    #
-    # In the current DisProt JSON payload used by this repository, regions also
-    # expose a `term_is_binding` helper flag. We prioritize this explicit flag
-    # and keep a `term_name`-based fallback for compatibility with payloads where
-    # `term_is_binding` is absent.
-    explicit_flag = get(region, "term_is_binding", missing)
-    if explicit_flag isa Bool
-        return explicit_flag
-    end
-
-    if explicit_flag isa AbstractString
-        normalized_flag = lowercase(strip(String(explicit_flag)))
-        normalized_flag == "true" && return true
-        normalized_flag == "false" && return false
-    end
-
-    term_name = get(region, "term_name", missing)
-    term_name isa AbstractString || return false
-    return occursin(_DISPROT_BINDING_LABEL_PATTERN, String(term_name))
+function _region_has_idr_binding_annotation(
+        region,
+        term_rules::_DisProtChallengeTermRules
+)::Bool
+    term_id = _region_term_id(region)
+    term_id === nothing && return false
+    startswith(term_id, "GO:") || return false
+    term_id in term_rules.go_binding_terms
 end
 
 """
@@ -356,15 +337,29 @@ function build_disprot_release_dates(disprot_entries)::Vector{Date}
 end
 
 """
-    build_disprot_protein_annotations(disprot_entries)
+    build_disprot_protein_annotations(
+        disprot_entries;
+        term_rules,
+        invalid_region_ids = nothing
+    )
 
 Build one row per DisProt protein with:
 - `acc`
 - `disprot_id`
 - `oldest_disprot_release_date`
 - `has_idr_binding_annotation`
+
+Binding is determined from ontology-derived GO term membership in
+`term_rules`.
+
+When `invalid_region_ids` is provided, regions with `region_id` in the set are
+ignored.
 """
-function build_disprot_protein_annotations(disprot_entries)::DataFrame
+function build_disprot_protein_annotations(
+        disprot_entries;
+        term_rules::_DisProtChallengeTermRules,
+        invalid_region_ids::Union{Nothing, Set{String}} = nothing
+)::DataFrame
     rows = DataFrame(
         acc = String[],
         disprot_id = String[],
@@ -386,10 +381,14 @@ function build_disprot_protein_annotations(disprot_entries)::DataFrame
         disprot_id = strip(String(get(entry, "disprot_id", "")))
         release_dates = _disprot_release_dates_for_entry(entry)
         oldest_disprot_release_date = _minimum_date_or_missing(release_dates)
-        has_idr_binding_annotation = any(
-            _region_has_idr_binding_annotation,
-            get(entry, "regions", Any[])
-        )
+        has_idr_binding_annotation = false
+        for region in get(entry, "regions", Any[])
+            invalid_region_ids !== nothing &&
+                _region_is_marked_invalid(region, invalid_region_ids) && continue
+
+            has_idr_binding_annotation = _region_has_idr_binding_annotation(region, term_rules)
+            has_idr_binding_annotation && break
+        end
 
         push!(seen_accessions, acc)
         push!(
@@ -717,7 +716,9 @@ end
         disprot_entries,
         pdb_release_map,
         caid_disprot_ids_by_dataset;
-        af2_training_cutoff_date = AF2_TRAINING_DATA_CUTOFF_DATE
+        af2_training_cutoff_date = AF2_TRAINING_DATA_CUTOFF_DATE,
+        term_rules,
+        invalid_region_ids = nothing
     )
 
 Convenience overload that derives the DisProt annotation and oldest-PDB tables
@@ -728,9 +729,15 @@ function build_dataset_stats_table(
         disprot_entries,
         pdb_release_map::DataFrame,
         caid_disprot_ids_by_dataset::AbstractDict;
-        af2_training_cutoff_date::Date = AF2_TRAINING_DATA_CUTOFF_DATE
+        af2_training_cutoff_date::Date = AF2_TRAINING_DATA_CUTOFF_DATE,
+        term_rules::_DisProtChallengeTermRules,
+        invalid_region_ids::Union{Nothing, Set{String}} = nothing
 )::DataFrame
-    disprot_annotations = build_disprot_protein_annotations(disprot_entries)
+    disprot_annotations = build_disprot_protein_annotations(
+        disprot_entries;
+        term_rules = term_rules,
+        invalid_region_ids = invalid_region_ids
+    )
     oldest_pdb_release_dates = build_oldest_pdb_release_dates(pdb_release_map)
 
     return build_dataset_stats_table(

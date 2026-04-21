@@ -3,6 +3,8 @@ using Dates
 using Downloads
 
 const _REPO_ROOT_PATH = normpath(joinpath(@__DIR__, ".."))
+const _IDPO_LATEST_RELEASE_API_URL = "https://api.github.com/repos/BioComputingUP/idpo/releases/latest"
+const _IDPO_RELEASE_ASSET_FILENAME = "idpo.json"
 
 """
     _relpath_from_repo(path)
@@ -38,6 +40,132 @@ function parse_disprot_release(release::AbstractString)::Date
         end
         rethrow(err)
     end
+end
+
+"""
+    _escape_regex_literal(value)
+
+Escape regular-expression metacharacters in `value`.
+"""
+function _escape_regex_literal(value::AbstractString)::String
+    replace(value, r"([\\.^$|?*+()\[\]{}])" => s"\\\1")
+end
+
+"""
+    _download_url_to_string(url; downloader = Downloads.download)
+
+Download `url` and return the payload as a UTF-8 `String`.
+"""
+function _download_url_to_string(
+        url::AbstractString;
+        downloader::Function = Downloads.download
+)::String
+    tmp_path, tmp_io = mktemp(; cleanup = false)
+    close(tmp_io)
+    try
+        downloader(url, tmp_path)
+        return read(tmp_path, String)
+    finally
+        if isfile(tmp_path)
+            rm(tmp_path; force = true)
+        end
+    end
+end
+
+"""
+    _extract_json_key_value(json_text, key)
+
+Extract a JSON string value for top-level key `key` using a strict regex match.
+Throws an `ErrorException` when the key cannot be found.
+"""
+function _extract_json_key_value(
+        json_text::AbstractString,
+        key::AbstractString
+)::String
+    escaped_key = _escape_regex_literal(key)
+    pattern = Regex("\"$(escaped_key)\"\\s*:\\s*\"([^\"]+)\"")
+    matched = match(pattern, json_text)
+    if matched === nothing
+        error("Could not find key \"$(key)\" in JSON payload.")
+    end
+    return replace(only(matched.captures), "\\/" => "/")
+end
+
+"""
+    _extract_release_asset_download_url(json_text, asset_filename)
+
+Extract the `browser_download_url` for release asset `asset_filename` from
+GitHub release API JSON payload.
+"""
+function _extract_release_asset_download_url(
+        json_text::AbstractString,
+        asset_filename::AbstractString
+)::String
+    escaped_name = _escape_regex_literal(asset_filename)
+    pattern = Regex(
+        "\"name\"\\s*:\\s*\"$(escaped_name)\"[\\s\\S]*?\"browser_download_url\"\\s*:\\s*\"([^\"]+)\"",
+        "s"
+    )
+    matched = match(pattern, json_text)
+    if matched === nothing
+        error(
+            "GitHub latest-release payload does not include asset \"$(asset_filename)\"."
+        )
+    end
+    return replace(only(matched.captures), "\\/" => "/")
+end
+
+"""
+    _resolve_latest_idpo_release(; api_url = _IDPO_LATEST_RELEASE_API_URL,
+        asset_filename = _IDPO_RELEASE_ASSET_FILENAME,
+        downloader = Downloads.download)
+
+Resolve the latest IDPO release tag and download URL for `asset_filename`
+from the GitHub Releases API.
+"""
+function _resolve_latest_idpo_release(;
+        api_url::AbstractString = _IDPO_LATEST_RELEASE_API_URL,
+        asset_filename::AbstractString = _IDPO_RELEASE_ASSET_FILENAME,
+        downloader::Function = Downloads.download
+)::NamedTuple{(:release_tag, :asset_url), Tuple{String, String}}
+    release_payload = _download_url_to_string(api_url; downloader = downloader)
+    release_tag = _extract_json_key_value(release_payload, "tag_name")
+    asset_url = _extract_release_asset_download_url(release_payload, asset_filename)
+    return (; release_tag, asset_url)
+end
+
+"""
+    _validate_idpo_obojson_payload(path)
+
+Validate that `path` contains a plausible IDPO OBO-JSON payload (not HTML
+fallback content), including the expected `graphs` section and IDPO term IDs.
+"""
+function _validate_idpo_obojson_payload(path::AbstractString)::Nothing
+    payload = read(path, String)
+    stripped_payload = strip(payload)
+    if isempty(stripped_payload)
+        error("IDPO payload is empty.")
+    end
+
+    payload_prefix_length = min(length(stripped_payload), 512)
+    payload_prefix = lowercase(first(stripped_payload, payload_prefix_length))
+    if occursin("<!doctype html", payload_prefix) || occursin("<html", payload_prefix)
+        error("IDPO payload appears to be HTML, not JSON.")
+    end
+
+    if !startswith(stripped_payload, "{")
+        error("IDPO payload does not start with a JSON object.")
+    end
+
+    if !occursin(r"\"graphs\"\s*:", payload)
+        error("IDPO payload is missing the expected \"graphs\" section.")
+    end
+
+    if !occursin(r"IDPO_[0-9]{7}", payload)
+        error("IDPO payload is missing expected IDPO term identifiers.")
+    end
+
+    return nothing
 end
 
 """
@@ -339,7 +467,7 @@ function ensure_files_within_size_limit(
 end
 
 """
-    write_download_report(report_path; status, timestamp_utc, release, idpo_version,
+    write_download_report(report_path; status, timestamp_utc, release, idpo_release_tag,
         sources, error_message = nothing)
 
 Write a Markdown report describing the last raw-data download run.
@@ -352,7 +480,7 @@ function write_download_report(
         status::AbstractString,
         timestamp_utc::AbstractString,
         release::AbstractString,
-        idpo_version::AbstractString,
+        idpo_release_tag::AbstractString,
         sources,
         error_message::Union{Nothing, AbstractString} = nothing
 )::Nothing
@@ -372,7 +500,7 @@ function write_download_report(
 - Status: `$(status)`
 - Download timestamp (UTC): `$(timestamp_utc)`
 - DisProt release: `$(release)`
-- IDPO version: `$(idpo_version)`
+- IDPO release tag: `$(idpo_release_tag)`
 """
 
     if error_message !== nothing

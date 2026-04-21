@@ -11,11 +11,12 @@ using IDRBindingDataset:
                          remove_files,
                          download_to_gzip_file_with_retries,
                          ensure_files_within_size_limit,
+                         _resolve_latest_idpo_release,
+                         _validate_idpo_obojson_payload,
                          utc_now_iso8601,
                          write_download_report
 
 const RELEASE = "2025_12"
-const IDPO_VERSION = "0.3.0"
 
 const RAW_DATA_DIR = normpath(joinpath(@__DIR__, "..", "data", "raw"))
 const DISPROT_DATA_DIR = joinpath(RAW_DATA_DIR, "disprot")
@@ -26,6 +27,7 @@ const IDPO_FILENAME = "idpo.json.gz"
 const IDPO_MAPPINGS_FILENAME = "mapping_ontology.tsv.gz"
 
 const IDPO_MAPPINGS_URL = "https://disprot.org/assets/data/mapping_ontology_Disprot-DO_GO_IDPO.tsv"
+const IDPO_LATEST_RELEASE_API_URL = "https://api.github.com/repos/BioComputingUP/idpo/releases/latest"
 # GitHub blocks files larger than 100 MiB in regular Git repositories.
 const GITHUB_SINGLE_FILE_HARD_LIMIT_BYTES = 100 * 1024 * 1024
 
@@ -40,7 +42,7 @@ function parse_command_line(args)
 Download DisProt regions, IDPO ontology, and IDPO mappings into data/raw/disprot.
 
 Run from the repository root:
-  julia scripts/01_download_disprot_data.jl --release 2025_12 --idpo_version 0.3.0
+  julia scripts/01_download_disprot_data.jl --release 2025_12
 
 The script activates and instantiates scripts/Project.toml internally.
 """,
@@ -51,47 +53,57 @@ The script activates and instantiates scripts/Project.toml internally.
         help = "DisProt release identifier (default: $(RELEASE))."
         arg_type = String
         default = RELEASE
-        "--idpo_version"
-        help = "IDPO version identifier (default: $(IDPO_VERSION))."
-        arg_type = String
-        default = IDPO_VERSION
     end
 
     parsed = parse_args(args, settings)
-    return (; release = parsed["release"], idpo_version = parsed["idpo_version"])
+    return (; release = parsed["release"])
 end
 
 function main()
     options = parse_command_line(ARGS)
     release = options.release
-    idpo_version = options.idpo_version
     download_timestamp = utc_now_iso8601()
     report_path = joinpath(DISPROT_DATA_DIR, RAW_README_FILENAME)
-    idpo_url = "https://disprot.org/assets/data/IDPO_v$(idpo_version).json"
-
-    mkpath(DISPROT_DATA_DIR)
-    println("Downloading DisProt sources to $(DISPROT_DATA_DIR)")
-    println("Using release = $(release)")
-    println("Using IDPO version = $(idpo_version)")
-    println("Removing previously downloaded raw data files before download")
-
+    idpo_release_tag = "unresolved"
+    idpo_url = IDPO_LATEST_RELEASE_API_URL
     sources = (
         (build_disprot_regions_url(release), DISPROT_REGIONS_FILENAME),
         (idpo_url, IDPO_FILENAME),
         (IDPO_MAPPINGS_URL, IDPO_MAPPINGS_FILENAME)
     )
-
     downloaded_paths = [joinpath(DISPROT_DATA_DIR, filename) for (_, filename) in sources]
-    remove_files(vcat(downloaded_paths, [report_path]))
+
+    mkpath(DISPROT_DATA_DIR)
+    println("Downloading DisProt sources to $(DISPROT_DATA_DIR)")
+    println("Using release = $(release)")
 
     try
+        idpo_release = _resolve_latest_idpo_release()
+        idpo_release_tag = idpo_release.release_tag
+        idpo_url = idpo_release.asset_url
+
+        sources = (
+            (build_disprot_regions_url(release), DISPROT_REGIONS_FILENAME),
+            (idpo_url, IDPO_FILENAME),
+            (IDPO_MAPPINGS_URL, IDPO_MAPPINGS_FILENAME)
+        )
+        downloaded_paths = [joinpath(DISPROT_DATA_DIR, filename)
+                            for (_, filename) in sources]
+
+        println("Using IDPO release tag = $(idpo_release_tag)")
+        println("Using IDPO source = $(idpo_url)")
+        println("Removing previously downloaded raw data files before download")
+        remove_files(vcat(downloaded_paths, [report_path]))
+
         for (url, filename) in sources
             destination = joinpath(DISPROT_DATA_DIR, filename)
             println("Downloading $(url)")
             download_to_gzip_file_with_retries(
                 url,
                 destination;
-                delays = ExponentialBackOff(n = 5)
+                delays = ExponentialBackOff(n = 5),
+                precompress_validator = filename == IDPO_FILENAME ?
+                                        _validate_idpo_obojson_payload : nothing
             )
         end
 
@@ -107,7 +119,7 @@ function main()
             status = "SUCCESS",
             timestamp_utc = download_timestamp,
             release = release,
-            idpo_version = idpo_version,
+            idpo_release_tag = idpo_release_tag,
             sources = sources
         )
     catch err
@@ -116,7 +128,7 @@ function main()
             status = "FAILED",
             timestamp_utc = download_timestamp,
             release = release,
-            idpo_version = idpo_version,
+            idpo_release_tag = idpo_release_tag,
             sources = sources,
             error_message = sprint(showerror, err)
         )

@@ -184,7 +184,7 @@ end
         status = "FAILED",
         timestamp_utc = "2026-02-11T15:00:00Z",
         release = "2025_12",
-        idpo_version = "0.3.0",
+        idpo_release_tag = "v2025-10-01",
         sources = sources,
         error_message = "network timeout"
     )
@@ -193,11 +193,118 @@ end
     @test occursin("Status: `FAILED`", report)
     @test occursin("Download timestamp (UTC): `2026-02-11T15:00:00Z`", report)
     @test occursin("DisProt release: `2025_12`", report)
-    @test occursin("IDPO version: `0.3.0`", report)
+    @test occursin("IDPO release tag: `v2025-10-01`", report)
     @test occursin("Final size (compressed, total):", report)
     @test occursin("`present.json`", report)
     @test occursin("`missing.tsv` (missing)", report)
     @test occursin("Error: `network timeout`", report)
+end
+
+@testitem "Latest IDPO release resolver extracts tag and idpo.json asset URL" begin
+    using Test
+    using IDRBindingDataset: _resolve_latest_idpo_release
+
+    fake_release_payload = """
+{
+  "tag_name": "v2025-10-01",
+  "assets": [
+    {
+      "name": "idpo-full.json",
+      "browser_download_url": "https://example.org/idpo-full.json"
+    },
+    {
+      "name": "idpo.json",
+      "browser_download_url": "https://example.org/idpo.json"
+    }
+  ]
+}
+"""
+
+    function fake_downloader(::AbstractString, path::AbstractString)
+        write(path, fake_release_payload)
+        return path
+    end
+
+    metadata = _resolve_latest_idpo_release(
+        api_url = "https://api.github.com/repos/BioComputingUP/idpo/releases/latest",
+        downloader = fake_downloader
+    )
+
+    @test metadata.release_tag == "v2025-10-01"
+    @test metadata.asset_url == "https://example.org/idpo.json"
+end
+
+@testitem "Latest IDPO release resolver fails when idpo.json asset is absent" begin
+    using Test
+    using IDRBindingDataset: _resolve_latest_idpo_release
+
+    fake_release_payload = """
+{
+  "tag_name": "v2025-10-01",
+  "assets": [
+    {
+      "name": "idpo-full.json",
+      "browser_download_url": "https://example.org/idpo-full.json"
+    }
+  ]
+}
+"""
+
+    function fake_downloader(::AbstractString, path::AbstractString)
+        write(path, fake_release_payload)
+        return path
+    end
+
+    err = try
+        _resolve_latest_idpo_release(
+            api_url = "https://api.github.com/repos/BioComputingUP/idpo/releases/latest",
+            downloader = fake_downloader
+        )
+        nothing
+    catch caught
+        caught
+    end
+
+    @test err isa ErrorException
+    @test occursin("does not include asset \"idpo.json\"", sprint(showerror, err))
+end
+
+@testitem "IDPO payload validator accepts plausible OBO-JSON and rejects HTML" begin
+    using Test
+    using IDRBindingDataset: _validate_idpo_obojson_payload
+
+    tmp_dir = mktempdir()
+    valid_path = joinpath(tmp_dir, "idpo.json")
+    html_path = joinpath(tmp_dir, "idpo.html")
+
+    write(
+        valid_path,
+        """
+{
+  "graphs": [
+    {
+      "id": "http://purl.obolibrary.org/obo/idpo.json",
+      "nodes": [
+        {"id": "http://purl.obolibrary.org/obo/IDPO_0000002"}
+      ]
+    }
+  ]
+}
+"""
+    )
+    write(html_path, "<!doctype html><html><body>not json</body></html>")
+
+    @test _validate_idpo_obojson_payload(valid_path) === nothing
+
+    err = try
+        _validate_idpo_obojson_payload(html_path)
+        nothing
+    catch caught
+        caught
+    end
+
+    @test err isa ErrorException
+    @test occursin("appears to be HTML", sprint(showerror, err))
 end
 
 @testitem "Download to gzip helper writes compressed output" begin

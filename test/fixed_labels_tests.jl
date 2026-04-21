@@ -25,7 +25,22 @@ using TestItems
     Dict(
         "acc" => "P_D1", "disprot_id" => "DP_D1", "released" => "2020_01", "regions" => Any[])
 ]
-    disprot_annotations = build_disprot_protein_annotations(disprot_entries)
+    disprot_annotations = build_disprot_protein_annotations(
+        disprot_entries;
+        term_rules = IDRBindingDataset._DisProtChallengeTermRules(
+            Set(["GO:0005488", "GO:0005515", "GO:0003676"]),
+            Set(["GO:0003676"]),
+            Set(["GO:0005515"]),
+            Set([
+                "IDPO:0000002",
+                "IDPO:0000003",
+                "IDPO:0000004",
+                "IDPO:0000011",
+                "IDPO:0000017",
+                "IDPO:0000014"
+            ])
+        )
+    )
 
     pdb_release_map = IDRBindingDataset.DataFrames.DataFrame(
         acc = ["P_A1", "P_B1", "P_C1"],
@@ -102,7 +117,22 @@ end
     Dict(
         "acc" => "P_B1", "disprot_id" => "DP_B1", "released" => "2020_01", "regions" => Any[])
 ]
-    disprot_annotations = build_disprot_protein_annotations(disprot_entries)
+    disprot_annotations = build_disprot_protein_annotations(
+        disprot_entries;
+        term_rules = IDRBindingDataset._DisProtChallengeTermRules(
+            Set(["GO:0005488", "GO:0005515", "GO:0003676"]),
+            Set(["GO:0003676"]),
+            Set(["GO:0005515"]),
+            Set([
+                "IDPO:0000002",
+                "IDPO:0000003",
+                "IDPO:0000004",
+                "IDPO:0000011",
+                "IDPO:0000017",
+                "IDPO:0000014"
+            ])
+        )
+    )
 
     oldest_pdb_release_dates = IDRBindingDataset.DataFrames.DataFrame(
         acc = String[],
@@ -155,7 +185,22 @@ end
     Dict(
         "acc" => "P_B1", "disprot_id" => "DP_B1", "released" => "2020_01", "regions" => Any[])
 ]
-    disprot_annotations = build_disprot_protein_annotations(disprot_entries)
+    disprot_annotations = build_disprot_protein_annotations(
+        disprot_entries;
+        term_rules = IDRBindingDataset._DisProtChallengeTermRules(
+            Set(["GO:0005488", "GO:0005515", "GO:0003676"]),
+            Set(["GO:0003676"]),
+            Set(["GO:0005515"]),
+            Set([
+                "IDPO:0000002",
+                "IDPO:0000003",
+                "IDPO:0000004",
+                "IDPO:0000011",
+                "IDPO:0000017",
+                "IDPO:0000014"
+            ])
+        )
+    )
     oldest_pdb_release_dates = IDRBindingDataset.DataFrames.DataFrame(
         acc = String[],
         oldest_pdb_release_date = Union{Missing, Date}[],
@@ -277,7 +322,22 @@ end
     Dict(
         "acc" => "P_C1", "disprot_id" => "DP_C1", "released" => "2020_01", "regions" => Any[])
 ]
-    disprot_annotations = build_disprot_protein_annotations(disprot_entries)
+    disprot_annotations = build_disprot_protein_annotations(
+        disprot_entries;
+        term_rules = IDRBindingDataset._DisProtChallengeTermRules(
+            Set(["GO:0005488", "GO:0005515", "GO:0003676"]),
+            Set(["GO:0003676"]),
+            Set(["GO:0005515"]),
+            Set([
+                "IDPO:0000002",
+                "IDPO:0000003",
+                "IDPO:0000004",
+                "IDPO:0000011",
+                "IDPO:0000017",
+                "IDPO:0000014"
+            ])
+        )
+    )
 
     # Legacy two-column format: missing explicit boolean columns.
     oldest_pdb_release_dates_legacy = IDRBindingDataset.DataFrames.DataFrame(

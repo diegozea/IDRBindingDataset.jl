@@ -1,0 +1,209 @@
+disprot_id	region_id	valid	start	end	length	Specific boundaries known	notes	notes 2	curator 	validated	ECO
+DP03758	DP03758r008	0	352	548	196	No	long protein fragment - low confidece		Victoria Nugnes		multiplex bead-based immunoassay evidence used in manual assertion
+DP03758	DP03758r009	0	352	548	196	No	long protein fragment - low confidece		Victoria Nugnes		isothermal titration calorimetry evidence used in manual assertion
+DP03758	DP03758r010	0	352	548	196	No	long protein fragment - low confidece		Victoria Nugnes		nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP03806	DP03806r003	0	293	365	72	No	protein fragment evidence	 >40 residues	Victoria Nugnes	Federica Quaglia	gel-filtration evidence used in manual assertion
+DP03806	DP03806r004	0	293	365	72	No	protein fragment evidence	 >40 residues	Victoria Nugnes	Federica Quaglia	glutathione S-transferase pull-down assay evidence used in manual assertion
+DP03818	DP03818r003	1	1	13	12	No	full protein evidence- short enough to be specific		Jaime Santos Suárez	Victoria Nugnes	far-UV circular dichroism evidence used in manual assertion
+DP03818	DP03818r004	1	1	13	12	No	full protein evidence- short enough to be specific		Jaime Santos Suárez	Victoria Nugnes	fluorescence evidence used in manual assertion
+DP03818	DP03818r013	1	1	13	12	No	full protein evidence- short enough to be specific		László Dobson	Victoria Nugnes	far-UV circular dichroism evidence used in manual assertion
+DP03914	DP03914r002	0	31	88	57	No	protein fragment evidence	 >40 residues	Victoria Nugnes	Federica Quaglia	isothermal titration calorimetry evidence used in manual assertion
+DP03914	DP03914r003	1	50	64	14	Yes			Victoria Nugnes	Federica Quaglia	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP03927	DP03927r004	1	1073	1082	9	Yes			Rita Pancsa	Federica Quaglia	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP03930	DP03930r002	1	774	829	55	Yes			Victoria Nugnes	Federica Quaglia	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP03980	DP03980r005	0	347	472	125	No	full protein evidence- low confidece		Erzsébet Fichó	Victoria Nugnes	immunoprecipitation evidence used in manual assertion
+DP03982	DP03982r003	0				No	full protein evidence- low confidece		Erzsébet Fichó	Victoria Nugnes	qualitative western immunoblotting evidence used in manual assertion
+DP03982	DP03982r004	0				No	full protein evidence- low confidece		Erzsébet Fichó	Victoria Nugnes	in vitro assay evidence used in manual assertion
+DP03984	DP03984r003	1	110	122	12	Yes			Erzsébet Fichó	Victoria Nugnes	nuclear magnetic resonance imaging evidence used in manual assertion
+DP03984	DP03984r008	1	80	90	10	Yes			Victoria Nugnes		nuclear magnetic resonance imaging evidence used in manual assertion
+DP03984	DP03984r009	1	59	72	13	Yes			Victoria Nugnes		nuclear magnetic resonance imaging evidence used in manual assertion
+DP03984	DP03984r010	1	129	141	12	Yes			Victoria Nugnes		nuclear magnetic resonance imaging evidence used in manual assertion
+DP03988	DP03988r004	1	62	71	9	Yes			Victoria Nugnes		nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP03988	DP03988r005	0				No	full protein evidence- low confidece		Victoria Nugnes		microscale thermophoresis evidence used in manual assertion
+DP03988	DP03988r006	0				No	full protein evidence- low confidece		Victoria Nugnes		cross-linking evidence used in manual assertion
+DP03990	DP03990r003	1	338	394	56	Yes			Erzsébet Fichó	Victoria Nugnes	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP03990	DP03990r004	0	312	394	82	No	protein fragment evidence	 >40 residues	Erzsébet Fichó	Victoria Nugnes	isothermal titration calorimetry evidence used in manual assertion
+DP04002	DP04002r002	1	263	291	28	Yes			Erzsébet Fichó	Victoria Nugnes	nuclear magnetic resonance imaging evidence used in manual assertion
+DP04014	DP04014r004	0				No	full protein evidence- low confidece		Erzsébet Fichó	Victoria Nugnes	matrix-assisted laser desorption/ionization time-of-flight mass spectrometry evidence used in manual assertion
+DP04014	DP04014r005	0				No	full protein evidence- low confidece		Erzsébet Fichó	Victoria Nugnes	isothermal titration calorimetry evidence used in manual assertion
+DP04014	DP04014r006	0				No	full protein evidence- low confidece		Erzsébet Fichó	Victoria Nugnes	yellow fluorescent protein fusion protein localization evidence used in manual assertion
+DP04017	DP04017r008	0				No	full protein evidence- low confidece		Victoria Nugnes		yellow fluorescent protein fusion protein localization evidence used in manual assertion
+DP04020	DP04020r003	0				No	full protein evidence- low confidece		Erzsébet Fichó	Victoria Nugnes	far-UV circular dichroism evidence used in manual assertion
+DP04020	DP04020r004	0				No	full protein evidence- low confidece		Erzsébet Fichó	Victoria Nugnes	fluorescence evidence used in manual assertion
+DP04020	DP04020r005	0				No	full protein evidence- low confidece		Victoria Nugnes		sodium dodecyl sulfate polyacrylamide gel electrophoresis evidence used in manual assertion
+DP04020	DP04020r008	0				No	full protein evidence- low confidece		Victoria Nugnes		glutathione S-transferase pull-down assay evidence used in manual assertion
+DP04020	DP04020r009	0				No	full protein evidence- low confidece		Victoria Nugnes		yeast 2-hybrid evidence used in manual assertion
+DP04020	DP04020r010	0				No	full protein evidence- low confidece		Victoria Nugnes		protein fragment functional complementation evidence used in manual assertion
+DP04020	DP04020r011	0				No	full protein evidence- low confidece		Victoria Nugnes		co-immunoprecipitation evidence used in manual assertion
+DP04024	DP04024r003	1	114	134	20	Yes			Victoria Nugnes		nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04028	DP04028r002	1	226	232	6	Yes			Zsófia Kálmán	Victoria Nugnes	X-ray crystallography-based structural model with missing residue coordinates used in manual assertion
+DP04033	DP04033r005	0	1	52	51	No	protein fragment evidence	 >40 residues	Victoria Nugnes		far-UV circular dichroism evidence used in manual assertion
+DP04092	DP04092r003	1	205	222	17	Yes			Victoria Nugnes		nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04134	DP04134r005	1	83	108	25	Yes			Victoria Nugnes		cleavage assay evidence used in manual assertion
+DP04134	DP04134r008	1	76	113	37	No	protein fragment evidence	r005 is more specific	Victoria Nugnes		cleavage assay evidence used in manual assertion
+DP04141	DP04141r002	0	30	115	85	No	protein fragment evidence	 >40 residues	Victoria Nugnes	Federica Quaglia	heteronuclear single quantum coherence spectroscopy evidence used in manual assertion
+DP04141	DP04141r003	1	73	95	22	Yes			Victoria Nugnes	Federica Quaglia	heteronuclear single quantum coherence spectroscopy evidence used in manual assertion
+DP04141	DP04141r004	1	81	111	30	Yes			Victoria Nugnes	Federica Quaglia	cryogenic electron microscopy evidence used in manual assertion
+DP04141	DP04141r008	1	84	89	5	No	mutation evidence	mutation of  84AA85 and 88AA89 prevents the binding 	Victoria Nugnes	Federica Quaglia	loss-of-function mutant phenotype evidence used in manual assertion
+DP04141	DP04141r009	0	90	95	5	No	mutation evidence 	single residue mutation	Victoria Nugnes	Federica Quaglia	loss-of-function mutant phenotype evidence used in manual assertion
+DP04141	DP04141r012	0	1	124	123	No	long protein fragment - low confidece		Victoria Nugnes	Federica Quaglia	glutathione S-transferase pull-down assay evidence used in manual assertion
+DP04141	DP04141r013	1	97	111	14	Yes			Victoria Nugnes	Federica Quaglia	cryogenic electron microscopy evidence used in manual assertion
+DP04142	DP04142r004	1	605	615	10	Yes			Federica Quaglia	Victoria Nugnes	x-ray crystallography evidence used in manual assertion
+DP04142	DP04142r005	1	607	613	6	Yes			Federica Quaglia	Victoria Nugnes	x-ray crystallography evidence used in manual assertion
+DP04142	DP04142r006	0	570	632	62	No	protein fragment evidence	 >40 residues	Federica Quaglia	Victoria Nugnes	isothermal titration calorimetry evidence used in manual assertion
+DP04142	DP04142r007	0	570	632	62	No	protein fragment evidence	 >40 residues	Federica Quaglia	Victoria Nugnes	mutant phenotype evidence used in manual assertion
+DP04144	DP04144r009	0	80	142	62	No	protein fragment evidence	 >40 residues	Victoria Nugnes	Federica Quaglia	dynamic light scattering assay evidence used in manual assertion
+DP04145	DP04145r005	0	80	142	62	No	protein fragment evidence	 >40 residues	Victoria Nugnes	Federica Quaglia	differential scanning calorimetry evidence used in manual assertion
+DP04145	DP04145r006	1	101	119	18	Yes			Victoria Nugnes	Federica Quaglia	heteronuclear single quantum coherence spectroscopy evidence used in manual assertion
+DP04145	DP04145r012	1	81	98	17	No	protein fragment evidence 	short enough to be considered specific	Victoria Nugnes		
+DP04155	DP04155r002	1	614	624	10	Yes			Rita Pancsa	Federica Quaglia	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04155	DP04155r003	1	615	630	15	No 	protein fragment evidence 	short enough to be considered specific - r002 is more specific	Rita Pancsa	Federica Quaglia	glutathione S-transferase pull-down assay evidence used in manual assertion
+DP04155	DP04155r004	1	615	630	15	No	mutation evidence 		Rita Pancsa	Federica Quaglia	point mutation phenotypic evidence used in manual assertion
+DP04155	DP04155r005	1	647	663	16	No	mutation evidence 		Rita Pancsa	Federica Quaglia	point mutation phenotypic evidence used in manual assertion
+DP04155	DP04155r006	1	647	663	16	No	protein fragment evidence 	short enough to be considered specific - r007 is robust	Rita Pancsa	Federica Quaglia	glutathione S-transferase pull-down assay evidence used in manual assertion
+DP04155	DP04155r007	1	647	663	16	Yes			Rita Pancsa	Federica Quaglia	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04155	DP04155r010	1	615	630	15	No	protein fragment evidence 	short enough to be considered specific	Rita Pancsa	Federica Quaglia	competitive binding evidence used in manual assertion
+DP04156	DP04156r003	1	219	232	13	Yes			Rita Pancsa	Federica Quaglia	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04159	DP04159r005	1	95	99	4	Yes			Rita Pancsa	Federica Quaglia	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04160	DP04160r003	1	307	315	8	Yes			Rita Pancsa	Federica Quaglia	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04161	DP04161r012	1	509	515	6	Yes			Norbert Deutsch	Victoria Nugnes	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04161	DP04161r013	0	454	511	57	No	protein fragment evidence	 >40 residues	Norbert Deutsch	Victoria Nugnes	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04161	DP04161r014	0	483	515	32	No	protein fragment evidence 	r012 is more specific	Norbert Deutsch	Victoria Nugnes	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04161	DP04161r015	1	35	77	42	No	protein fragment evidence	authors tested different protein fragments lenght and this proved to be the shrotes one to mantain binding 	Victoria Nugnes		co-purification evidence used in manual assertion
+DP04161	DP04161r016	1	35	53	18	Yes			Victoria Nugnes		x-ray crystallography evidence used in manual assertion
+DP04161	DP04161r019	1	65	75	10	Yes			Victoria Nugnes		x-ray crystallography evidence used in manual assertion
+DP04161	DP04161r020	0	490	550	60	No	protein fragment evidence	 >40 residues	Victoria Nugnes		bacterial 2-hybrid assay evidence used in manual assertion
+DP04161	DP04161r021	0	490	550	60	No	protein fragment evidence	 >40 residues	Victoria Nugnes		co-purification evidence used in manual assertion
+DP04167	DP04167r004	0	293	355	62	No	protein fragment evidence 	 >40 residues	Victoria Nugnes	Federica Quaglia	loss-of-function mutant phenotype evidence used in manual assertion
+DP04167	DP04167r005	1	330	348	18	No	protein fragment evidence 	short enough to be considered specific	Victoria Nugnes	Federica Quaglia	direct assay evidence used in manual assertion
+DP04167	DP04167r006	0	293	355	62	No	protein fragment evidence 	 >40 residues	Victoria Nugnes	Federica Quaglia	loss-of-function mutant phenotype evidence used in manual assertion
+DP04167	DP04167r008	0	293	355	62	No	protein fragment evidence 	 >40 residues	Victoria Nugnes	Federica Quaglia	electrophoretic mobility shift assay evidence used in manual assertion
+DP04167	DP04167r010	0	293	344	51	No	protein fragment evidence 	 >40 residues	Victoria Nugnes	Federica Quaglia	loss-of-function mutant phenotype evidence used in manual assertion
+DP04167	DP04167r011	0	270	355	85	No	protein fragment evidence 	 >40 residues	Victoria Nugnes	Federica Quaglia	electrophoretic mobility shift assay evidence used in manual assertion
+DP04169	DP04169r002	1	12	30	18	Yes			László Dobson	Victoria Nugnes	heteronuclear single quantum coherence spectroscopy evidence used in manual assertion
+DP04169	DP04169r005	1	1	33	32	No	protein fragment evidence 	short enough to be considered specific	Victoria Nugnes	Federica Quaglia	far-UV circular dichroism evidence used in manual assertion
+DP04172	DP04172r003	0	194	362	168	No	long protein fragment - low confidece		Victoria Nugnes		microscopy evidence used in manual assertion
+DP04177	DP04177r004	0	11	64	53	No	protein fragment evidence 	 >40 residues	Victoria Nugnes	Federica Quaglia	electrophoretic mobility shift assay evidence used in manual assertion
+DP04177	DP04177r005	0	11	64	53	No	protein fragment evidence 	 >40 residues	Victoria Nugnes	Federica Quaglia	electrophoretic mobility shift assay evidence used in manual assertion
+DP04189	DP04189r003	1	131	141	10	Yes			Victoria Nugnes		x-ray crystallography evidence used in manual assertion
+DP04189	DP04189r006	1	263	273	10	Yes			Victoria Nugnes		x-ray crystallography evidence used in manual assertion
+DP04190	DP04190r010	0	1	54	53	No	protein fragment evidence 	 >40 residues	Victoria Nugnes		protein binding evidence used in manual assertion
+DP04190	DP04190r011	0	1	54	53	No	protein fragment evidence 	 >40 residues	Victoria Nugnes		far-UV circular dichroism evidence used in manual assertion
+DP04190	DP04190r012	0	1	53	52	No	protein fragment evidence 	 >40 residues	Victoria Nugnes		fluorescence evidence used in manual assertion
+DP04190	DP04190r014	1	2	34	32	No	protein fragment evidence 	short enough to be considered specific	Victoria Nugnes		in vitro assay evidence used in manual assertion
+DP04190	DP04190r016	1	2	34	32	No	protein fragment evidence	short enough to be considered specific	Victoria Nugnes		in vitro assay evidence used in manual assertion
+DP04191	DP04191r003	1	1025	1090	65	Yes			László Dobson	Victoria Nugnes	nuclear magnetic resonance evidence used in manual assertion
+DP04192	DP04192r004	1	50	65	15	No	protein fragment evidence	short enough to be considered specific	László Dobson	Victoria Nugnes	far-UV circular dichroism evidence used in manual assertion
+DP04193	DP04193r006	1	38	54	16	No	protein fragment evidence	short enough to be considered specific	László Dobson	Victoria Nugnes	far-UV circular dichroism evidence used in manual assertion
+DP04197	DP04197r006	1	9	30	21	No	protein fragment evidence	short enough to be considered specific	Victoria Nugnes		loss-of-function mutant phenotype evidence used in manual assertion
+DP04197	DP04197r007	1	9	30	21	No	protein fragment evidence	short enough to be considered specific	Victoria Nugnes		loss-of-function mutant phenotype evidence used in manual assertion
+DP04198	DP04198r003	1	2950	2989	39	No	protein fragment evidence	short enough to be considered specific	Zsófia Kálmán	Victoria Nugnes	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04199	DP04199r003	0	1	178	177	No	full protein evidence- low confidece		Victoria Nugnes		affinity chromatography evidence used in manual assertion
+DP04199	DP04199r004	0	1	178	177	No	full protein evidence- low confidece		Victoria Nugnes		affinity chromatography evidence used in manual assertion
+DP04199	DP04199r005	0	1	178	177	No	full protein evidence- low confidece		Victoria Nugnes		affinity chromatography evidence used in manual assertion
+DP04199	DP04199r006	0	1	178	177	No	full protein evidence- low confidece		Victoria Nugnes		affinity chromatography evidence used in manual assertion
+DP04199	DP04199r009	0	1	178	177	No	full protein evidence- low confidece		Victoria Nugnes		microscale thermophoresis evidence used in manual assertion
+DP04199	DP04199r010	1	165	178	13	No	mutation evidence 	multiple mutations throughout the region 	Victoria Nugnes		loss-of-function mutant phenotype evidence used in manual assertion
+DP04200	DP04200r003	0	1	150	149	No	full protein evidence- low confidece		Victoria Nugnes	Federica Quaglia	microscale thermophoresis evidence used in manual assertion
+DP04211	DP04211r006	0	52	63	11	No	mutation evidence 	two residue mutation 62 and 63	Erzsébet Fichó	Victoria Nugnes	loss-of-function mutant phenotype evidence used in manual assertion
+DP04218	DP04218r003	0	41	86	45	No	protein fragment evidence 	 >40 residues	István Reményi	Victoria Nugnes	yeast 2-hybrid evidence used in manual assertion
+DP04218	DP04218r007	0	41	86	45	No	protein fragment evidence 	 >40 residues			cross-linking evidence used in manual assertion
+DP04218	DP04218r008	0	41	86	45	No	protein fragment evidence 	 >40 residues			glutathione S-transferase pull-down assay evidence used in manual assertion
+DP04218	DP04218r009	0	1	86	85	No	protein fragment evidence 	 >40 residues			small-angle X-ray scattering evidence used in manual assertion
+DP04219	DP04219r006	1	1	27	26	Yes			István Reményi	Victoria Nugnes	nuclear magnetic resonance spectroscopy-based hydrogen-deuterium exchange evidence used in manual assertion
+DP04235	DP04235r004	1	140	183	43	Yes			Rita Pancsa	Federica Quaglia	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04235	DP04235r005	0	128	186	58	No	protein fragment evidence 	 >40 residues	Rita Pancsa	Federica Quaglia	isothermal titration calorimetry evidence used in manual assertion
+DP04235	DP04235r006	0	128	186	58	No	protein fragment evidence 	 >40 residues	Rita Pancsa	Federica Quaglia	glutathione S-transferase pull-down assay evidence used in manual assertion
+DP04236	DP04236r003	1	65	75	10	No	protein fragment evidence 	short enough to be considered specific	Rita Pancsa	Federica Quaglia	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04236	DP04236r004	1	65	75	10	No	protein fragment evidence 	short enough to be considered specific	Rita Pancsa	Federica Quaglia	isothermal titration calorimetry evidence used in manual assertion
+DP04236	DP04236r005	1	65	75	10	No	protein fragment evidence 	short enough to be considered specific	Rita Pancsa	Federica Quaglia	glutathione S-transferase pull-down assay evidence used in manual assertion
+DP04239	DP04239r003	1	305	312	7	Yes			Victoria Nugnes	Federica Quaglia	x-ray crystallography evidence used in manual assertion
+DP04239	DP04239r005	1	302	320	18	No	protein fragment evidence 	r003 is more specific	Victoria Nugnes	Federica Quaglia	isothermal titration calorimetry evidence used in manual assertion
+DP04241	DP04241r002	0	1	159	158	No	long protein fragment - low confidece		Victoria Nugnes	Federica Quaglia	isothermal titration calorimetry evidence used in manual assertion
+DP04241	DP04241r003	1	80	118	38	Yes			Victoria Nugnes	Federica Quaglia	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04241	DP04241r006	1	288	294	6	Yes			Victoria Nugnes	Federica Quaglia	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04241	DP04241r007	1	185	198	13	Yes			Victoria Nugnes	Federica Quaglia	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04241	DP04241r008	1	60	70	10	Yes			Victoria Nugnes	Federica Quaglia	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04241	DP04241r009	1	60	70	10	Yes			Victoria Nugnes	Federica Quaglia	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04243	DP04243r005	0				No	full protein evidence- low confidece		Victoria Nugnes	Federica Quaglia	heteronuclear single quantum coherence spectroscopy evidence used in manual assertion
+DP04243	DP04243r006	0	5	10	5		Single residue involved in binding identified		Victoria Nugnes		x-ray crystallography evidence used in manual assertion
+DP04243	DP04243r007	0	5	10	5		Single residue involved in binding identified		Victoria Nugnes		x-ray crystallography evidence used in manual assertion
+DP04243	DP04243r008	0	30	35	5		Single residue involved in binding identified		Victoria Nugnes		x-ray crystallography evidence used in manual assertion
+DP04243	DP04243r009	0	30	35	5		Single residue involved in binding identified		Victoria Nugnes		x-ray crystallography evidence used in manual assertion
+DP04244	DP04244r004	0				No	long protein fragment - low confidece		Victoria Nugnes	Federica Quaglia	immunoprecipitation evidence used in manual assertion
+DP04244	DP04244r005	0				No	long protein fragment - low confidece		Victoria Nugnes	Federica Quaglia	glutathione S-transferase pull-down assay evidence used in manual assertion
+DP04250	DP04250r002	1	130	144	14	No	protein fragment evidence 	short enough to be considered specific	Rita Pancsa	Federica Quaglia	gel electrophoresis evidence used in manual assertion
+DP04255	DP04255r003	0	69	191	122	No	long protein fragment - low confidece		Victoria Nugnes		co-immunoprecipitation evidence used in manual assertion
+DP04255	DP04255r004	1	113	170	57	Yes			Victoria Nugnes		heteronuclear single quantum coherence spectroscopy evidence used in manual assertion
+DP04257	DP04257r005	1	170	175	5	Yes			Victoria Nugnes		nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04259	DP04259r002	1	295	299	4	Yes			Zsófia Kálmán	Victoria Nugnes	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04259	DP04259r003	1	282	294	12	Yes			Zsófia Kálmán	Victoria Nugnes	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04260	DP04260r005	1	40	63	23	No	protein fragment evidence 	short enough to be considered specific	Victoria Nugnes		direct assay evidence used in manual assertion
+DP04264	DP04264r002	1	556	571	15	Yes			Victoria Nugnes		protein hydrogen-deuterium exchange mass spectrometry evidence used in manual assertion
+DP04264	DP04264r004	1	557	561	4	Yes			Victoria Nugnes		nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04264	DP04264r005	0	425	430	5	No	mutation evidence 	single residue mutation - there are more specific annotations	Victoria Nugnes		loss-of-function mutant phenotype evidence used in manual assertion
+DP04264	DP04264r006	0	420	425	5	No	mutation evidence 	single residue mutation - there are more specific annotations	Victoria Nugnes		loss-of-function mutant phenotype evidence used in manual assertion
+DP04264	DP04264r009	0	414	639	225	No	long protein fragment - low confidece		Victoria Nugnes		co-immunoprecipitation evidence used in manual assertion
+DP04264	DP04264r010	0	639	713	74	No	protein fragment evidence 	 >40 residues	Victoria Nugnes		co-immunoprecipitation evidence used in manual assertion
+DP04264	DP04264r013	0	340	639	299	No	long protein fragment - low confidece		Victoria Nugnes		co-immunoprecipitation evidence used in manual assertion
+DP04264	DP04264r014	0	639	713	74	No	protein fragment evidence 	 >40 residues	Victoria Nugnes		co-immunoprecipitation evidence used in manual assertion
+DP04264	DP04264r016	1	426	439	13	Yes			Victoria Nugnes		protein hydrogen-deuterium exchange mass spectrometry evidence used in manual assertion
+DP04264	DP04264r017	1	471	495	24	Yes			Victoria Nugnes		protein hydrogen-deuterium exchange mass spectrometry evidence used in manual assertion
+DP04264	DP04264r018	1	421	431	10	Yes			Victoria Nugnes		protein hydrogen-deuterium exchange mass spectrometry evidence used in manual assertion
+DP04264	DP04264r019	1	474	480	6	Yes			Victoria Nugnes		protein hydrogen-deuterium exchange mass spectrometry evidence used in manual assertion
+DP04280	DP04280r006	0				No	full protein evidence- low confidece		Victoria Nugnes		gel-filtration evidence used in manual assertion
+DP04280	DP04280r007	0				No	full protein evidence- low confidece		Victoria Nugnes		small-angle X-ray scattering evidence used in manual assertion
+DP04295	DP04295r003	1	430	465	35	No	short enough to be ok		Victoria Nugnes		nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04295	DP04295r014	1	448	462	14	Yes			Victoria Nugnes		nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04295	DP04295r015	1	446	464	18	No	protein fragment evidence 	r012 is more specific	Victoria Nugnes		bait-prey hybrid interaction evidence used in manual assertion
+DP04298	DP04298r005	1	525	555	30	No	protein fragment evidence 	short enough to be considered specific	Victoria Nugnes		bait-prey hybrid interaction evidence used in manual assertion
+DP04298	DP04298r006	1	532	548	16	Yes			Victoria Nugnes		nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04298	DP04298r010	0	496	583	87	No	protein fragment evidence 	 >40 residues	Victoria Nugnes		far-UV circular dichroism evidence used in manual assertion
+DP04298	DP04298r011	0	496	583	87	No	protein fragment evidence 	 >40 residues	Victoria Nugnes		thioflavin T based fluorescence spectroscopy evidence
+DP04308	DP04308r011	0	1	204	203	No	full protein evidence- low confidece		Victoria Nugnes		
+DP04308	DP04308r010	1	191	199	8	Yes			László Dobson	Victoria Nugnes	protein-oligonucleotide microarray binding evidence used in manual assertion
+DP04308	DP04308r009	1	170	178	8	Yes			László Dobson	Victoria Nugnes	protein-oligonucleotide microarray binding evidence used in manual assertion
+DP04308	DP04308r008	1	154	165	11	Yes			László Dobson	Victoria Nugnes	protein-oligonucleotide microarray binding evidence used in manual assertion
+DP04308	DP04308r007	1	137	147	10	Yes			László Dobson	Victoria Nugnes	protein-oligonucleotide microarray binding evidence used in manual assertion
+DP04308	DP04308r006	1	89	95	6	Yes			László Dobson	Victoria Nugnes	protein-oligonucleotide microarray binding evidence used in manual assertion
+DP04308	DP04308r005	1	63	69	6	Yes			László Dobson	Victoria Nugnes	protein-oligonucleotide microarray binding evidence used in manual assertion
+DP04308	DP04308r004	1	39	47	8	Yes			László Dobson	Victoria Nugnes	protein-oligonucleotide microarray binding evidence used in manual assertion
+DP04308	DP04308r003	1	1	14	13	Yes			László Dobson	Victoria Nugnes	protein-oligonucleotide microarray binding evidence used in manual assertion
+DP04326	DP04326r001	0	22	26	4	No	mutation evidence 	single residue mutation	Erzsébet Fichó	Victoria Nugnes	loss-of-function mutant phenotype evidence used in manual assertion
+DP04326	DP04326r006	0	136	145	9	No	only a couple of residues involed in binding. 		Erzsébet Fichó	Victoria Nugnes	electron paramagnetic resonance evidence used in manual assertion
+DP04326	DP04326r012	0	1	194	193	No	long protein fragment - low confidece		Erzsébet Fichó	Victoria Nugnes	small-angle X-ray scattering evidence used in manual assertion
+DP04326	DP04326r013	0	1	194	193	No	long protein fragment - low confidece		Erzsébet Fichó	Victoria Nugnes	fluorescence resonance energy transfer evidence used in manual assertion
+DP04326	DP04326r015	0	1	194	193	No	long protein fragment - low confidece		Erzsébet Fichó	Victoria Nugnes	small-angle X-ray scattering evidence used in manual assertion
+DP04326	DP04326r018	0	1	194	193	No	long protein fragment - low confidece		Victoria Nugnes		analytical ultracentrifugation evidence used in manual assertion
+DP04326	DP04326r019	0	1	194	193	No	long protein fragment - low confidece		Victoria Nugnes		analytical ultracentrifugation evidence used in manual assertion
+DP04326	DP04326r020	0	1	194	193	No	long protein fragment - low confidece		Victoria Nugnes		analytical ultracentrifugation evidence used in manual assertion
+DP04326	DP04326r022 	1	145	149	4	No	mutation evidence 		Victoria Nugnes		loss-of-function mutant phenotype evidence used in manual assertion
+DP04328	DP04328r009	1	176	200	24	No	protein fragment mutation evidence	short enough to be considered specific	Victoria Nugnes		
+DP04337	DP04337r004	0	364	413	49	No	protein fragment evidence 	 >40 residues	Erzsébet Fichó	Victoria	lipid binding assay evidence used in manual assertion
+DP04337	DP04337r005	1	372	377	5	No	mutation evidence 		Erzsébet Fichó	victoria	fluorescence recovery after photobleaching evidence used in manual assertion
+DP04341	DP04341r002	1	399	439	40	No	protein fragment evidence	short enough to be considered specific	Trinidad Cordero	Victoria Nugnes	small-angle X-ray scattering evidence used in manual assertion
+DP04343	DP04343r003	0			0	No	full protein evidence- low confidece		Rita Pancsa	Victoria Nugnes	far-UV circular dichroism evidence used in manual assertion
+DP04379	DP04379r002	1	17	43	26	Yes			Rita Pancsa	Victoria Nugnes	nuclear magnetic resonance imaging evidence used in manual assertion
+DP04380	DP04379r008	1	1	41	40	No	protein fragment evidence 	 >40 residues	Rita Pancsa	Victoria Nugnes	co-immunoprecipitation evidence used in manual assertion
+DP04381	DP04379r009	1	1	41	40	No	protein fragment mutation evidence	short enough to be considered specific	Rita Pancsa	Victoria Nugnes	deletion mutation phenotypic evidence used in manual assertion
+DP04382	DP04379r004	1	11	110	99	Yes			Rita Pancsa	Victoria Nugnes	nuclear magnetic resonance evidence used in manual assertion
+DP04388	DP04388r004	0	1	195	194	No	long protein fragment - low confidece		Rita Pancsa	Victoria Nugnes	microscale thermophoresis evidence used in manual assertion
+DP04388	DP04388r005	0	1	195	194	No	long protein fragment - low confidece		Rita Pancsa	Victoria Nugnes	physical interaction evidence used in manual assertion
+DP04388	DP04388r006	1	65	97	32	Yes			Rita Pancsa	Victoria Nugnes	microscale thermophoresis evidence used in manual assertion
+DP04388	DP04388r008	0	1	123	122	No	long protein fragment - low confidece		Rita Pancsa	Victoria Nugnes	co-immunoprecipitation evidence used in manual assertion
+DP04388	DP04388r009	0	124	242	118	No	long protein fragment - low confidece		Rita Pancsa	Victoria Nugnes	co-immunoprecipitation evidence used in manual assertion
+DP04391	DP04391r004	1	24	50	26	No	short enough to be ok		Rita Pancsa	Victoria Nugnes	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04391	DP04391r005	1	27	41	14	Yes			Rita Pancsa	Victoria Nugnes	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04391	DP04391r007	1	24	46	22	No	protein fragment mutation evidence	short enough to be considered specific	Rita Pancsa	Victoria Nugnes	isothermal titration calorimetry evidence used in manual assertion
+DP04391	DP04391r009	1	29	38	9	Yes			Rita Pancsa	Victoria Nugnes	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04391	DP04391r010	1	42	49	7	Yes			Rita Pancsa	Victoria Nugnes	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04391	DP04391r011	1	24	46	22	No	protein fragment mutation evidence	short enough to be considered specific	Rita Pancsa	Victoria Nugnes	isothermal titration calorimetry evidence used in manual assertion
+DP04391	DP04391r012	1	24	46	22	No	protein fragment mutation evidence	short enough to be considered specific	Rita Pancsa	Victoria Nugnes	stopped-flow fluorescence spectroscopy evidence
+DP04391	DP04391r013	1	24	46	22	No	protein fragment mutation evidence	short enough to be considered specific	Rita Pancsa	Victoria Nugnes	protein thermal shift assay evidence used in manual assertion
+DP04391	DP04391r014	1	24	46	22	No	protein fragment mutation evidence	short enough to be considered specific	Rita Pancsa	Victoria Nugnes	fluorescence evidence used in manual assertion
+DP04391	DP04401r007	0	154	255	101	No	long protein fragment - low confidece		Rita Pancsa	Victoria Nugnes	fluorescence evidence used in manual assertion
+DP04401	DP04401r008	0	154	255	101	No	long protein fragment - low confidece		Rita Pancsa	Victoria Nugnes	nuclear magnetic resonance spectroscopy evidence used in manual assertion
+DP04401	DP04401r009	0	154	255	101	No	long protein fragment - low confidece		Rita Pancsa	Victoria Nugnes	protein thermal shift assay evidence used in manual assertion
+DP04401	DP04401r013	0	154	255	101	No	long protein fragment - low confidece		Rita Pancsa	Victoria Nugnes	isothermal titration calorimetry evidence used in manual assertion
+DP04401	DP04401r015	0	154	255	101	No	long protein fragment - low confidece		Rita Pancsa	Victoria Nugnes	stopped-flow fluorescence spectroscopy evidence
+DP04401	DP04401r018	0	154	255	101	No	long protein fragment - low confidece		Victoria Nugnes		nuclear magnetic resonance spectroscopy evidence used in manual assertion

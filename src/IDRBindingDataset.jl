@@ -27,6 +27,8 @@ export build_cluster_representatives_table
 export write_cluster_representatives_csv
 export write_sequence_clustering_readme
 export download_caid_reference_data
+export download_caid3_invalid_regions_data
+export download_go_reference_data
 export download_sifts_reference_data
 export fetch_pdb_initial_release_dates
 export extract_pdb_codes
@@ -74,12 +76,17 @@ export write_final_dataset_csv_gz
 export build_dataset_json_records
 export build_dataset_csv_table
 export write_dataset_json_gz
+export check_caid3_binding_idr_labels
+export write_caid3_binding_labels_report
 
 include("raw_data_download.jl")
 include("shared_helpers.jl")
 include("disprot_data.jl")
 include("sequence_clustering.jl")
 include("caid_data_download.jl")
+include("caid3_invalid_regions.jl")
+include("go_data_download.jl")
+include("disprot_challenge_terms.jl")
 include("sifts_data_download.jl")
 include("pdb_release_dates.jl")
 include("pdb_release_dataset.jl")
@@ -90,5 +97,6 @@ include("elm_motif_clustering.jl")
 include("dataset_stats.jl")
 include("dataset_finalization.jl")
 include("dataset_json_export.jl")
+include("caid3_binding_labels.jl")
 
 end

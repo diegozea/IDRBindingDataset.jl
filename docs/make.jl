@@ -10,7 +10,8 @@ makedocs(;
     format = Documenter.HTML(;
         canonical = "https://diegozea.github.io/IDRBindingDataset.jl",
         edit_link = "main",
-        assets = String[]
+        assets = String[],
+        size_threshold_ignore = ["index.md"]
     ),
     pages = [
         "Home" => "index.md",

@@ -9,6 +9,8 @@ using CSV
 using DataFrames
 using IDRBindingDataset:
                          FINAL_DATASET_LABEL_VALIDATION,
+                         _build_disprot_challenge_term_rules,
+                         _load_caid3_invalid_region_ids,
                          build_dataset_csv_table,
                          build_dataset_json_records,
                          build_final_cluster_dataset_table,
@@ -141,7 +143,14 @@ function main()
     )
 
     disprot_entries = read_disprot_entries_from_raw_data(options.raw_data_dir)
-    json_records = build_dataset_json_records(final_dataset_table, disprot_entries)
+    term_rules = _build_disprot_challenge_term_rules(options.raw_data_dir)
+    invalid_region_ids = _load_caid3_invalid_region_ids(options.raw_data_dir)
+    json_records = build_dataset_json_records(
+        final_dataset_table,
+        disprot_entries;
+        term_rules = term_rules,
+        invalid_region_ids = invalid_region_ids
+    )
     csv_table = build_dataset_csv_table(json_records)
 
     write_final_dataset_csv_gz(csv_table, output_csv_path)

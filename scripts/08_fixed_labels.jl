@@ -10,7 +10,9 @@ using DataFrames
 using IDRBindingDataset:
                          AF2_TRAINING_DATA_CUTOFF_DATE,
                          DISPROT_REGIONS_RELATIVE_PATH,
+                         _build_disprot_challenge_term_rules,
                          _discover_caid_binding_datasets,
+                         _load_caid3_invalid_region_ids,
                          _relpath_from_repo,
                          _require_caid_dataset_path,
                          build_disprot_protein_annotations,
@@ -100,7 +102,13 @@ function main()
     cluster_representatives = DataFrame(CSV.File(options.cluster_representatives_path))
     pdb_release_map = DataFrame(CSV.File(options.pdb_release_map_path))
     disprot_entries = read_disprot_entries_from_raw_data(options.raw_data_dir)
-    disprot_annotations = build_disprot_protein_annotations(disprot_entries)
+    term_rules = _build_disprot_challenge_term_rules(options.raw_data_dir)
+    invalid_region_ids = _load_caid3_invalid_region_ids(options.raw_data_dir)
+    disprot_annotations = build_disprot_protein_annotations(
+        disprot_entries;
+        term_rules = term_rules,
+        invalid_region_ids = invalid_region_ids
+    )
     oldest_pdb_release_dates = build_oldest_pdb_release_dates(pdb_release_map)
     caid_datasets = _discover_caid_binding_datasets(options.raw_data_dir)
     _require_caid_dataset_path(caid_datasets, 2)
