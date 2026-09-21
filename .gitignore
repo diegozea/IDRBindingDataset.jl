@@ -7,9 +7,10 @@
 /data/scratch/elm/mapping/*
 !/data/scratch/elm/mapping/README.md
 /data/scratch/elm/mapping/motifs.csv.gz
-
+/scripts/add_feature/output/*
+/plots_analysis/*
 # VS Code
 .vscode/
-
+*.csv  
 # Backups
 backups/*
