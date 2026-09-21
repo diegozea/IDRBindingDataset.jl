@@ -1,0 +1,5 @@
+ERROR: LoadError: UndefVarError: `DEFAULT_ENV` not defined in `Main`
+Stacktrace:
+ [1] top-level scope
+   @ /var/spool/slurmd/job1132729/slurm_script:49
+in expression starting at /var/spool/slurmd/job1132729/slurm_script:47
