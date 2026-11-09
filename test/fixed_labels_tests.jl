@@ -10,21 +10,23 @@ using TestItems
 
     cluster_representatives = IDRBindingDataset.DataFrames.DataFrame(
         protein_id = ["P_A1", "P_B1", "P_C1", "P_D1"],
-        global_representative_id = ["P_A1", "P_B1", "P_C1", "P_D1"],
-        local_representative_id = ["P_A1", "P_B1", "P_C1", "P_D1"],
         final_cluster_id = ["cluster_A", "cluster_B", "cluster_C", "cluster_D"]
     )
 
     disprot_entries = Any[
-    Dict(
-        "acc" => "P_A1", "disprot_id" => "DP_A1", "released" => "2020_01", "regions" => Any[]),
-    Dict(
-        "acc" => "P_B1", "disprot_id" => "DP_B1", "released" => "2020_01", "regions" => Any[]),
-    Dict(
-        "acc" => "P_C1", "disprot_id" => "DP_C1", "released" => "2020_01", "regions" => Any[]),
-    Dict(
-        "acc" => "P_D1", "disprot_id" => "DP_D1", "released" => "2020_01", "regions" => Any[])
-]
+        Dict(
+            "acc" => "P_A1", "disprot_id" => "DP_A1", "released" => "2020_01", "regions" =>
+                Any[]),
+        Dict(
+            "acc" => "P_B1", "disprot_id" => "DP_B1", "released" => "2020_01", "regions" =>
+                Any[]),
+        Dict(
+            "acc" => "P_C1", "disprot_id" => "DP_C1", "released" => "2020_01", "regions" =>
+                Any[]),
+        Dict(
+            "acc" => "P_D1", "disprot_id" => "DP_D1", "released" => "2020_01", "regions" =>
+                Any[])
+    ]
     disprot_annotations = build_disprot_protein_annotations(
         disprot_entries;
         term_rules = IDRBindingDataset._DisProtChallengeTermRules(
@@ -60,8 +62,6 @@ using TestItems
 
     @test names(fixed_labels) == [
         "protein_id",
-        "global_representative_id",
-        "local_representative_id",
         "final_cluster_id",
         "protein_disprot_id",
         "protein_has_idr_binding_annotation",
@@ -96,6 +96,25 @@ using TestItems
     @test !by_acc["P_D1"].protein_has_idr_binding_annotation
     @test !by_acc["P_D1"].protein_has_pdb_structure
     @test ismissing(by_acc["P_D1"].cluster_fixed_dataset_label)
+
+    # A standalone rerun may receive a clustering artifact from the old schema.
+    legacy_clusters = copy(cluster_representatives)
+    legacy_clusters.global_representative_id = ["P_A1", "P_B1", "P_C1", "P_D1"]
+    legacy_clusters.local_representative_id = ["P_A1", "P_B1", "P_C1", "P_D1"]
+    legacy_clusters.source_note = ["alpha", "beta", "gamma", "delta"]
+    original_legacy_clusters = copy(legacy_clusters)
+    legacy_fixed_labels = build_fixed_labels_table(
+        legacy_clusters,
+        disprot_annotations,
+        oldest_pdb,
+        Dict("caid_2" => Set(["DP_C1"]), "caid_3" => Set{String}())
+    )
+
+    @test "global_representative_id" ∉ names(legacy_fixed_labels)
+    @test "local_representative_id" ∉ names(legacy_fixed_labels)
+    @test isequal(legacy_fixed_labels[:, names(fixed_labels)], fixed_labels)
+    @test legacy_fixed_labels.source_note == ["alpha", "beta", "gamma", "delta"]
+    @test isequal(legacy_clusters, original_legacy_clusters)
 end
 
 @testitem "Build fixed labels table includes only provided CAID versions" begin
@@ -107,16 +126,16 @@ end
 
     cluster_representatives = IDRBindingDataset.DataFrames.DataFrame(
         protein_id = ["P_A1", "P_B1"],
-        global_representative_id = ["P_A1", "P_B1"],
-        local_representative_id = ["P_A1", "P_B1"],
         final_cluster_id = ["cluster_A", "cluster_B"]
     )
     disprot_entries = Any[
-    Dict(
-        "acc" => "P_A1", "disprot_id" => "DP_A1", "released" => "2020_01", "regions" => Any[]),
-    Dict(
-        "acc" => "P_B1", "disprot_id" => "DP_B1", "released" => "2020_01", "regions" => Any[])
-]
+        Dict(
+            "acc" => "P_A1", "disprot_id" => "DP_A1", "released" => "2020_01", "regions" =>
+                Any[]),
+        Dict(
+            "acc" => "P_B1", "disprot_id" => "DP_B1", "released" => "2020_01", "regions" =>
+                Any[])
+    ]
     disprot_annotations = build_disprot_protein_annotations(
         disprot_entries;
         term_rules = IDRBindingDataset._DisProtChallengeTermRules(
@@ -175,16 +194,16 @@ end
 
     cluster_representatives = IDRBindingDataset.DataFrames.DataFrame(
         protein_id = ["P_A1", "P_B1"],
-        global_representative_id = ["P_A1", "P_B1"],
-        local_representative_id = ["P_A1", "P_B1"],
         final_cluster_id = ["cluster_A", "cluster_B"]
     )
     disprot_entries = Any[
-    Dict(
-        "acc" => "P_A1", "disprot_id" => "DP_A1", "released" => "2020_01", "regions" => Any[]),
-    Dict(
-        "acc" => "P_B1", "disprot_id" => "DP_B1", "released" => "2020_01", "regions" => Any[])
-]
+        Dict(
+            "acc" => "P_A1", "disprot_id" => "DP_A1", "released" => "2020_01", "regions" =>
+                Any[]),
+        Dict(
+            "acc" => "P_B1", "disprot_id" => "DP_B1", "released" => "2020_01", "regions" =>
+                Any[])
+    ]
     disprot_annotations = build_disprot_protein_annotations(
         disprot_entries;
         term_rules = IDRBindingDataset._DisProtChallengeTermRules(
@@ -310,18 +329,19 @@ end
 
     cluster_representatives = IDRBindingDataset.DataFrames.DataFrame(
         protein_id = ["P_A1", "P_B1", "P_C1"],
-        global_representative_id = ["P_A1", "P_B1", "P_C1"],
-        local_representative_id = ["P_A1", "P_B1", "P_C1"],
         final_cluster_id = ["cluster_A", "cluster_B", "cluster_C"]
     )
     disprot_entries = Any[
-    Dict(
-        "acc" => "P_A1", "disprot_id" => "DP_A1", "released" => "2020_01", "regions" => Any[]),
-    Dict(
-        "acc" => "P_B1", "disprot_id" => "DP_B1", "released" => "2020_01", "regions" => Any[]),
-    Dict(
-        "acc" => "P_C1", "disprot_id" => "DP_C1", "released" => "2020_01", "regions" => Any[])
-]
+        Dict(
+            "acc" => "P_A1", "disprot_id" => "DP_A1", "released" => "2020_01", "regions" =>
+                Any[]),
+        Dict(
+            "acc" => "P_B1", "disprot_id" => "DP_B1", "released" => "2020_01", "regions" =>
+                Any[]),
+        Dict(
+            "acc" => "P_C1", "disprot_id" => "DP_C1", "released" => "2020_01", "regions" =>
+                Any[])
+    ]
     disprot_annotations = build_disprot_protein_annotations(
         disprot_entries;
         term_rules = IDRBindingDataset._DisProtChallengeTermRules(

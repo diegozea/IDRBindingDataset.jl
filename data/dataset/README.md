@@ -12,6 +12,35 @@ Both files contain the same proteins and split labels. The JSON keeps
 `residue_labels` as integer vectors, while the CSV stores `residue_labels` as a
 compact string with one character per residue (`0`, `1`, `2`).
 
+## Schema
+
+The current build has 18 columns, in this order:
+
+```text
+protein_id
+final_cluster_id
+protein_disprot_id
+protein_has_idr_binding_annotation
+protein_oldest_pdb_release_date
+protein_has_pdb_structure
+protein_has_missing_pdb_release_date
+protein_in_caid2
+protein_in_caid3
+protein_in_af2_training_set
+cluster_in_af2_training_set
+cluster_in_caid2
+cluster_in_caid3
+cluster_fixed_dataset_label
+protein_elm_clusters
+cluster_dataset_label
+sequence
+residue_labels
+```
+
+`global_representative_id` and `local_representative_id` are no longer saved in
+the clustering, fixed-label, or final dataset tables. Both clustering passes
+still contribute to `final_cluster_id`. CAID2 and CAID3 remain separate.
+
 ## Data Dictionary (Added Final Columns)
 
 - `protein_elm_clusters`: one or more ELM motif-cluster IDs for each protein,
@@ -46,10 +75,10 @@ Complete example:
 julia scripts/15_final_dataset.jl --fixed_labels_path data/derived/fixed/cluster_fixed_labels.csv.gz --elm_motif_clustering_path data/derived/elm/elm_motif_clustering.csv.gz --raw_data_dir data/raw --output_dir data/dataset --output_csv_filename cluster_dataset_labels.csv.gz --output_json_filename cluster_dataset_labels.json.gz --missing_label validation
 ```
 
-## Backup Check
+## Comparing Older Artifacts
 
-To verify the generated JSON matches the preserved backup artifact:
-
-```bash
-cmp data/dataset/cluster_dataset_labels.json.gz backups/cluster_dataset_labels.json.gz
-```
+Older artifacts contain the two representative-ID columns. To compare them
+with the current schema, decompress and parse both artifacts, omit
+`global_representative_id` and `local_representative_id` from the older records,
+then compare the retained fields and row order. A byte-for-byte comparison of
+compressed files is not a schema migration check.

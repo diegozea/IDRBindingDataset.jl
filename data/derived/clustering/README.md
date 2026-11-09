@@ -1,10 +1,13 @@
 # Sequence Clustering Outputs
 
-Generated at (UTC): 2026-04-21T16:42:19Z
+Generated at (UTC): 2026-11-09T17:17:09Z
 
 ## Outputs
 - DisProt full-protein FASTA: data/derived/clustering/disprot_full_proteins.fasta.gz (1082833 bytes, 1.0828 MB)
-- Cluster representatives CSV: data/derived/clustering/cluster_representatives.csv.gz (26080 bytes, 0.0261 MB)
+- Cluster representatives CSV: data/derived/clustering/cluster_representatives.csv.gz (18845 bytes, 0.0188 MB)
+
+The CSV contains one row per protein with only `protein_id` and `final_cluster_id`.
+Global and local representative assignments are used internally to compute final clusters.
 
 ## Sequence and Cluster Counts
 - Protein sequence count: 3199

@@ -124,19 +124,21 @@ function build_protein_elm_clusters_table(
     normalized = select(protein_elm_motif_clusters, :protein_id, :elm_motif_cluster)
     transform!(
         normalized,
-        :protein_id => ByRow(
-            value -> _normalize_required_protein_id(
-            value;
-            argument_name = "protein_elm_motif_clusters.protein_id"
-        )
-        ) => :protein_id
+        :protein_id =>
+            ByRow(
+                value -> _normalize_required_protein_id(
+                value;
+                argument_name = "protein_elm_motif_clusters.protein_id"
+            )
+            ) => :protein_id
     )
 
     protein_elm_clusters = combine(
         groupby(normalized, :protein_id),
-        :elm_motif_cluster => (
-            values -> _join_unique_sorted_elm_clusters(values; separator = separator)
-        ) => output_column
+        :elm_motif_cluster =>
+            (
+                values -> _join_unique_sorted_elm_clusters(values; separator = separator)
+            ) => output_column
     )
 
     sort!(protein_elm_clusters, :protein_id)
@@ -164,23 +166,25 @@ function _normalize_protein_elm_clusters_table(
 
     normalized = select(
         protein_elm_clusters,
-        :protein_id => ByRow(
-            value -> _normalize_required_protein_id(
-            value;
-            argument_name = "protein_elm_clusters.protein_id"
-        )
-        ) => :protein_id,
+        :protein_id =>
+            ByRow(
+                value -> _normalize_required_protein_id(
+                value;
+                argument_name = "protein_elm_clusters.protein_id"
+            )
+            ) => :protein_id,
         elm_cluster_column
     )
 
     normalized = combine(
         groupby(normalized, :protein_id),
-        elm_cluster_column => (
-            values -> _single_nonmissing_or_missing(
-            values;
-            value_label = string(elm_cluster_column)
-        )
-        ) => elm_cluster_column
+        elm_cluster_column =>
+            (
+                values -> _single_nonmissing_or_missing(
+                values;
+                value_label = string(elm_cluster_column)
+            )
+            ) => elm_cluster_column
     )
     sort!(normalized, :protein_id)
     normalized
@@ -290,6 +294,9 @@ Expected columns in `protein_elm_clusters`:
 
 Adds one new column:
 - `cluster_dataset_label`
+
+Retired `global_representative_id` and `local_representative_id` columns are
+omitted when reading a fixed-label table produced with the older schema.
 """
 function build_final_cluster_dataset_table(
         fixed_labels_table::AbstractDataFrame,
@@ -312,13 +319,17 @@ function build_final_cluster_dataset_table(
         elm_cluster_column = elm_cluster_column
     )
 
-    final_dataset = leftjoin(copy(fixed_labels_table), normalized_elm_clusters; on = :protein_id)
+    retained_fixed_labels = select(
+        fixed_labels_table, _dataset_columns_without_representatives(fixed_labels_table)
+    )
+    final_dataset = leftjoin(retained_fixed_labels, normalized_elm_clusters; on = :protein_id)
     transform!(
         final_dataset,
-        :cluster_fixed_dataset_label => (
-            values -> _map_fixed_to_final_dataset_label.(
-            values; missing_label = cleaned_missing_label)
-        ) => :cluster_dataset_label
+        :cluster_fixed_dataset_label =>
+            (
+                values -> _map_fixed_to_final_dataset_label.(
+                values; missing_label = cleaned_missing_label)
+            ) => :cluster_dataset_label
     )
     _ensure_final_dataset_allowed_labels(
         final_dataset;

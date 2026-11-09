@@ -1,5 +1,41 @@
 using TestItems
 
+@testitem "Finalization omits legacy representatives and preserves other metadata" begin
+    using Test
+    using IDRBindingDataset: build_final_cluster_dataset_table
+
+    fixed_labels = IDRBindingDataset.DataFrames.DataFrame(
+        protein_id = ["P1", "P2", "P3"],
+        global_representative_id = ["P1", "P2", "P3"],
+        local_representative_id = ["P1", "P2", "P3"],
+        final_cluster_id = ["cluster_A", "cluster_B", "cluster_C"],
+        protein_in_caid2 = [true, false, false],
+        protein_in_caid3 = [false, true, false],
+        cluster_in_caid2 = [true, false, false],
+        cluster_in_caid3 = [false, true, false],
+        cluster_fixed_dataset_label = Any["caid", "caid", missing],
+        source_note = ["alpha", "beta", "gamma"]
+    )
+    original_fixed_labels = copy(fixed_labels)
+    elm_clusters = IDRBindingDataset.DataFrames.DataFrame(
+        protein_id = ["P1", "P2", "P3"],
+        protein_elm_clusters = ["1", "2", "3"]
+    )
+
+    final_dataset = build_final_cluster_dataset_table(fixed_labels, elm_clusters)
+    retained_columns = [
+        "protein_id", "final_cluster_id", "protein_in_caid2", "protein_in_caid3",
+        "cluster_in_caid2", "cluster_in_caid3", "cluster_fixed_dataset_label", "source_note"
+    ]
+
+    @test names(final_dataset) == vcat(
+        retained_columns, ["protein_elm_clusters", "cluster_dataset_label"]
+    )
+    @test isequal(final_dataset[:, retained_columns], fixed_labels[:, retained_columns])
+    @test final_dataset.cluster_dataset_label == ["testing", "testing", "validation"]
+    @test isequal(fixed_labels, original_fixed_labels)
+end
+
 @testitem "Build protein ELM clusters table joins sorted unique cluster IDs" begin
     using Test
     using IDRBindingDataset: build_protein_elm_clusters_table

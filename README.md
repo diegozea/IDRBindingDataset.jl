@@ -94,6 +94,15 @@ These thresholds are documented in:
 
 - `data/derived/clustering/README.md`
 
+The saved clustering table contains only `protein_id` and `final_cluster_id`.
+Global and local representative assignments are used internally to calculate
+the final clusters; `global_representative_id` and `local_representative_id`
+are no longer exported in intermediate or final dataset tables. The existing
+clustering function names and `cluster_representatives.csv.gz` filename are
+retained. Downstream table builders also omit these two columns when reading
+older intermediate tables. CAID experiments retain their separate protein-level
+and cluster-level membership columns.
+
 ### 2. Split Criteria (Leakage-Aware)
 
 Fixed labels are assigned at cluster level in `src/fixed_labels.jl`.

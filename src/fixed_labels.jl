@@ -163,7 +163,8 @@ function _build_cluster_split_labels(
         groupby(stats, :final_cluster_id),
         :protein_in_af2_training_set => _any_true => :cluster_in_af2_training_set,
         :protein_has_pdb_structure => _any_true => :cluster_has_pdb_structure,
-        :protein_has_missing_pdb_release_date => _any_true => :cluster_has_missing_pdb_release_date,
+        :protein_has_missing_pdb_release_date =>
+            _any_true => :cluster_has_missing_pdb_release_date,
         cluster_caid_specs...
     )
 
@@ -274,7 +275,8 @@ function _discover_caid_binding_datasets(raw_data_dir::AbstractString)
     ),
     )
 
-    datasets = NamedTuple{(:name, :number, :binding_fasta_path), Tuple{String, Int, String}}[]
+    datasets = NamedTuple{
+        (:name, :number, :binding_fasta_path), Tuple{String, Int, String}}[]
     for name in dataset_names
         dataset_number = _extract_caid_dataset_number(name)
         binding_fasta_path = normpath(joinpath(raw_data_dir, name, "binding.fasta.gz"))
@@ -371,10 +373,11 @@ function _add_caid_membership_columns!(
         dataset_ids = caid_ids_by_number[dataset_number]
         transform!(
             stats,
-            :protein_disprot_id => ByRow(
-                value -> !ismissing(value) &&
-                         in(String(value), dataset_ids)
-            ) => column_name
+            :protein_disprot_id =>
+                ByRow(
+                    value -> !ismissing(value) &&
+                             in(String(value), dataset_ids)
+                ) => column_name
         )
         push!(protein_caid_columns, column_name)
     end
@@ -428,7 +431,8 @@ Build one per-protein table containing all fixed-label inputs and outputs used
 for deterministic split assignment.
 
 Returned columns include:
-- all columns from `cluster_representatives`,
+- all columns from `cluster_representatives` except the retired
+  `global_representative_id` and `local_representative_id` columns,
 - `protein_disprot_id`,
 - `protein_has_idr_binding_annotation`,
 - `protein_oldest_pdb_release_date`,
@@ -493,9 +497,10 @@ function _build_fixed_labels_table_from_caid_datasets(
 
     transform!(
         stats,
-        :protein_oldest_pdb_release_date => ByRow(
-            x -> coalesce(x <= af2_training_cutoff_date, false)
-        ) => :protein_in_af2_training_set
+        :protein_oldest_pdb_release_date =>
+            ByRow(
+                x -> coalesce(x <= af2_training_cutoff_date, false)
+            ) => :protein_in_af2_training_set
     )
 
     cluster_split_labels = _build_cluster_split_labels(
@@ -508,7 +513,7 @@ function _build_fixed_labels_table_from_caid_datasets(
     cluster_caid_columns = Symbol[Symbol(replace(String(protein_column), "protein_" => "cluster_"))
                                   for protein_column in protein_caid_columns]
 
-    cluster_columns = propertynames(cluster_representatives)
+    cluster_columns = _dataset_columns_without_representatives(cluster_representatives)
     output_columns = unique([
         cluster_columns...,
         :protein_disprot_id,

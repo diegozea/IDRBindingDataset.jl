@@ -53,8 +53,6 @@ const _CLUSTER_ASSIGNMENT_COLUMN_NAMES = [
     "cluster_id", "representative_id", "sequence_id", "cluster_size"]
 const _CLUSTER_REPRESENTATIVE_COLUMN_NAMES = [
     "protein_id",
-    "global_representative_id",
-    "local_representative_id",
     "final_cluster_id"
 ]
 
@@ -779,8 +777,8 @@ function _final_cluster_ids(
     global_groups = Dict{String, Vector{Int}}()
     local_groups = Dict{String, Vector{Int}}()
 
-    for (protein_id, global_representative_id, local_representative_id) in
-        zip(protein_ids, global_representative_ids, local_representative_ids)
+    for (protein_id, global_representative_id, local_representative_id) in zip(
+        protein_ids, global_representative_ids, local_representative_ids)
         protein_index = protein_index_map[protein_id]
         push!(get!(global_groups, global_representative_id, Int[]), protein_index)
         push!(get!(local_groups, local_representative_id, Int[]), protein_index)
@@ -806,9 +804,10 @@ end
 
 Build a final one-row-per-protein table with columns:
 - `protein_id`
-- `global_representative_id`
-- `local_representative_id`
 - `final_cluster_id`
+
+Global and local representative assignments are used only to compute the final
+clusters. They are not included in the returned table.
 """
 function build_cluster_representatives_table(
         global_assignments::DataFrame,
@@ -819,43 +818,35 @@ function build_cluster_representatives_table(
     @argcheck(names(local_assignments) == _CLUSTER_ASSIGNMENT_COLUMN_NAMES,
         "Local assignments must have columns $(_CLUSTER_ASSIGNMENT_COLUMN_NAMES), got $(names(local_assignments)).")
 
-    global_representatives = select(
-        global_assignments,
-        :sequence_id => :protein_id,
-        :representative_id => :global_representative_id
-    )
-    local_representatives = select(
-        local_assignments,
-        :sequence_id => :protein_id,
-        :representative_id => :local_representative_id
-    )
-
-    @argcheck(nrow(global_representatives) == nrow(local_representatives),
+    @argcheck(nrow(global_assignments) == nrow(local_assignments),
         "Global and local assignments contain different numbers of proteins.")
 
-    representatives = innerjoin(
-        global_representatives,
-        local_representatives;
-        on = :protein_id,
-        validate = (true, true)
+    assignments = innerjoin(
+        select(global_assignments, :sequence_id, :representative_id),
+        select(local_assignments, :sequence_id, :representative_id);
+        on = :sequence_id,
+        validate = (true, true),
+        renamecols = "_global" => "_local"
     )
-    @argcheck(nrow(representatives) == nrow(global_representatives),
+    @argcheck(nrow(assignments) == nrow(global_assignments),
         "Global and local assignments do not cover the same protein IDs.")
 
-    sort!(representatives, :protein_id)
-    representatives.final_cluster_id = _final_cluster_ids(
-        representatives.protein_id,
-        representatives.global_representative_id,
-        representatives.local_representative_id
+    sort!(assignments, :sequence_id)
+    return DataFrame(
+        protein_id = assignments.sequence_id,
+        final_cluster_id = _final_cluster_ids(
+            assignments.sequence_id,
+            assignments.representative_id_global,
+            assignments.representative_id_local
+        )
     )
-    return representatives
 end
 
 """
     write_cluster_representatives_csv(representatives, output_path)
 
-Write the final cluster-representative table to CSV. If `output_path` ends with
-`.gz`, the CSV is gzip-compressed.
+Write the `protein_id` and `final_cluster_id` columns to CSV. If `output_path`
+ends with `.gz`, the CSV is gzip-compressed.
 """
 function write_cluster_representatives_csv(
         representatives::DataFrame,
@@ -949,6 +940,9 @@ Generated at (UTC): $(generated_at_utc)
 ## Outputs
 - DisProt full-protein FASTA: $(disprot_fasta_path) ($(_bytes_and_mb_string(disprot_fasta_size_bytes)))
 - Cluster representatives CSV: $(representatives_path) ($(_bytes_and_mb_string(representatives_size_bytes)))
+
+The CSV contains one row per protein with only `protein_id` and `final_cluster_id`.
+Global and local representative assignments are used internally to compute final clusters.
 
 ## Sequence and Cluster Counts
 - Protein sequence count: $(sequence_count)

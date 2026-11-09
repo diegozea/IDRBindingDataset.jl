@@ -69,43 +69,43 @@ end
     using IDRBindingDataset: build_disprot_protein_annotations
 
     disprot_entries = Any[
-    Dict(
-        "acc" => "P11111",
-        "disprot_id" => "DP00001",
-        "released" => "2020_04",
-        "regions" => Any[
-            Dict(
-                "released" => "2021_01",
-                "term_id" => "IDPO:0000002",
-                "term_is_binding" => false
-            ),
-            Dict(
-                "released" => "2020_09",
-                "term_id" => "GO:0005515",
-                "term_is_binding" => true
+        Dict(
+            "acc" => "P11111",
+            "disprot_id" => "DP00001",
+            "released" => "2020_04",
+            "regions" => Any[
+                Dict(
+                    "released" => "2021_01",
+                    "term_id" => "IDPO:0000002",
+                    "term_is_binding" => false
+                ),
+                Dict(
+                    "released" => "2020_09",
+                    "term_id" => "GO:0005515",
+                    "term_is_binding" => true
+                )
+            ]
+        ),
+        Dict(
+            "acc" => "P22222",
+            "disprot_id" => "DP00002",
+            "released" => "2021_03",
+            "regions" => Any[
+                Dict(
+                "released" => "2021_07",
+                "term_id" => "GO:0003676"
             )
-        ]
-    ),
-    Dict(
-        "acc" => "P22222",
-        "disprot_id" => "DP00002",
-        "released" => "2021_03",
-        "regions" => Any[
-            Dict(
-            "released" => "2021_07",
-            "term_id" => "GO:0003676"
+            ]
+        ),
+        Dict(
+            "acc" => "P33333",
+            "disprot_id" => "DP00003",
+            "released" => "2022_02",
+            "regions" => Any[
+                Dict("released" => "2022_08", "term_id" => "IDPO:0000002")
+            ]
         )
-        ]
-    ),
-    Dict(
-        "acc" => "P33333",
-        "disprot_id" => "DP00003",
-        "released" => "2022_02",
-        "regions" => Any[
-            Dict("released" => "2022_08", "term_id" => "IDPO:0000002")
-        ]
-    )
-]
+    ]
 
     annotations = build_disprot_protein_annotations(
         disprot_entries;
@@ -148,27 +148,27 @@ end
     )
 
     disprot_entries = Any[
-    Dict(
-        "acc" => "P11111",
-        "disprot_id" => "DP00001",
-        "released" => "2020_04",
-        "regions" => Any[
-            Dict(
-            "term_id" => "GO:0060090",
-            "term_name" => "molecular adaptor activity",
-            "term_is_binding" => true
+        Dict(
+            "acc" => "P11111",
+            "disprot_id" => "DP00001",
+            "released" => "2020_04",
+            "regions" => Any[
+                Dict(
+                "term_id" => "GO:0060090",
+                "term_name" => "molecular adaptor activity",
+                "term_is_binding" => true
+            )
+            ]
+        ),
+        Dict(
+            "acc" => "P22222",
+            "disprot_id" => "DP00002",
+            "released" => "2020_07",
+            "regions" => Any[
+                Dict("term_id" => "GO:0005515", "term_name" => "protein binding")
+            ]
         )
-        ]
-    ),
-    Dict(
-        "acc" => "P22222",
-        "disprot_id" => "DP00002",
-        "released" => "2020_07",
-        "regions" => Any[
-            Dict("term_id" => "GO:0005515", "term_name" => "protein binding")
-        ]
-    )
-]
+    ]
 
     annotations = build_disprot_protein_annotations(
         disprot_entries;
@@ -194,7 +194,7 @@ end
     )
 
     disprot_entries = Any[
-    Dict(
+        Dict(
         "acc" => "P11111",
         "disprot_id" => "DP00001",
         "released" => "2020_04",
@@ -202,7 +202,7 @@ end
             Dict("region_id" => "DP00001r001", "term_id" => "GO:0005515")
         ]
     )
-]
+    ]
 
     annotations = build_disprot_protein_annotations(
         disprot_entries;
@@ -218,25 +218,25 @@ end
     using IDRBindingDataset: build_disprot_release_dates
 
     disprot_entries = Any[
-    Dict(
-        "acc" => "P11111",
-        "disprot_id" => "DP00001",
-        "released" => "2021_03",
-        "regions" => Any[
-            Dict("released" => "2020_06"),
-            Dict("released" => missing)
-        ]
-    ),
-    Dict(
-        "acc" => "P22222",
-        "disprot_id" => "DP00002",
-        "released" => "2020_06",
-        "regions" => Any[
-            Dict("released" => "2022_01"),
-            Dict()
-        ]
-    )
-]
+        Dict(
+            "acc" => "P11111",
+            "disprot_id" => "DP00001",
+            "released" => "2021_03",
+            "regions" => Any[
+                Dict("released" => "2020_06"),
+                Dict("released" => missing)
+            ]
+        ),
+        Dict(
+            "acc" => "P22222",
+            "disprot_id" => "DP00002",
+            "released" => "2020_06",
+            "regions" => Any[
+                Dict("released" => "2022_01"),
+                Dict()
+            ]
+        )
+    ]
 
     @test build_disprot_release_dates(disprot_entries) == [
         Date(2020, 6, 1),
@@ -250,13 +250,13 @@ end
     using IDRBindingDataset: build_disprot_release_dates
 
     disprot_entries = Any[
-    Dict(
+        Dict(
         "acc" => "P11111",
         "disprot_id" => "DP00001",
         "released" => "invalid",
         "regions" => Any[]
     )
-]
+    ]
 
     @test_throws ArgumentError build_disprot_release_dates(disprot_entries)
 end
@@ -271,31 +271,29 @@ end
 
     cluster_representatives = IDRBindingDataset.DataFrames.DataFrame(
         protein_id = ["P11111", "P22222", "P33333"],
-        global_representative_id = ["P11111", "P11111", "P33333"],
-        local_representative_id = ["P11111", "P22222", "P33333"],
         final_cluster_id = ["cluster_000001", "cluster_000001", "cluster_000002"]
     )
 
     disprot_entries = Any[
-    Dict(
-        "acc" => "P11111",
-        "disprot_id" => "DP00001",
-        "released" => "2020_04",
-        "regions" => Any[Dict("released" => "2020_04", "term_id" => "IDPO:0000002")]
-    ),
-    Dict(
-        "acc" => "P22222",
-        "disprot_id" => "DP00002",
-        "released" => "2021_03",
-        "regions" => Any[Dict("released" => "2021_06", "term_id" => "GO:0005515")]
-    ),
-    Dict(
-        "acc" => "P33333",
-        "disprot_id" => "DP00003",
-        "released" => "2022_02",
-        "regions" => Any[Dict("released" => "2022_02", "term_id" => "IDPO:0000002")]
-    )
-]
+        Dict(
+            "acc" => "P11111",
+            "disprot_id" => "DP00001",
+            "released" => "2020_04",
+            "regions" => Any[Dict("released" => "2020_04", "term_id" => "IDPO:0000002")]
+        ),
+        Dict(
+            "acc" => "P22222",
+            "disprot_id" => "DP00002",
+            "released" => "2021_03",
+            "regions" => Any[Dict("released" => "2021_06", "term_id" => "GO:0005515")]
+        ),
+        Dict(
+            "acc" => "P33333",
+            "disprot_id" => "DP00003",
+            "released" => "2022_02",
+            "regions" => Any[Dict("released" => "2022_02", "term_id" => "IDPO:0000002")]
+        )
+    ]
     disprot_annotations = build_disprot_protein_annotations(
         disprot_entries;
         term_rules = IDRBindingDataset._DisProtChallengeTermRules(
@@ -331,8 +329,6 @@ end
 
     @test names(stats) == [
         "protein_id",
-        "global_representative_id",
-        "local_representative_id",
         "final_cluster_id",
         "protein_disprot_id",
         "protein_oldest_disprot_release_date",
@@ -366,6 +362,27 @@ end
     @test by_acc["P11111"].cluster_fixed_dataset_label == "caid"
     @test by_acc["P33333"].cluster_fixed_dataset_label == "caid"
     @test !by_acc["P33333"].protein_has_idr_binding_annotation
+
+    legacy_clusters = copy(cluster_representatives)
+    legacy_clusters.global_representative_id = ["P11111", "P11111", "P33333"]
+    legacy_clusters.local_representative_id = ["P11111", "P22222", "P33333"]
+    legacy_clusters.source_note = ["alpha", "beta", "gamma"]
+    original_legacy_clusters = copy(legacy_clusters)
+    legacy_stats = build_dataset_stats_table(
+        legacy_clusters,
+        disprot_annotations,
+        oldest_pdb,
+        Dict(
+            "caid_2" => Set(["DP00001", "DP00003"]),
+            "caid_3" => Set(["DP00002"])
+        )
+    )
+
+    @test "global_representative_id" ∉ names(legacy_stats)
+    @test "local_representative_id" ∉ names(legacy_stats)
+    @test isequal(legacy_stats[:, names(stats)], stats)
+    @test legacy_stats.source_note == ["alpha", "beta", "gamma"]
+    @test isequal(legacy_clusters, original_legacy_clusters)
 end
 
 @testitem "Build dataset stats table convenience overload derives helper tables" begin
@@ -375,24 +392,22 @@ end
 
     cluster_representatives = IDRBindingDataset.DataFrames.DataFrame(
         protein_id = ["P11111", "P22222"],
-        global_representative_id = ["P11111", "P22222"],
-        local_representative_id = ["P11111", "P22222"],
         final_cluster_id = ["cluster_000001", "cluster_000002"]
     )
     disprot_entries = Any[
-    Dict(
-        "acc" => "P11111",
-        "disprot_id" => "DP00001",
-        "released" => "2020_04",
-        "regions" => Any[Dict("released" => "2020_04", "term_id" => "IDPO:0000002")]
-    ),
-    Dict(
-        "acc" => "P22222",
-        "disprot_id" => "DP00002",
-        "released" => "2020_07",
-        "regions" => Any[Dict("released" => "2021_01", "term_id" => "GO:0005515")]
-    )
-]
+        Dict(
+            "acc" => "P11111",
+            "disprot_id" => "DP00001",
+            "released" => "2020_04",
+            "regions" => Any[Dict("released" => "2020_04", "term_id" => "IDPO:0000002")]
+        ),
+        Dict(
+            "acc" => "P22222",
+            "disprot_id" => "DP00002",
+            "released" => "2020_07",
+            "regions" => Any[Dict("released" => "2021_01", "term_id" => "GO:0005515")]
+        )
+    ]
     pdb_release_map = IDRBindingDataset.DataFrames.DataFrame(
         acc = ["P11111", "P22222", "P22222"],
         pdb_release_date = ["2018-01-01", "2022-01-01", "2020-01-01"]
@@ -437,24 +452,22 @@ end
 
     cluster_representatives = IDRBindingDataset.DataFrames.DataFrame(
         protein_id = ["P11111", "P22222"],
-        global_representative_id = ["P11111", "P22222"],
-        local_representative_id = ["P11111", "P22222"],
         final_cluster_id = ["cluster_000001", "cluster_000002"]
     )
     disprot_entries = Any[
-    Dict(
-        "acc" => "P11111",
-        "disprot_id" => "DP00001",
-        "released" => "2020_04",
-        "regions" => Any[Dict("released" => "2020_04", "term_id" => "IDPO:0000002")]
-    ),
-    Dict(
-        "acc" => "P22222",
-        "disprot_id" => "DP00002",
-        "released" => "2020_07",
-        "regions" => Any[Dict("released" => "2021_01", "term_id" => "GO:0005515")]
-    )
-]
+        Dict(
+            "acc" => "P11111",
+            "disprot_id" => "DP00001",
+            "released" => "2020_04",
+            "regions" => Any[Dict("released" => "2020_04", "term_id" => "IDPO:0000002")]
+        ),
+        Dict(
+            "acc" => "P22222",
+            "disprot_id" => "DP00002",
+            "released" => "2020_07",
+            "regions" => Any[Dict("released" => "2021_01", "term_id" => "GO:0005515")]
+        )
+    ]
     pdb_release_map = IDRBindingDataset.DataFrames.DataFrame(
         acc = String[],
         pdb_release_date = String[]
@@ -501,15 +514,16 @@ end
         protein_id = ["P_A1", "P_A2", "P_B1", "P_C1", "P_C2", "P_D1"],
         final_cluster_id = [
             "cluster_A", "cluster_A", "cluster_B", "cluster_C", "cluster_C", "cluster_D"],
-        cluster_fixed_dataset_label = Any["training", "training", "caid", missing, missing, missing],
+        cluster_fixed_dataset_label = Any[
+            "training", "training", "caid", missing, missing, missing],
         protein_oldest_disprot_release_date = Any[
-        Date(2019, 1, 1),
-        Date(2020, 1, 1),
-        Date(2021, 6, 1),
-        Date(2023, 2, 1),
-        Date(2022, 6, 1),
-        missing
-    ]
+            Date(2019, 1, 1),
+            Date(2020, 1, 1),
+            Date(2021, 6, 1),
+            Date(2023, 2, 1),
+            Date(2022, 6, 1),
+            missing
+        ]
     )
 
     labeled = assign_missing_cluster_labels_by_disprot_cutoff(
@@ -525,6 +539,17 @@ end
     @test by_acc["P_D1"].cluster_disprot_cutoff_dataset_label == "training"
     @test by_acc["P_C1"].cluster_min_protein_oldest_disprot_release_date == Date(2022, 6, 1)
     @test by_acc["P_D1"].cluster_min_protein_oldest_disprot_release_date === missing
+
+    legacy_stats = copy(dataset_stats)
+    legacy_stats.global_representative_id = copy(dataset_stats.protein_id)
+    legacy_stats.local_representative_id = copy(dataset_stats.protein_id)
+    original_legacy_stats = copy(legacy_stats)
+    legacy_labeled = assign_missing_cluster_labels_by_disprot_cutoff(
+        legacy_stats;
+        disprot_testing_cutoff_date = Date(2022, 1, 1)
+    )
+    @test isequal(legacy_labeled, labeled)
+    @test isequal(legacy_stats, original_legacy_stats)
 end
 
 @testitem "Assign missing cluster labels rejects inconsistent fixed labels inside cluster" begin
@@ -633,12 +658,12 @@ end
             "cluster_A", "cluster_B", "cluster_C", "cluster_C", "cluster_D"],
         cluster_fixed_dataset_label = Any["training", "caid", missing, missing, missing],
         protein_oldest_disprot_release_date = Any[
-        Date(2019, 1, 1),
-        Date(2021, 6, 1),
-        Date(2022, 6, 1),
-        Date(2023, 2, 1),
-        missing
-    ],
+            Date(2019, 1, 1),
+            Date(2021, 6, 1),
+            Date(2022, 6, 1),
+            Date(2023, 2, 1),
+            missing
+        ],
         protein_has_idr_binding_annotation = [true, false, true, false, true]
     )
 

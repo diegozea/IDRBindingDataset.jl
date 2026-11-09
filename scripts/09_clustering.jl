@@ -41,7 +41,7 @@ Build DisProt full-protein FASTA and run DIAMOND clustering in two modes:
 
 Final artifacts are:
 - `disprot_full_proteins.fasta.gz` (full DisProt protein sequences clustered),
-- `cluster_representatives.csv.gz` (protein ID + global/local representative),
+- `cluster_representatives.csv.gz` (`protein_id` + `final_cluster_id`),
 - `README.md` (run summary).
 
 Run from the repository root:
