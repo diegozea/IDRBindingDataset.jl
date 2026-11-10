@@ -3,6 +3,19 @@ using CSV
 using DataFrames
 
 """
+    _dataset_columns_without_representatives(table)
+
+Return the input column names in order, excluding the retired
+`global_representative_id` and `local_representative_id` metadata columns.
+This also accepts tables written with the older clustering schema.
+"""
+function _dataset_columns_without_representatives(table::AbstractDataFrame)::Vector{Symbol}
+    return [column
+            for column in propertynames(table)
+            if column ∉ (:global_representative_id, :local_representative_id)]
+end
+
+"""
     _write_csv_gz(table, output_path)
 
 Write one table-like object to a gzip-compressed CSV file at `output_path`.

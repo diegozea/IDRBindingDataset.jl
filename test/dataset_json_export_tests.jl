@@ -14,15 +14,16 @@ using TestItems
     )
 
     disprot_entries = Any[
-    Dict(
+        Dict(
         "acc" => "P00001",
         "sequence" => "acdefg",
         "regions" => Any[
-            Dict("term_id" => "IDPO:0000002", "term_name" => "disorder", "start" => 2, "end" => 4),
+            Dict("term_id" => "IDPO:0000002", "term_name" => "disorder", "start" => 2, "end" =>
+                4),
             Dict("term_id" => "GO:0005515", "start" => 3, "end" => 5)
         ]
     )
-]
+    ]
 
     records = build_dataset_json_records(
         final_dataset_table,
@@ -63,7 +64,7 @@ end
     )
 
     disprot_entries = Any[
-    Dict(
+        Dict(
         "acc" => "P00002",
         "sequence" => "AAAAA",
         "regions" => Any[
@@ -77,7 +78,7 @@ end
             )
         ]
     )
-]
+    ]
 
     records = build_dataset_json_records(
         final_dataset_table,
@@ -118,7 +119,7 @@ end
     )
 
     disprot_entries = Any[
-    Dict(
+        Dict(
         "acc" => "P00009",
         "sequence" => "AAAAAA",
         "regions" => Any[
@@ -135,7 +136,7 @@ end
             Dict("term_name" => "RNA binding", "start" => 6, "end" => 6)
         ]
     )
-]
+    ]
 
     records = build_dataset_json_records(
         final_dataset_table,
@@ -164,15 +165,18 @@ end
     )
 
     disprot_entries = Any[
-    Dict(
+        Dict(
         "acc" => "P00010",
         "sequence" => "AAAAAA",
         "regions" => Any[
-            Dict("region_id" => "DP00010r001", "term_id" => "IDPO:0000002", "start" => 1, "end" => 6),
-            Dict("region_id" => "DP00010r002", "term_id" => "GO:0005515", "start" => 2, "end" => 5)
+            Dict(
+                "region_id" => "DP00010r001", "term_id" => "IDPO:0000002", "start" =>
+                    1, "end" => 6),
+            Dict("region_id" => "DP00010r002", "term_id" => "GO:0005515", "start" => 2, "end" =>
+                5)
         ]
     )
-]
+    ]
 
     records = build_dataset_json_records(
         final_dataset_table,
@@ -193,7 +197,7 @@ end
     )
 
     disprot_entries = Any[
-    Dict(
+        Dict(
         "acc" => "P00006",
         "sequence" => "AAAAAA",
         "regions" => Any[
@@ -203,7 +207,7 @@ end
             Dict("term_id" => "IDPO:9999999", "start" => 6, "end" => 6)
         ]
     )
-]
+    ]
 
     records = build_dataset_json_records(
         final_dataset_table,
@@ -234,8 +238,8 @@ end
         cluster_dataset_label = ["testing"]
     )
     disprot_entries = Any[
-    Dict("acc" => "P00003", "sequence" => "AAAA", "regions" => Any[])
-]
+        Dict("acc" => "P00003", "sequence" => "AAAA", "regions" => Any[])
+    ]
 
     @test_throws ArgumentError build_dataset_json_records(
         final_dataset_table,
@@ -265,14 +269,14 @@ end
         cluster_dataset_label = ["testing"]
     )
     disprot_entries = Any[
-    Dict(
+        Dict(
         "acc" => "P00004",
         "sequence" => "AAAA",
         "regions" => Any[
             Dict("term_id" => "IDPO:0000002", "start" => 3, "end" => 6)
         ]
     )
-]
+    ]
 
     @test_throws ArgumentError build_dataset_json_records(
         final_dataset_table,
@@ -304,14 +308,14 @@ end
         protein_elm_clusters = [missing]
     )
     disprot_entries = Any[
-    Dict(
+        Dict(
         "acc" => "P00005",
         "sequence" => "ABCDE",
         "regions" => Any[
             Dict("term_id" => "GO:0005515", "start" => 2, "end" => 3)
         ]
     )
-]
+    ]
     records = build_dataset_json_records(
         final_dataset_table,
         disprot_entries;

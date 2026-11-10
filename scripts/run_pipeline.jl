@@ -191,16 +191,16 @@ function _write_summary(path::AbstractString, results)::Nothing
     total_elapsed_seconds = sum(result.elapsed_seconds for result in results)
 
     lines = String[
-    "# Pipeline Run Summary",
-    "",
-    "- Total scripts: `$(length(results))`",
-    "- Passed: `$(n_pass)`",
-    "- Failed: `$(n_fail)`",
-    "- Total elapsed (s): `$(round(total_elapsed_seconds; digits = 2))`",
-    "",
-    "| Script | Status | Exit Code | Elapsed (s) |",
-    "|---|---|---:|---:|"
-]
+        "# Pipeline Run Summary",
+        "",
+        "- Total scripts: `$(length(results))`",
+        "- Passed: `$(n_pass)`",
+        "- Failed: `$(n_fail)`",
+        "- Total elapsed (s): `$(round(total_elapsed_seconds; digits = 2))`",
+        "",
+        "| Script | Status | Exit Code | Elapsed (s) |",
+        "|---|---|---:|---:|"
+    ]
 
     for result in results
         push!(

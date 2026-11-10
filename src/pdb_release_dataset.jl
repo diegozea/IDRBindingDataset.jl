@@ -163,8 +163,10 @@ function _expand_merged_pdb_references(
     expanded = transform(
         merged_pdb_references,
         [:acc,
-            :pdb] => ByRow((acc,
-            pdb_reference) -> _expanded_reference_rows(String(acc), String(pdb_reference))) => :expanded_rows
+            :pdb] =>
+            ByRow((acc,
+                pdb_reference) -> _expanded_reference_rows(String(acc), String(pdb_reference))) =>
+                :expanded_rows
     )
     # `flatten` + `AsTable` turns nested vectors of named tuples into flat columns.
     cleaned = select(flatten(expanded, :expanded_rows), :expanded_rows => AsTable)
@@ -202,7 +204,8 @@ function _build_invalid_merged_pdb_references(
 
     transform!(
         invalid,
-        :pdb_reference => ByRow(_ -> PDB_LOOKUP_FAILURE_REASON_INVALID_FORMAT) => :failure_reason
+        :pdb_reference =>
+            ByRow(_ -> PDB_LOOKUP_FAILURE_REASON_INVALID_FORMAT) => :failure_reason
     )
     sort!(invalid, [:pdb_reference, :acc])
     return invalid

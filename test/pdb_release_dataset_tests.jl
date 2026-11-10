@@ -7,7 +7,7 @@ using TestItems
                              build_unique_uniprot_pdb_map
 
     disprot_entries = Any[
-    Dict(
+        Dict(
         "acc" => "P11111",
         "regions" => Any[
             Dict(
@@ -20,7 +20,7 @@ using TestItems
         )
         ]
     )
-]
+    ]
 
     refs = collect_disprot_region_level_pdb_refs(disprot_entries)
     @test size(refs, 1) == 3

@@ -11,7 +11,7 @@ deterministic base split:
 
 ## Artifact
 
-- Compressed CSV: `data/derived/fixed/cluster_fixed_labels.csv.gz` (`55567` bytes)
+- Compressed CSV: `data/derived/fixed/cluster_fixed_labels.csv.gz` (`46335` bytes)
 - Number of proteins: `3199`
 - Number of final clusters: `2439`
 

@@ -74,7 +74,8 @@ end
 
         entries = [Dict(
                        "rcsb_id" => pdb_id,
-                       "rcsb_accession_info" => Dict("initial_release_date" => "1990-01-01")
+                       "rcsb_accession_info" =>
+                           Dict("initial_release_date" => "1990-01-01")
                    )
                    for pdb_id in batch_ids]
 

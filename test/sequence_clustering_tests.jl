@@ -56,10 +56,10 @@ end
     using IDRBindingDataset
 
     entries = Any[
-    Dict("acc" => "P11111", "sequence" => "ACDE"),
-    Dict(
-        "acc" => "P11111", "sequence" => "FGHI")
-]
+        Dict("acc" => "P11111", "sequence" => "ACDE"),
+        Dict(
+            "acc" => "P11111", "sequence" => "FGHI")
+    ]
 
     @test_throws ArgumentError IDRBindingDataset.extract_disprot_full_protein_sequences(entries)
 end
@@ -223,21 +223,21 @@ end
     @test cluster_for_m2 == 3
 end
 
-@testitem "Cluster representative table adds deterministic final cluster IDs" begin
+@testitem "Final cluster IDs preserve global-local bridges and row-order independence" begin
     using Test
     using IDRBindingDataset
 
     global_assignments = IDRBindingDataset.DataFrames.DataFrame(
-        cluster_id = ["G000002", "G000001", "G000002", "G000001"],
-        representative_id = ["P3", "P1", "P3", "P1"],
-        sequence_id = ["P3", "P1", "P4", "P2"],
-        cluster_size = [2, 2, 2, 2]
+        cluster_id = ["G000002", "G000001", "G000002", "G000001", "G000003"],
+        representative_id = ["P3", "P1", "P3", "P1", "P5"],
+        sequence_id = ["P3", "P1", "P4", "P2", "P5"],
+        cluster_size = [2, 2, 2, 2, 1]
     )
     local_assignments = IDRBindingDataset.DataFrames.DataFrame(
-        cluster_id = ["L000002", "L000001", "L000002", "L000001"],
-        representative_id = ["P2", "P1", "P2", "P1"],
-        sequence_id = ["P4", "P1", "P2", "P3"],
-        cluster_size = [2, 2, 2, 2]
+        cluster_id = ["L000002", "L000001", "L000003", "L000002", "L000001"],
+        representative_id = ["P2", "P1", "P5", "P2", "P1"],
+        sequence_id = ["P4", "P1", "P5", "P2", "P3"],
+        cluster_size = [2, 2, 1, 2, 2]
     )
 
     representatives = IDRBindingDataset.build_cluster_representatives_table(
@@ -247,12 +247,39 @@ end
 
     @test names(representatives) == [
         "protein_id",
-        "global_representative_id",
-        "local_representative_id",
         "final_cluster_id"
     ]
-    @test representatives.protein_id == ["P1", "P2", "P3", "P4"]
-    @test all(representatives.final_cluster_id .== "cluster_000001")
+    @test representatives.protein_id == ["P1", "P2", "P3", "P4", "P5"]
+    @test representatives.final_cluster_id == [
+        "cluster_000001", "cluster_000001", "cluster_000001", "cluster_000001", "cluster_000002"]
+    @test IDRBindingDataset.build_cluster_representatives_table(
+        global_assignments[[5, 4, 3, 2, 1], :],
+        local_assignments[[2, 5, 4, 1, 3], :]
+    ) == representatives
+end
+
+@testitem "Final cluster table rejects duplicate and mismatched protein IDs" begin
+    using Test
+    using IDRBindingDataset
+
+    assignments = IDRBindingDataset.DataFrames.DataFrame(
+        cluster_id = ["C1", "C2", "C3"],
+        representative_id = ["P1", "P2", "P3"],
+        sequence_id = ["P1", "P2", "P3"],
+        cluster_size = [1, 1, 1]
+    )
+    duplicate_assignments = assignments[[1, 1, 3], :]
+    @test_throws ArgumentError IDRBindingDataset.build_cluster_representatives_table(
+        duplicate_assignments, assignments)
+    @test_throws ArgumentError IDRBindingDataset.build_cluster_representatives_table(
+        assignments, duplicate_assignments)
+
+    mismatched_assignments = copy(assignments)
+    mismatched_assignments.sequence_id[3] = "P4"
+    @test_throws ArgumentError IDRBindingDataset.build_cluster_representatives_table(
+        assignments, mismatched_assignments)
+    @test_throws ArgumentError IDRBindingDataset.build_cluster_representatives_table(
+        assignments, assignments[1:2, :])
 end
 
 @testitem "Cluster representative CSV writer and README writer" begin
@@ -313,10 +340,9 @@ end
     )
     @test names(representatives_df) == [
         "protein_id",
-        "global_representative_id",
-        "local_representative_id",
         "final_cluster_id"
     ]
+    @test representatives_df == representatives
 
     readme_contents = read(readme_path, String)
     @test occursin("## Outputs", readme_contents)

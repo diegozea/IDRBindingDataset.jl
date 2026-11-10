@@ -254,13 +254,12 @@ function build_cluster_elm_motifs_table(
 
     motifs_with_regex = copy(expanded_instances)
     motifs_with_regex[!, :regex] = Union{Missing, String}[get(regex_by_identifier, elm_identifier, missing)
-                                                          for elm_identifier in
-                                                              motifs_with_regex.ELMIdentifier]
+                                                          for elm_identifier in motifs_with_regex.ELMIdentifier]
 
     missing_regex_identifiers = String[String(identifier)
                                        for
-                                       identifier in
-                                       motifs_with_regex[ismissing.(motifs_with_regex.regex), :ELMIdentifier]]
+                                       identifier in motifs_with_regex[
+        ismissing.(motifs_with_regex.regex), :ELMIdentifier]]
     unique!(missing_regex_identifiers)
     sort!(missing_regex_identifiers)
     if !isempty(missing_regex_identifiers)

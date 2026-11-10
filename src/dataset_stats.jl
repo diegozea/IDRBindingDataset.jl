@@ -245,13 +245,15 @@ function build_oldest_pdb_release_dates(pdb_release_map::DataFrame)::DataFrame
     normalized = select(
         pdb_release_map,
         :acc => ByRow(x -> String(x)) => :acc,
-        :pdb_release_date => ByRow(_normalize_pdb_release_date) => :_normalized_release_date
+        :pdb_release_date =>
+            ByRow(_normalize_pdb_release_date) => :_normalized_release_date
     )
 
     oldest_by_accession = combine(
         groupby(normalized, :acc),
         :_normalized_release_date => _minimum_date_or_missing => :oldest_pdb_release_date,
-        :_normalized_release_date => (values -> any(ismissing, values)) => :has_missing_pdb_release_date
+        :_normalized_release_date =>
+            (values -> any(ismissing, values)) => :has_missing_pdb_release_date
     )
     oldest_by_accession.has_pdb_structure = trues(nrow(oldest_by_accession))
 
@@ -417,7 +419,8 @@ end
 
 Build the per-protein stats table used for cluster-distribution analysis.
 
-Output columns include all columns from `cluster_representatives`, plus:
+Output columns include all columns from `cluster_representatives` except the
+retired `global_representative_id` and `local_representative_id` columns, plus:
 - `protein_disprot_id`
 - `protein_oldest_disprot_release_date`
 - `protein_has_idr_binding_annotation`
@@ -475,7 +478,7 @@ function build_dataset_stats_table(
         "cluster_in_caid"
     )
 
-    cluster_columns = Symbol.(names(cluster_representatives))
+    cluster_columns = _dataset_columns_without_representatives(cluster_representatives)
     output_columns = unique([
         cluster_columns...,
         :protein_disprot_id,
@@ -509,7 +512,8 @@ Required `dataset_stats` columns:
 - `cluster_fixed_dataset_label`
 - `protein_oldest_disprot_release_date`
 
-Returned table includes all input columns plus:
+Returned table includes all input columns except the retired
+`global_representative_id` and `local_representative_id` columns, plus:
 - `cluster_min_protein_oldest_disprot_release_date`
 - `cluster_disprot_cutoff_dataset_label`
 
@@ -537,27 +541,30 @@ function assign_missing_cluster_labels_by_disprot_cutoff(
 
     cluster_cutoff_labels = combine(
         groupby(dataset_stats, :final_cluster_id),
-        :cluster_fixed_dataset_label => (
-            values -> _single_nonmissing_or_missing(
-            values;
-            value_label = "cluster_fixed_dataset_label"
-        )
-        ) => :cluster_fixed_dataset_label,
-        :protein_oldest_disprot_release_date => _minimum_date_or_missing => :cluster_min_protein_oldest_disprot_release_date
+        :cluster_fixed_dataset_label =>
+            (
+                values -> _single_nonmissing_or_missing(
+                values;
+                value_label = "cluster_fixed_dataset_label"
+            )
+            ) => :cluster_fixed_dataset_label,
+        :protein_oldest_disprot_release_date =>
+            _minimum_date_or_missing => :cluster_min_protein_oldest_disprot_release_date
     )
     transform!(
         cluster_cutoff_labels,
         [
             :cluster_fixed_dataset_label,
             :cluster_min_protein_oldest_disprot_release_date
-        ] => ByRow(
-            (fixed_label,
-            min_disprot_release_date) -> _cluster_label_with_disprot_cutoff(
-            fixed_label,
-            min_disprot_release_date,
-            disprot_testing_cutoff_date
-        )
-        ) => :cluster_disprot_cutoff_dataset_label
+        ] =>
+            ByRow(
+                (fixed_label,
+                min_disprot_release_date) -> _cluster_label_with_disprot_cutoff(
+                fixed_label,
+                min_disprot_release_date,
+                disprot_testing_cutoff_date
+            )
+            ) => :cluster_disprot_cutoff_dataset_label
     )
     select!(
         cluster_cutoff_labels,
@@ -566,7 +573,8 @@ function assign_missing_cluster_labels_by_disprot_cutoff(
         :cluster_disprot_cutoff_dataset_label
     )
 
-    return leftjoin(dataset_stats, cluster_cutoff_labels, on = :final_cluster_id)
+    retained_stats = select(dataset_stats, _dataset_columns_without_representatives(dataset_stats))
+    return leftjoin(retained_stats, cluster_cutoff_labels, on = :final_cluster_id)
 end
 
 """
@@ -611,13 +619,15 @@ function summarize_dataset_labels_by_binding(
 
     cluster_binding = combine(
         groupby(dataset_stats, :final_cluster_id),
-        dataset_label_column => (
-            values -> _single_nonmissing_or_missing(
-            values;
-            value_label = string(dataset_label_column)
-        )
-        ) => :dataset_label,
-        :protein_has_idr_binding_annotation => _any_true => :cluster_has_idr_binding_annotation
+        dataset_label_column =>
+            (
+                values -> _single_nonmissing_or_missing(
+                values;
+                value_label = string(dataset_label_column)
+            )
+            ) => :dataset_label,
+        :protein_has_idr_binding_annotation =>
+            _any_true => :cluster_has_idr_binding_annotation
     )
     cluster_summary = combine(
         groupby(cluster_binding, :dataset_label),
@@ -637,7 +647,8 @@ function summarize_dataset_labels_by_binding(
     summary.n_idr_binding_clusters = coalesce.(summary.n_idr_binding_clusters, 0)
     transform!(
         summary,
-        :dataset_label => ByRow(value -> _normalize_label_for_report(value)) => :dataset_label
+        :dataset_label =>
+            ByRow(value -> _normalize_label_for_report(value)) => :dataset_label
     )
     summary._dataset_label_sort_key = _split_label_sort_key.(summary.dataset_label)
     sort!(summary, :_dataset_label_sort_key)
