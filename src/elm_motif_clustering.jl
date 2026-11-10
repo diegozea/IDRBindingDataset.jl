@@ -292,7 +292,8 @@ function build_protein_elm_motif_cluster_table(
     normalized_motifs = select(motif_table, :protein_id, :regex)
     transform!(normalized_motifs,
         :protein_id => ByRow(value -> _strip_wrapping_quotes(String(value))) => :protein_id)
-    transform!(normalized_motifs, :regex => ByRow(value -> _strip_wrapping_quotes(String(value))) => :regex)
+    transform!(normalized_motifs, :regex =>
+        ByRow(value -> _strip_wrapping_quotes(String(value))) => :regex)
 
     normalized_clusters = select(regex_cluster_table, :regex, :elm_motif_cluster)
     transform!(normalized_clusters,
@@ -347,7 +348,8 @@ function _summarize_regex_cluster_table(regex_cluster_table::AbstractDataFrame):
     _require_columns(regex_cluster_table, _REQUIRED_REGEX_CLUSTER_COLUMNS, "regex_cluster_table")
 
     cluster_sizes = isempty(regex_cluster_table) ? Int[] :
-                    combine(groupby(regex_cluster_table, :elm_motif_cluster), nrow => :count).count
+                    combine(groupby(regex_cluster_table, :elm_motif_cluster), nrow =>
+        :count).count
 
     (
         regex_count = nrow(regex_cluster_table),
@@ -371,7 +373,8 @@ function _summarize_protein_cluster_table(protein_cluster_table::AbstractDataFra
     )
 
     clusters_per_protein = isempty(protein_cluster_table) ? Int[] :
-                           combine(groupby(protein_cluster_table, :protein_id), nrow => :count).count
+                           combine(groupby(protein_cluster_table, :protein_id), nrow =>
+        :count).count
 
     (
         row_count = nrow(protein_cluster_table),
